@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "esbuild src/index.tsx --bundle --minify --sourcemap --outfile=public/bundle.js",
+    "build": "esbuild src/index.tsx --bundle --minify --sourcemap --outfile=build/reactjs_bundle.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
