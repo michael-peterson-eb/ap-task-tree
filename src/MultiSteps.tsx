@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 import QandA from './QandA';
+import QandAForm from './QandAForm';
 import QADataGrid from './QADataGrid';
 
 export default function HorizontalLinearStepper() {
@@ -98,7 +99,7 @@ export default function HorizontalLinearStepper() {
         </React.Fragment>
       ) : (
         <React.Fragment>
-          <QADataGrid qtype={questionTypes[activeStep]}/>
+          <QandAForm qtype={questionTypes[activeStep]}/>
           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
             <Button
               color="inherit"

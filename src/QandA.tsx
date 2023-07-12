@@ -41,13 +41,11 @@ export default async function QandA(props) {
       <Typography sx={{ mt: 2, mb: 1 }}>Question and Answer for </Typography>
       <Grid container spacing={2}>
         {asQuestions.map((q) => {
-          return
+          return (
             <Grid item xs={4}>
               <Item>{q.EA_SA_txtaQuestion}</Item>
             </Grid>
-            <Grid item xs={8}>
-              <Item>xs=4</Item>
-            </Grid>;
+          )
         })}
       </Grid>
     </Box>
