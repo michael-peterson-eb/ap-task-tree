@@ -5,14 +5,14 @@ import Link from '@mui/material/Link';
 
 import MultiStep from './MultiSteps';
 
-export default function App() {
+export default function App({recordInfo}) {
   return (
     <Container maxWidth="lg">
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h3" gutterBottom>
           Impact Assessment - POC
         </Typography>
-        <MultiStep />
+        <MultiStep recordInfo={recordInfo}/>
       </Box>
     </Container>
   );

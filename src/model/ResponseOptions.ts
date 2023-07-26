@@ -1,6 +1,4 @@
-import { AnyARecord } from "dns";
-
-export const fetchAssessmentResponseOptions = async (templateID: any) => {
+export const fetchResponseOptionsByTemplateId = async (templateID: any) => {
   try {
     const condition = `EA_SA_rsAssessmentQuestionTemplate=${templateID} ORDER BY EA_SA_intDisplayOrder ASC`;
 

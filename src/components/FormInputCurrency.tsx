@@ -2,18 +2,23 @@ import { FormInputProps } from "./FormInputProps";
 
 import {
   FormControl,
-  Input,
-  InputLabel,
+  TextField,
   InputAdornment
 } from '@mui/material';
 
-export const FormInputCurrency = ({ data }: FormInputProps) => {
+export const FormInputCurrency = ({ data, onChange }: FormInputProps) => {
   return(
-    <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-      <InputLabel htmlFor="standard-adornment-amount">Amount</InputLabel>
-      <Input
-        id="standard-adornment-amount"
-        startAdornment={<InputAdornment position="start">$</InputAdornment>}
+    <FormControl fullWidth sx={{ m: 1, fontSize: 18 }} variant="standard">
+      <TextField
+        label={data.EA_SA_txtaQuestion}
+        id={data.id}
+        name={data.id}
+        sx={{ m: 1 }}
+        InputProps={{
+          startAdornment: <InputAdornment position="start">US$</InputAdornment>,
+          inputMode: 'numeric', pattern: '[0-9]*'
+        }}
+        onChange={onChange}
       />
     </FormControl>
   )
