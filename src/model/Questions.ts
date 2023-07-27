@@ -1,3 +1,17 @@
+const AssessmentQuestionFields = [
+  "id",
+  "name",
+  "EA_SA_rfQuestionType",
+  "EA_SA_txtaResponse",
+  "EA_SA_ddResponse",
+  "EA_SA_curResponse",
+  "EA_SA_txtaAdditionalInformation",
+  "EA_SA_rsTimeInterval",
+  "EA_SA_rsAssessmentResponseOptions",
+  "EA_SA_rsAssessmentQuestionTemplate",
+  "EA_SA_rfTimeInterval",
+];
+
 /**
  * fetch Assessment Questions by record id and question type id
  * @param questionTypeID
@@ -35,6 +49,33 @@ export const fetchQuestionsByQuestionTypeId = async (
     return results;
   } catch (error) {
     console.log("Error: fetchQuestions ", error);
+  }
+};
+
+export const fetchAssessQuestionsByTemplateId = async (
+  recordInfo: any,
+  templateID: any
+) => {
+  try {
+    // EA_SA_rsProcess=${RECORD_INFO.id} AND
+    let queryCondition = `${recordInfo.questionRelName}=${recordInfo.id}`;
+    queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
+    queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate <> 'null'`;
+
+    const results = await _RB.selectQuery(
+      AssessmentQuestionFields,
+      "EA_SA_AssessmentQuestion",
+      queryCondition,
+      100,
+      true
+    );
+
+    return await results;
+  } catch (error) {
+    console.log(
+      "Error: QuestionInterval:fetchQuestionsIntervalsByTemplateId ",
+      error
+    );
   }
 };
 

@@ -13,7 +13,7 @@ import { fetchResponseOptionsByTemplateId } from './model/ResponseOptions';
 
 import { getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
 
-const QandAForm = ({recordInfo, qtype, handleFormValues, handleOnChange}) => {
+const QandAForm = ({recordInfo, qtype, handleFormValues, handleOnChange, autoCompleteHandler}) => {
 
   const [tableData, setTableData] = useState([]);
 
@@ -66,7 +66,7 @@ console.log("--QAForm--", recordInfo, qtype)
           }
           // MSP - Multi-Select
           if (data.EA_SA_ddlResponseFormat === 'MSP' )  {
-            return <FormMultiSelect recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange}/>
+            return <FormMultiSelect recordInfo={recordInfo} qtype={qtype} data={data} onChange={autoCompleteHandler}/>
           }
           // CCY - Currency
           if (data.EA_SA_ddlResponseFormat === 'CCY')  {

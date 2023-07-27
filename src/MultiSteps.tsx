@@ -126,7 +126,18 @@ export default function MultiSteps({recordInfo}) {
       }
     });
   }
-
+  const handleAutoCompleteChange = (event, autoComplete) => {
+    const {name, value} = autoComplete;
+    console.log("--handleAutoCompleteChange--", value)
+    setFormUpdated(true);
+    setFormValues({
+      ...formValues,
+      [name]:{
+        ...formValues[name],
+        value
+      }
+    });
+  }
   const formMethods = useForm();
 
   const onSubmit = () => {
@@ -183,7 +194,7 @@ export default function MultiSteps({recordInfo}) {
         </Fragment>
       ) : (
         <Fragment>
-          <QandAForm recordInfo={recordInfo} qtype={questionTypes[activeStep]} handleFormValues={setFormValues} handleOnChange={handleChange}/>
+          <QandAForm recordInfo={recordInfo} qtype={questionTypes[activeStep]} handleFormValues={setFormValues} handleOnChange={handleChange} autoCompleteHandler={handleAutoCompleteChange}/>
           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1 }}>
             <Button
               color="inherit"
