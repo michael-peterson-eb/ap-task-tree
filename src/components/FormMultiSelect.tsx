@@ -2,7 +2,6 @@ import {useEffect, useState} from 'react';
 import {
   TextField,
   Autocomplete,
-  FormControl,
 } from "@mui/material";
 import { FormInputProps } from "./FormInputProps";
 import {
@@ -15,6 +14,7 @@ import {
 export const FormMultiSelect = ({recordInfo, qtype, data, onChange}: FormInputProps) => {
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
+  const [defaultValues, setDefaultValues] = useState([]);
 
   const templateId = data.id;
   useEffect(() => {
@@ -24,7 +24,7 @@ export const FormMultiSelect = ({recordInfo, qtype, data, onChange}: FormInputPr
       setAssessQuestion(assessQuestions);
 
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-      console.log("--fetchQuestionsIntervalsByTemplateId:options--", responseOptions)
+      //console.log("--fetchQuestionsIntervalsByTemplateId:options--", responseOptions)
 
       setQuesResponseOptions(responseOptions);
     }
@@ -35,28 +35,31 @@ export const FormMultiSelect = ({recordInfo, qtype, data, onChange}: FormInputPr
 
   }, [templateId])
 
-  const setValue = (val) => {
-    console.log("--setValue--", val)
-  }
+  const getDefaultValue = (options: any, stored: string) => {
+    if ( stored == null ) return [];
+    const matched = options.filter((opt: any) => {
+      if (stored.indexOf(opt.id) >= 0 ) {
+          return opt;
+      }
+    });
+    return matched;
+  };
 
-  const defaultValue = [
-    {id: 136198002, name:"1st Weelkkk"},
-    {id: 136198003, name:"2nd Weelkkk"},
-  ]
-  console.log("--multiSelect:qtype--", qtype)
-  console.log("--multiSelect:data--", data)
+  //console.log("--multiSelect:qtype--", qtype)
+  //console.log("--multiSelect:data--", data)
 
   return (
     <div>
     {assessQuestions.length > 0 && assessQuestions.map((aq) => {
+      const stringValues = aq.EA_SA_txtaResponse;
+      const defaultValue = getDefaultValue(quesResponseOptions, stringValues);
       return (
         <Autocomplete
           sx={{ m: 1}}
           multiple
           id={aq.id}
           options={quesResponseOptions}
-          defaultValue={defaultValue}
-          //getOptionSelected={(option, value) => option.id === value.id}
+          value={defaultValue}
           getOptionLabel={(option) => option.name}
           disableCloseOnSelect
           renderOption={(props, option) => {
@@ -67,7 +70,11 @@ export const FormMultiSelect = ({recordInfo, qtype, data, onChange}: FormInputPr
             );
           }}
           onChange={(event: any, newValue: any | null) => {
-            onChange(event, {name: aq.id, value: newValue});
+            onChange('MSP', event, {name: aq.id, value: newValue});
+          }}
+          onInputChange={(event, value) => {
+            console.log("onInputChange---", value)
+            setDefaultValues(value);
           }}
           renderInput={(params) => (
             <TextField

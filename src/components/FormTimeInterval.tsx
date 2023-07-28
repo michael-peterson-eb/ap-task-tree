@@ -45,7 +45,8 @@ export const FormTimeInterval = ({recordInfo, qtype, data, onChange}: FormInputP
       .catch(console.error);
 
   }, [templateId])
-console.log("--FormTimeInterval--", templateId, data)
+
+  console.log("--FormTimeInterval--", templateId, data)
   return (
     <div>
       <InputLabel style={{ fontSize: '14px' }}>{questionsInterval.length > 0 && questionsInterval[0].name}</InputLabel>
@@ -65,7 +66,14 @@ console.log("--FormTimeInterval--", templateId, data)
                 </TableCell>
                 <TableCell style={{padding: '0px'}}>
                   <FormControl sx={{ m: 1, minWidth: 120, margin: '4px' }} size="small">
-                    <Select style={{ fontSize: '14px' }} native name={qa.id} defaultValue={qa.EA_SA_rsAssessmentResponseOptions} onChange={onChange}>
+                    <Select
+                      style={{ fontSize: '14px' }}
+                      native name={qa.id}
+                      defaultValue={qa.EA_SA_rsAssessmentResponseOptions}
+                      onChange={(event: any) => {
+                        onChange('SSP', event);
+                      }}
+                    >
                       <option aria-label="None" value="">Please select</option>
                       {quesResponseOptions.length > 0 && quesResponseOptions.map((item:any) => {
                         return <option value={item.id}>{item.name}</option>

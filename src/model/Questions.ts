@@ -190,6 +190,31 @@ export const updateQuestion = async (recordID: any, fields: any) => {
   }
 };
 
+const concatObjectIds = (values: any) => {
+  const ids = values.map((opt: any) => {
+    return opt.id;
+  });
+  return ids.join(",");
+};
+
+export const updateQuestionWithResponse = async (
+  updatedResponses: any,
+  responseFields: any
+) => {
+  for (let recordId in updatedResponses) {
+    const record = updatedResponses[recordId];
+    const fields = {};
+    const recordType = record.type;
+    if (responseFields.hasOwnProperty(recordType)) {
+      let value = record.value;
+      if (recordType === "MSP") value = concatObjectIds(value);
+      console.log("--updateValue--", value, recordType);
+      fields[responseFields[recordType]] = value;
+      await updateQuestion(recordId, fields);
+    }
+  }
+};
+
 export const getRelatedResponseOptions = async (questionId: any) => {
   try {
     // R7996162=Assessment Question to Assessment Response Options

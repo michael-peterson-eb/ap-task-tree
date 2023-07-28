@@ -7,10 +7,9 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import {Box, ThemeProvider} from '@mui/material';
 import { FormProvider, useForm, useFieldArray } from "react-hook-form";
+import { updateQuestionWithResponse } from './model/Questions';
 
-import QandA from './QandA';
 import QandAForm from './QandAForm';
-import QADataGrid from './QADataGrid';
 import { getQuestionTypes } from './model/Assessment';
 import { NavButtonTheme } from './common/CustomTheme';
 
@@ -23,6 +22,14 @@ export default function MultiSteps({recordInfo}) {
   //const [currentRecordInfo, setCurrentRecordInfo] = React.useState(recordInfo);
 
   //const [sectionStatus, setSectionStatus] = React.useState({});
+
+  const questionResponseFields = {
+    MSP: "EA_SA_txtaResponse",
+    SSP: "EA_SA_rsAssessmentResponseOptions",
+    CCY: "EA_SA_curResponse",
+    DATE: "EA_SA_ddResponse",
+    FRES: "EA_SA_txtaResponse",
+  };
 
   const isStepOptional = (step: number) => {
     return step === 1;
@@ -70,22 +77,13 @@ export default function MultiSteps({recordInfo}) {
     setActiveStep(0);
   };
 
-  //let questionTypes = React.useRef(null);
-
   useEffect(() => {
-    // (async () => {
-    //   //console.log("--useEffect--currentRecordInfo---", currentRecordInfo)
-    //   //const qTypes = await _RB.selectQuery(['id', 'name'],'EA_SA_AssessmentQuestionType', true, 1000, true);
-    //   const qTypes = await getQuestionTypes(recordInfo);
-    //   console.log("--useEffect--currentRecordInfo---", qTypes)
-    //   setQuestionTypes(await qTypes);
-    //   console.log("--questionTypes---", questionTypes)
-    // })();
     console.log("--useEffect:recordInfo-->", recordInfo)
     getQuestionTypes(recordInfo).then((data) => {
 
       console.log("--useEffect:data--", data)
-      setQuestionTypes((prevData) => ([...prevData, ...data]));
+      //setQuestionTypes((prevData) => ([...prevData, ...data]));
+      setQuestionTypes(data);
       console.log("--questionTypes---", questionTypes)
       //console.log("--questionTypes:types---", types)
     });
@@ -93,55 +91,35 @@ export default function MultiSteps({recordInfo}) {
 
   /** React Form Hook */
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const formFields = Object.keys(formValues);
     let newFormValues = {...formValues}
     console.log("--handleSubmit--", formFields, newFormValues)
-    for (let index = 0; index < formFields.length; index++) {
-      const currentField = formFields[index];
-      const currentValue = formValues[currentField].value;
-
-      if(currentValue === ''){
-        newFormValues = {
-          ...newFormValues,
-          [currentField]:{
-            ...newFormValues[currentField],
-            error:true
-          }
-        }
-      }
-    }
-    setFormValues(newFormValues)
+    await updateQuestionWithResponse(formValues, questionResponseFields);
   }
 
-  const handleChange = (e) => {
-    const {name, value} = e.target;
-    console.log("--handleChange--", e)
-    setFormUpdated(true);
-    setFormValues({
-      ...formValues,
-      [name]:{
-        ...formValues[name],
-        value
-      }
-    });
+  const handleChange = (type: any, event: any) => {
+    const {name, value} = event.target;
+    console.log("--handleChange--", event)
+    trackUpdatedQuestions(type, name, value);
   }
-  const handleAutoCompleteChange = (event, autoComplete) => {
+
+  const customChangedHandler = (type: any, event: any, autoComplete: any) => {
     const {name, value} = autoComplete;
-    console.log("--handleAutoCompleteChange--", value)
+    console.log("--customChangedHandler--", value)
+    trackUpdatedQuestions(type, name, value);
+  }
+
+  const trackUpdatedQuestions = (fieldType: any, aqId: any, value: any) => {
     setFormUpdated(true);
     setFormValues({
       ...formValues,
-      [name]:{
-        ...formValues[name],
+      [aqId]:{
+        ...formValues[aqId],
+        type: fieldType,
         value
       }
     });
-  }
-  const formMethods = useForm();
-
-  const onSubmit = () => {
-    console.log("Submitted.....")
   }
 
   const setFormValues = (values) => {
@@ -149,7 +127,12 @@ export default function MultiSteps({recordInfo}) {
     formValues = values;
   }
 
-  console.log("--MultiStep-->", recordInfo)
+  const formMethods = useForm();
+
+  const onSubmit = () => {
+    console.log("Submitted.....")
+  }
+
   return (
     <FormProvider {...formMethods}>
        <form onSubmit={handleSubmit}>
@@ -194,7 +177,7 @@ export default function MultiSteps({recordInfo}) {
         </Fragment>
       ) : (
         <Fragment>
-          <QandAForm recordInfo={recordInfo} qtype={questionTypes[activeStep]} handleFormValues={setFormValues} handleOnChange={handleChange} autoCompleteHandler={handleAutoCompleteChange}/>
+          <QandAForm recordInfo={recordInfo} qtype={questionTypes[activeStep]} handleFormValues={setFormValues} handleOnChange={handleChange} customChangedHandler={customChangedHandler}/>
           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1 }}>
             <Button
               color="inherit"

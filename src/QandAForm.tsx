@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react'
-import {Box, ThemeProvider} from '@mui/material';
+import {
+  Box,
+  ThemeProvider,
+  Checkbox,
+  FormControlLabel,
+  Alert,
+  AlertTitle,
+} from '@mui/material';
 
 import { FormInputCurrency } from './components/FormInputCurrency';
 import { FormInputNumber } from './components/FormInputNumber';
@@ -13,9 +20,10 @@ import { fetchResponseOptionsByTemplateId } from './model/ResponseOptions';
 
 import { getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
 
-const QandAForm = ({recordInfo, qtype, handleFormValues, handleOnChange, autoCompleteHandler}) => {
+const QandAForm = ({recordInfo, qtype, handleFormValues, handleOnChange, customChangedHandler}) => {
 
   const [tableData, setTableData] = useState([]);
+  const [isTypeCompleted, setTypeCompleted] = useState(false);
 
   const setFormValues = (data: any) => {
     const formValues: any = {};
@@ -41,6 +49,7 @@ const QandAForm = ({recordInfo, qtype, handleFormValues, handleOnChange, autoCom
   }
 console.log("--QAForm--", recordInfo, qtype)
   useEffect(() => {
+    setTypeCompleted(false);
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
       //const options = await fetchResponseOptionsByTemplateId(qtype.id);
       setTableData(data);
@@ -62,11 +71,11 @@ console.log("--QAForm--", recordInfo, qtype)
           }
           // Text Response
           if (data.EA_SA_ddlResponseFormat === 'FRES' )  {
-            return <FormInputText data={data} name={data.id} onChange={handleOnChange}/>
+            return <FormInputText recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange}/>
           }
           // MSP - Multi-Select
           if (data.EA_SA_ddlResponseFormat === 'MSP' )  {
-            return <FormMultiSelect recordInfo={recordInfo} qtype={qtype} data={data} onChange={autoCompleteHandler}/>
+            return <FormMultiSelect recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler}/>
           }
           // CCY - Currency
           if (data.EA_SA_ddlResponseFormat === 'CCY')  {
@@ -74,6 +83,23 @@ console.log("--QAForm--", recordInfo, qtype)
           }
           // DATE - Date
         })}
+        <Alert severity="info">
+        <AlertTitle>Impact Assessment</AlertTitle>
+          <FormControlLabel control={
+            <Checkbox
+              id={qtype.id}
+              name={qtype.id}
+              checked={isTypeCompleted}
+              onChange={(event: any) => {
+
+                console.log("--completed--", event.target.checked)
+                const checked = event.target.checked;
+                setTypeCompleted(checked)
+                customChangedHandler('STATUS', event, {name: qtype.id, value: checked});
+              }}
+              inputProps={{ 'aria-label': 'controlled' }}/>
+            } label={`Checked if ${qtype.name} Impact Assessment is complete!`} />
+        </Alert>
       </Box>
     </ThemeProvider>
   )
