@@ -3,7 +3,7 @@ import {
     FormControl,
     Select,
     MenuItem,
-    FormHelperText,
+    TextField,
     InputLabel,
     Table,
     TableBody,
@@ -46,16 +46,23 @@ export const FormTimeInterval = ({recordInfo, qtype, data, onChange}: FormInputP
 
   }, [templateId])
 
+  const getNameValue = (options: any, id: any) => {
+    if (!id) return "No Answer";
+    const found = options.find(opt => opt.id == id);
+    console.log("---get----", found, options, id)
+    return found.name;
+  }
+
   console.log("--FormTimeInterval--", templateId, data)
   return (
     <div>
       <InputLabel style={{ fontSize: '14px' }}>{questionsInterval.length > 0 && questionsInterval[0].name}</InputLabel>
-      <TableContainer>
-        <Table sx={{ minWidth: 650 }} size="small" aria-label="simple table">
+      <TableContainer component={Paper} sx={{marginBottom: '16px'}}>
+        <Table sx={{width: '100%'}} size="small" aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Time Interval</TableCell>
-              <TableCell>Impact</TableCell>
+              <TableCell style={{width: '20%'}}>Time Interval</TableCell>
+              <TableCell style={{width: '80%'}}>Impact</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -65,21 +72,27 @@ export const FormTimeInterval = ({recordInfo, qtype, data, onChange}: FormInputP
                   {qa.EA_SA_rfTimeInterval}
                 </TableCell>
                 <TableCell style={{padding: '0px'}}>
-                  <FormControl sx={{ m: 1, minWidth: 120, margin: '4px' }} size="small">
+                  {recordInfo.crudAction === 'edit' &&
                     <Select
-                      style={{ fontSize: '14px' }}
-                      native name={qa.id}
+                      sx={{ width: '100%' }}
+                      style={{ fontSize: '14px'}}
+                      name={qa.id}
+                      native
                       defaultValue={qa.EA_SA_rsAssessmentResponseOptions}
                       onChange={(event: any) => {
                         onChange('SSP', event);
                       }}
                     >
-                      <option aria-label="None" value="">Please select</option>
+                      <option aria-label="None" value="">Select Impact</option>
                       {quesResponseOptions.length > 0 && quesResponseOptions.map((item:any) => {
                         return <option value={item.id}>{item.name}</option>
                       })}
                     </Select>
-                  </FormControl>
+                  }
+
+                  {recordInfo.crudAction === 'view' &&
+                    <div>{getNameValue(quesResponseOptions, qa.EA_SA_rsAssessmentResponseOptions)}</div>
+                  }
                 </TableCell>
               </TableRow>
             ))}

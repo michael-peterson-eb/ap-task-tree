@@ -17,23 +17,28 @@ export const FormMultiSelect = ({recordInfo, qtype, data, onChange}: FormInputPr
   const [defaultValues, setDefaultValues] = useState([]);
 
   const templateId = data.id;
-  useEffect(() => {
-    // declare the async data fetching function
-    const fetchQuestionsAndOptions = async () => {
-      const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
-      setAssessQuestion(assessQuestions);
 
-      const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-      //console.log("--fetchQuestionsIntervalsByTemplateId:options--", responseOptions)
+  const fetchQuestionsAndOptions = async () => {
+    const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+    setAssessQuestion(assessQuestions);
+    console.log("--fetchQuestionsIntervalsByTemplateId:question--", assessQuestions)
 
-      setQuesResponseOptions(responseOptions);
+    const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
+    //console.log("--fetchQuestionsIntervalsByTemplateId:options--", responseOptions)
+
+    setQuesResponseOptions(responseOptions);
+
+    if ( assessQuestions && assessQuestions.length > 0 ) {
+      const stringValues = assessQuestions[0].EA_SA_txtaResponse;
+      const defaultValue = getDefaultValue(responseOptions, stringValues);
+      console.log("--fetchQuestionsIntervalsByTemplateId:default--", stringValues, responseOptions, defaultValue)
+      setDefaultValues(defaultValue);
     }
+  }
 
-    // call the function and catch any error
-    fetchQuestionsAndOptions()
-      .catch(console.error);
-
-  }, [templateId])
+  useEffect(() => {
+    fetchQuestionsAndOptions().catch(console.error);
+  }, [])
 
   const getDefaultValue = (options: any, stored: string) => {
     if ( stored == null ) return [];
@@ -45,21 +50,15 @@ export const FormMultiSelect = ({recordInfo, qtype, data, onChange}: FormInputPr
     return matched;
   };
 
-  //console.log("--multiSelect:qtype--", qtype)
-  //console.log("--multiSelect:data--", data)
-
   return (
     <div>
-    {assessQuestions.length > 0 && assessQuestions.map((aq) => {
-      const stringValues = aq.EA_SA_txtaResponse;
-      const defaultValue = getDefaultValue(quesResponseOptions, stringValues);
-      return (
+      {assessQuestions.map((aq) => (
         <Autocomplete
-          sx={{ m: 1}}
+          sx={{ m: 2, marginTop: '12px'}}
           multiple
           id={aq.id}
           options={quesResponseOptions}
-          value={defaultValue}
+          value={defaultValues}
           getOptionLabel={(option) => option.name}
           disableCloseOnSelect
           renderOption={(props, option) => {
@@ -70,22 +69,20 @@ export const FormMultiSelect = ({recordInfo, qtype, data, onChange}: FormInputPr
             );
           }}
           onChange={(event: any, newValue: any | null) => {
+            setDefaultValues([...newValue])
             onChange('MSP', event, {name: aq.id, value: newValue});
           }}
-          onInputChange={(event, value) => {
-            console.log("onInputChange---", value)
-            setDefaultValues(value);
-          }}
+          readOnly={recordInfo.crudAction == 'view' ? true : false}
           renderInput={(params) => (
             <TextField
+              sx={{marginTop: '12px'}}
               {...params}
               name={aq.id}
               label={aq.name}
             />
           )}
         />
-      )
-    })}
+      ))}
     </div>
   );
 }

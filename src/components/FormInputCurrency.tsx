@@ -6,7 +6,7 @@ import {
   InputAdornment
 } from '@mui/material';
 
-export const FormInputCurrency = ({ data, onChange }: FormInputProps) => {
+export const FormInputCurrency = ({ recordInfo, qtype, data, onChange}: FormInputProps) => {
   return(
     <FormControl fullWidth sx={{ m: 1, fontSize: 18 }} variant="standard">
       <TextField

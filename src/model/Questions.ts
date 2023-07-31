@@ -66,7 +66,7 @@ export const fetchAssessQuestionsByTemplateId = async (
       AssessmentQuestionFields,
       "EA_SA_AssessmentQuestion",
       queryCondition,
-      100,
+      1,
       true
     );
 

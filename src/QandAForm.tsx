@@ -14,6 +14,7 @@ import { FormInputText } from './components/FormInputText';
 import { FormMultiSelect } from './components/FormMultiSelect';
 import { FormSingleSelect } from './components/FormSingleSelect';
 import { FormTimeInterval } from './components/FormTimeInterval';
+import { FormInputDate } from './components/FormInputDate';
 import { CustomFontTheme } from './common/CustomTheme';
 
 import { fetchResponseOptionsByTemplateId } from './model/ResponseOptions';
@@ -49,7 +50,7 @@ const QandAForm = ({recordInfo, qtype, handleFormValues, handleOnChange, customC
   }
 console.log("--QAForm--", recordInfo, qtype)
   useEffect(() => {
-    setTypeCompleted(false);
+    setTypeCompleted(qtype.status === 'completed' ? true : false);
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
       //const options = await fetchResponseOptionsByTemplateId(qtype.id);
       setTableData(data);
@@ -79,9 +80,12 @@ console.log("--QAForm--", recordInfo, qtype)
           }
           // CCY - Currency
           if (data.EA_SA_ddlResponseFormat === 'CCY')  {
-            return <FormInputCurrency data={data} name={data.id} onChange={handleOnChange}/>
+            return <FormInputCurrency recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange}/>
           }
           // DATE - Date
+          if (data.EA_SA_ddlResponseFormat === 'DATE')  {
+            return <FormInputDate recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler}/>
+          }
         })}
         <Alert severity="info">
         <AlertTitle>Impact Assessment</AlertTitle>
@@ -91,11 +95,12 @@ console.log("--QAForm--", recordInfo, qtype)
               name={qtype.id}
               checked={isTypeCompleted}
               onChange={(event: any) => {
-
                 console.log("--completed--", event.target.checked)
                 const checked = event.target.checked;
-                setTypeCompleted(checked)
+                qtype.status = checked ? "completed": "on-going";
+                setTypeCompleted(checked);
                 customChangedHandler('STATUS', event, {name: qtype.id, value: checked});
+
               }}
               inputProps={{ 'aria-label': 'controlled' }}/>
             } label={`Checked if ${qtype.name} Impact Assessment is complete!`} />

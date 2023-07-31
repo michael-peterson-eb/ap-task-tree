@@ -9,6 +9,8 @@ import {
 export const FormInputText = ({ recordInfo, qtype, data, onChange}: FormInputProps) => {
 
   const [assessQuestions, setAssessQuestion] = useState([]);
+  const [fieldValue, setFieldValue] = useState(data.EA_SA_txtaResponse);
+
   const templateId = data.id;
 
   useEffect(() => {
@@ -16,6 +18,11 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange}: FormInputPro
     const fetchQuestionsAndOptions = async () => {
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
       setAssessQuestion(assessQuestions);
+
+      if ( assessQuestions && assessQuestions.length > 0 ) {
+        const fieldValue = assessQuestions[0].EA_SA_txtaResponse;
+        setFieldValue(fieldValue);
+      }
     }
 
     // call the function and catch any error
@@ -26,24 +33,25 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange}: FormInputPro
 
   return (
     <div>
-      {assessQuestions.length > 0 && assessQuestions.map((aq: any) => {
-        return (
-          <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-            <TextField
-              sx={{ m: 1 }}
-              required={ data.EA_SA_cbRequiredQuestion == 0}
-              helperText={data.EA_SA_txtaHelpText}
-              id={aq.id}
-              label={data.EA_SA_txtaQuestion}
-              name={aq.id}
-              value={aq.EA_SA_txtaResponse}
-              onChange={(event: any) => {
-                onChange('FRES', event);
-              }}
-              />
-          </FormControl>
-        )
-      })}
+      {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
+        <FormControl fullWidth sx={{ m: 1 }} variant="standard">
+          <TextField
+            sx={{ m: 0 }}
+            required={ data.EA_SA_cbRequiredQuestion == 0}
+            helperText={data.EA_SA_txtaHelpText}
+            id={aq.id}
+            label={data.EA_SA_txtaQuestion}
+            name={aq.id}
+            value={fieldValue}
+            InputProps={recordInfo.crudAction == 'view' ? {readOnly: true}: {readOnly: false}}
+            onChange={(event: any) => {
+              const {name, value} = event.target;
+              setFieldValue(value);
+              onChange('FRES', event);
+            }}
+          />
+        </FormControl>
+      ))}
     </div>
   );
 };

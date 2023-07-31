@@ -1,13 +1,12 @@
 import {useState, useEffect, Fragment, ReactNode, useRef} from 'react';
 import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
 import Grid from '@mui/material/Grid';
-import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import {Box, ThemeProvider} from '@mui/material';
-import { FormProvider, useForm, useFieldArray } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { updateQuestionWithResponse } from './model/Questions';
+import { fetchObjectSectionStatuses, updateStatusJSON } from './model/SectionStatus';
 
 import QandAForm from './QandAForm';
 import { getQuestionTypes } from './model/Assessment';
@@ -18,10 +17,8 @@ export default function MultiSteps({recordInfo}) {
   const [skipped, setSkipped] = useState(new Set<number>());
   const [questionTypes, setQuestionTypes] = useState([]);
   const [formUpdated, setFormUpdated] = useState(false);
-
-  //const [currentRecordInfo, setCurrentRecordInfo] = React.useState(recordInfo);
-
-  //const [sectionStatus, setSectionStatus] = React.useState({});
+  const [formValues, setFormValues] = useState({});
+  const [sectionStatus, setSectionStatus] = useState(recordInfo.sectionStatusesJSON);
 
   const questionResponseFields = {
     MSP: "EA_SA_txtaResponse",
@@ -39,8 +36,6 @@ export default function MultiSteps({recordInfo}) {
     return skipped.has(step);
   };
 
-  let formValues = {};
-
   const handleNext = () => {
     let newSkipped = skipped;
     console.log("--handleNext--", formValues)
@@ -49,12 +44,16 @@ export default function MultiSteps({recordInfo}) {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
     }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
+    if ( activeStep === questionTypes.length - 1 ) {
+      handleReset(); // back to first step
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setSkipped(newSkipped);
+    }
   };
 
   const handleBack = () => {
+    handleSubmit();  // save any field(s) that were touched or updated
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
@@ -78,14 +77,13 @@ export default function MultiSteps({recordInfo}) {
   };
 
   useEffect(() => {
-    console.log("--useEffect:recordInfo-->", recordInfo)
+    //console.log("--useEffect:recordInfo-->", recordInfo)
     getQuestionTypes(recordInfo).then((data) => {
 
-      console.log("--useEffect:data--", data)
+      //console.log("--useEffect:data--", data)
       //setQuestionTypes((prevData) => ([...prevData, ...data]));
       setQuestionTypes(data);
       console.log("--questionTypes---", questionTypes)
-      //console.log("--questionTypes:types---", types)
     });
   }, []);
 
@@ -96,6 +94,7 @@ export default function MultiSteps({recordInfo}) {
     let newFormValues = {...formValues}
     console.log("--handleSubmit--", formFields, newFormValues)
     await updateQuestionWithResponse(formValues, questionResponseFields);
+    await updateStatusObject();
   }
 
   const handleChange = (type: any, event: any) => {
@@ -104,7 +103,7 @@ export default function MultiSteps({recordInfo}) {
     trackUpdatedQuestions(type, name, value);
   }
 
-  const customChangedHandler = (type: any, event: any, autoComplete: any) => {
+  const customChangedHandler = (type: any, _event: any, autoComplete: any) => {
     const {name, value} = autoComplete;
     console.log("--customChangedHandler--", value)
     trackUpdatedQuestions(type, name, value);
@@ -122,16 +121,35 @@ export default function MultiSteps({recordInfo}) {
     });
   }
 
-  const setFormValues = (values) => {
-    console.log("--formValues--", values)
-    formValues = values;
-  }
-
   const formMethods = useForm();
 
   const onSubmit = () => {
     console.log("Submitted.....")
   }
+
+  const updateStatusObject = async () => {
+    let newValue: any = {};
+    const activeType = questionTypes[activeStep]
+    const typeId = activeType.id;
+    const recordId = recordInfo.id;
+    //console.log("--updateStatusObject:qTypes--", questionTypes)
+    //console.log("--updateStatusObject:before--", formValues, activeType, activeStep)
+    // check if section status has been updated
+    if (formValues.hasOwnProperty(typeId)) {
+      const status = formValues[typeId];
+      const newStatus = status.value ? "completed" : "not-started";
+      newValue[`type-${typeId}`] = newStatus;
+      console.log("--updateStatusObject:NewStatus--", sectionStatus, newValue)
+      const newSectionStatus = { ...sectionStatus, ...newValue }
+
+      // update section status state
+      setSectionStatus(newSectionStatus);
+      //setQuestionTypes({...questionTypes, ...{id: typeId, name: activeType.name, status: newStatus}})
+      //console.log("--updateStatusObject--", activeType, formValues, sectionStatus, questionTypes)
+      // update statuses field
+      await updateStatusJSON(recordInfo, newSectionStatus);
+    }
+  };
 
   return (
     <FormProvider {...formMethods}>
@@ -156,7 +174,7 @@ export default function MultiSteps({recordInfo}) {
           return (
             <Grid item xs={(12 / questionTypes.length)}>
               <ThemeProvider theme={NavButtonTheme}>
-                <Button color='neutral' variant="contained" style={{textTransform: 'none', color: "#000"}} fullWidth>
+                <Button color='neutral' variant="contained" style={{textTransform: 'none', color: "#000"}} fullWidth onClick={() => setActiveStep(index)}>
                   {label.name}
                 </Button>
               </ThemeProvider>
@@ -187,12 +205,6 @@ export default function MultiSteps({recordInfo}) {
             >
               Back
             </Button>
-            <Box sx={{ flex: '1 1 auto' }} />
-            {isStepOptional(activeStep) && (
-              <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                Skip
-              </Button>
-            )}
             <Button onClick={handleNext}>
               {activeStep === questionTypes.length - 1 ? 'Finish' : 'Next'}
             </Button>
