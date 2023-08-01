@@ -1,18 +1,32 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
+import {useState, useEffect, Fragment, ReactNode, useRef} from 'react';
 import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
+import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import {Box, ThemeProvider} from '@mui/material';
+import { FormProvider, useForm } from "react-hook-form";
+import { updateQuestionWithResponse } from './model/Questions';
+import { fetchObjectSectionStatuses, updateStatusJSON } from './model/SectionStatus';
 
-import QandA from './QandA';
-import QADataGrid from './QADataGrid';
+import QandAForm from './QandAForm';
+import { getQuestionTypes } from './model/Assessment';
+import { NavButtonTheme } from './common/CustomTheme';
 
-export default function HorizontalLinearStepper() {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [skipped, setSkipped] = React.useState(new Set<number>());
-  const [questionTypes, setQuestionTypes] = React.useState([]);
+export default function MultiSteps({recordInfo}) {
+  const [activeStep, setActiveStep] = useState(0);
+  const [skipped, setSkipped] = useState(new Set<number>());
+  const [questionTypes, setQuestionTypes] = useState([]);
+  const [formUpdated, setFormUpdated] = useState(false);
+  const [formValues, setFormValues] = useState({});
+  const [sectionStatus, setSectionStatus] = useState(recordInfo.sectionStatusesJSON);
+
+  const questionResponseFields = {
+    MSP: "EA_SA_txtaResponse",
+    SSP: "EA_SA_rsAssessmentResponseOptions",
+    CCY: "EA_SA_curResponse",
+    DATE: "EA_SA_ddResponse",
+    FRES: "EA_SA_txtaResponse",
+  };
 
   const isStepOptional = (step: number) => {
     return step === 1;
@@ -24,16 +38,22 @@ export default function HorizontalLinearStepper() {
 
   const handleNext = () => {
     let newSkipped = skipped;
+    console.log("--handleNext--", formValues)
+    handleSubmit();
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
     }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
+    if ( activeStep === questionTypes.length - 1 ) {
+      handleReset(); // back to first step
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      setSkipped(newSkipped);
+    }
   };
 
   const handleBack = () => {
+    handleSubmit();  // save any field(s) that were touched or updated
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
@@ -56,20 +76,92 @@ export default function HorizontalLinearStepper() {
     setActiveStep(0);
   };
 
-  React.useEffect(() => {
-    (async () => {
-      const qTypes = await _RB.selectQuery(['id', 'name'],'EA_SA_AssessmentQuestionType', true, 1000, true);
-      setQuestionTypes(qTypes);
-    })();
+  useEffect(() => {
+    //console.log("--useEffect:recordInfo-->", recordInfo)
+    getQuestionTypes(recordInfo).then((data) => {
+
+      //console.log("--useEffect:data--", data)
+      //setQuestionTypes((prevData) => ([...prevData, ...data]));
+      setQuestionTypes(data);
+      console.log("--questionTypes---", questionTypes)
+    });
   }, []);
 
+  /** React Form Hook */
+
+  const handleSubmit = async () => {
+    const formFields = Object.keys(formValues);
+    let newFormValues = {...formValues}
+    console.log("--handleSubmit--", formFields, newFormValues)
+    await updateQuestionWithResponse(formValues, questionResponseFields);
+    await updateStatusObject();
+  }
+
+  const handleChange = (type: any, event: any) => {
+    const {name, value} = event.target;
+    console.log("--handleChange--", event)
+    trackUpdatedQuestions(type, name, value);
+  }
+
+  const customChangedHandler = (type: any, _event: any, autoComplete: any) => {
+    const {name, value} = autoComplete;
+    console.log("--customChangedHandler--", value)
+    trackUpdatedQuestions(type, name, value);
+  }
+
+  const trackUpdatedQuestions = (fieldType: any, aqId: any, value: any) => {
+    setFormUpdated(true);
+    setFormValues({
+      ...formValues,
+      [aqId]:{
+        ...formValues[aqId],
+        type: fieldType,
+        value
+      }
+    });
+  }
+
+  const formMethods = useForm();
+
+  const onSubmit = () => {
+    console.log("Submitted.....")
+  }
+
+  const updateStatusObject = async () => {
+    let newValue: any = {};
+    const activeType = questionTypes[activeStep]
+    const typeId = activeType.id;
+    const recordId = recordInfo.id;
+    //console.log("--updateStatusObject:qTypes--", questionTypes)
+    //console.log("--updateStatusObject:before--", formValues, activeType, activeStep)
+    // check if section status has been updated
+    if (formValues.hasOwnProperty(typeId)) {
+      const status = formValues[typeId];
+      const newStatus = status.value ? "completed" : "not-started";
+      newValue[`type-${typeId}`] = newStatus;
+      console.log("--updateStatusObject:NewStatus--", sectionStatus, newValue)
+      const newSectionStatus = { ...sectionStatus, ...newValue }
+
+      // update section status state
+      setSectionStatus(newSectionStatus);
+      //setQuestionTypes({...questionTypes, ...{id: typeId, name: activeType.name, status: newStatus}})
+      //console.log("--updateStatusObject--", activeType, formValues, sectionStatus, questionTypes)
+      // update statuses field
+      await updateStatusJSON(recordInfo, newSectionStatus);
+    }
+  };
+
   return (
+    <FormProvider {...formMethods}>
+       <form onSubmit={handleSubmit}>
+
     <Box sx={{ width: '100%' }}>
       <Stepper activeStep={activeStep}>
-        {questionTypes.map((label, index) => {
+      <Grid container spacing={1}>
+        {questionTypes.length > 0 && questionTypes.map((label, index) => {
           const stepProps: { completed?: boolean } = {};
           const labelProps: {
-            optional?: React.ReactNode;
+            optional?: ReactNode;
           } = {};
           if (isStepOptional(index)) {
             labelProps.optional = (
@@ -80,14 +172,19 @@ export default function HorizontalLinearStepper() {
             stepProps.completed = false;
           }
           return (
-            <Step key={label} {...stepProps}>
-              <StepLabel {...labelProps}>{label.name}</StepLabel>
-            </Step>
+            <Grid item xs={(12 / questionTypes.length)}>
+              <ThemeProvider theme={NavButtonTheme}>
+                <Button color={activeStep == index ? 'active' : 'neutral'} variant="contained" style={{textTransform: 'none', color: activeStep == index ? '#FFF' : '#000'}} fullWidth onClick={() => setActiveStep(index)}>
+                  {label.name}
+                </Button>
+              </ThemeProvider>
+            </Grid>
           );
         })}
+        </Grid>
       </Stepper>
       {activeStep === questionTypes.length ? (
-        <React.Fragment>
+        <Fragment>
           <Typography sx={{ mt: 2, mb: 1 }}>
             All steps completed - you&apos;re finished
           </Typography>
@@ -95,11 +192,11 @@ export default function HorizontalLinearStepper() {
             <Box sx={{ flex: '1 1 auto' }} />
             <Button onClick={handleReset}>Reset</Button>
           </Box>
-        </React.Fragment>
+        </Fragment>
       ) : (
-        <React.Fragment>
-          <QADataGrid qtype={questionTypes[activeStep]}/>
-          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+        <Fragment>
+          <QandAForm recordInfo={recordInfo} qtype={questionTypes[activeStep]} handleFormValues={setFormValues} handleOnChange={handleChange} customChangedHandler={customChangedHandler}/>
+          <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1 }}>
             <Button
               color="inherit"
               disabled={activeStep === 0}
@@ -108,18 +205,15 @@ export default function HorizontalLinearStepper() {
             >
               Back
             </Button>
-            <Box sx={{ flex: '1 1 auto' }} />
-            {isStepOptional(activeStep) && (
-              <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                Skip
-              </Button>
-            )}
             <Button onClick={handleNext}>
               {activeStep === questionTypes.length - 1 ? 'Finish' : 'Next'}
             </Button>
           </Box>
-        </React.Fragment>
+        </Fragment>
       )}
     </Box>
+
+    </form>
+    </FormProvider>
   );
 }
