@@ -1,9 +1,6 @@
 import {useEffect, useState} from 'react';
 import {
-    FormControl,
     Select,
-    MenuItem,
-    TextField,
     InputLabel,
     Table,
     TableBody,
@@ -49,14 +46,13 @@ export const FormTimeInterval = ({recordInfo, qtype, data, onChange}: FormInputP
   const getNameValue = (options: any, id: any) => {
     if (!id) return "No Answer";
     const found = options.find(opt => opt.id == id);
-    console.log("---get----", found, options, id)
     return found.name;
   }
 
-  console.log("--FormTimeInterval--", templateId, data)
+  //console.log("--FormTimeInterval--", templateId, data)
   return (
     <div>
-      <InputLabel style={{ fontSize: '14px' }}>{questionsInterval.length > 0 && questionsInterval[0].name}</InputLabel>
+      <InputLabel style={{ marginTop: '12px', fontSize: '14px' }}>{questionsInterval.length > 0 && questionsInterval[0].name}</InputLabel>
       <TableContainer component={Paper} sx={{marginBottom: '16px'}}>
         <Table sx={{width: '100%'}} size="small" aria-label="simple table">
           <TableHead>

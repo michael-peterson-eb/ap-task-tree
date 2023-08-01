@@ -54,7 +54,7 @@ export const FormMultiSelect = ({recordInfo, qtype, data, onChange}: FormInputPr
     <div>
       {assessQuestions.map((aq) => (
         <Autocomplete
-          sx={{ m: 2, marginTop: '12px'}}
+          sx={{marginTop: '10px'}}
           multiple
           id={aq.id}
           options={quesResponseOptions}

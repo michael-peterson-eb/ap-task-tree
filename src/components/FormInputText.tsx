@@ -34,7 +34,7 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange}: FormInputPro
   return (
     <div>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-        <FormControl fullWidth sx={{ m: 1 }} variant="standard">
+        <FormControl fullWidth sx={{marginTop: '12px' }} variant="standard">
           <TextField
             sx={{ m: 0 }}
             required={ data.EA_SA_cbRequiredQuestion == 0}

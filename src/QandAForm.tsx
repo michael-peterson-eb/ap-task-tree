@@ -87,8 +87,8 @@ console.log("--QAForm--", recordInfo, qtype)
             return <FormInputDate recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler}/>
           }
         })}
-        <Alert severity="info">
-        <AlertTitle>Impact Assessment</AlertTitle>
+        <Alert sx={{marginTop: '12px'}} severity="info">
+          <AlertTitle>Impact Assessment</AlertTitle>
           <FormControlLabel control={
             <Checkbox
               id={qtype.id}

@@ -174,7 +174,7 @@ export default function MultiSteps({recordInfo}) {
           return (
             <Grid item xs={(12 / questionTypes.length)}>
               <ThemeProvider theme={NavButtonTheme}>
-                <Button color='neutral' variant="contained" style={{textTransform: 'none', color: "#000"}} fullWidth onClick={() => setActiveStep(index)}>
+                <Button color={activeStep == index ? 'active' : 'neutral'} variant="contained" style={{textTransform: 'none', color: activeStep == index ? '#FFF' : '#000'}} fullWidth onClick={() => setActiveStep(index)}>
                   {label.name}
                 </Button>
               </ThemeProvider>

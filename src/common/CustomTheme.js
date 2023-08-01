@@ -41,7 +41,7 @@ export const NavButtonTheme = createTheme({
       contrastText: "#fff",
     },
     active: {
-      main: "#86b79c",
+      main: "#0572ed",
     },
   },
 });
