@@ -6,28 +6,32 @@ import {
   fetchAssessQuestionsByTemplateId
 } from "../model/Questions";
 
-export const FormInputText = ({ recordInfo, qtype, data, onChange }: FormInputProps) => {
+const initValue = (record: any, resp: any) => {
+  if (record.crudAction == 'view' && (resp == null || resp == '')) {
+    return 'No Answer';
+  } else {
+    return resp;
+  }
+};
 
+export const FormInputText = ({ recordInfo, qtype, data, onChange }: FormInputProps) => {
   const [assessQuestions, setAssessQuestion] = useState([]);
-  const [fieldValue, setFieldValue] = useState(data.EA_SA_txtaResponse);
+  const [fieldValue, setFieldValue] = useState('');
 
   const templateId = data.id;
 
   useEffect(() => {
-    // declare the async data fetching function
     const fetchQuestionsAndOptions = async () => {
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
       setAssessQuestion(assessQuestions);
 
       if (assessQuestions && assessQuestions.length > 0) {
         const fieldValue = assessQuestions[0].EA_SA_txtaResponse;
-        setFieldValue(fieldValue);
+        setFieldValue(initValue(recordInfo, fieldValue));
       }
     }
 
-    // call the function and catch any error
-    fetchQuestionsAndOptions()
-      .catch(console.error);
+    fetchQuestionsAndOptions().catch(console.error);
 
   }, [templateId])
 

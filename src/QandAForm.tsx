@@ -55,16 +55,16 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
       //const options = await fetchResponseOptionsByTemplateId(qtype.id);
       setTableData(data);
       //setFormValues(data);
-      console.log('--questionTemplate:QType--', qtype)
-      console.log('--questionTemplate:Data--', data)
+      //console.log('--questionTemplate:QType--', qtype)
+      //console.log('--questionTemplate:Data--', data)
       //console.log('--questionTemplateOptions--',options)
-      console.log('--questionTemplate:TableData--', tableData)
+      //console.log('--questionTemplate:TableData--', tableData)
     });
   }, [qtype.id]);
 
   return (
     <ThemeProvider theme={CustomFontTheme}>
-      <Box sx={{ margin: 'auto' }}>
+      <Box sx={{ margin: 'auto', maxHeight: 900, overflow: 'auto' }}>
         {tableData.length > 0 && tableData.map((data) => {
           // Single-Select Picklist
           if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 1) {
@@ -87,7 +87,7 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
             return <FormInputDate recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler} />
           }
         })}
-        <Alert sx={{ marginTop: '12px' }} severity="info">
+        <Alert sx={{ marginTop: '12px', marginBottom: '12px' }} severity="info">
           <AlertTitle>Impact Assessment</AlertTitle>
           <FormControlLabel control={
             <Checkbox
@@ -95,12 +95,12 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
               name={qtype.id}
               checked={isTypeCompleted}
               onChange={(event: any) => {
-                console.log("--completed--", event.target.checked)
                 const checked = event.target.checked;
                 qtype.status = checked ? "completed" : "on-going";
-                setTypeCompleted(checked);
-                customChangedHandler('STATUS', event, { name: qtype.id, value: checked });
-
+                if (recordInfo.crudAction == 'edit') {
+                  setTypeCompleted(checked);
+                  customChangedHandler('STATUS', event, { name: qtype.id, value: checked });
+                }
               }}
               inputProps={{ 'aria-label': 'controlled' }} />
           } label={`Checked if ${qtype.name} Impact Assessment is complete!`} />

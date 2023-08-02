@@ -75,6 +75,19 @@ export default function MultiSteps({ recordInfo }) {
     });
   };
 
+  const sectionTabColor = (currIdx, activeIdx, stepId) => {
+    const objKey = `type-${stepId}`;
+    const step = sectionStatus.hasOwnProperty(objKey) ? sectionStatus[objKey] : null;
+    console.log("---tabColor---", objKey, sectionStatus, currIdx, activeIdx)
+    if (activeIdx == currIdx) {
+      return 'active';
+    } else if (step && step == 'completed') {
+      return 'completed';
+    } else {
+      return 'neutral';
+    }
+  }
+
   const handleReset = () => {
     setActiveStep(0);
   };
@@ -171,9 +184,9 @@ export default function MultiSteps({ recordInfo }) {
                   <Grid item xs={(12 / questionTypes.length)}>
                     <ThemeProvider theme={NavButtonTheme}>
                       <Button
-                        color={activeStep == index ? 'active' : 'neutral'}
+                        color={sectionTabColor(index, activeStep, label.id)}
                         variant="contained"
-                        style={{ textTransform: 'none', color: activeStep == index ? '#FFF' : '#000' }}
+                        style={{ textTransform: 'none', color: activeStep == index ? '#FFF' : '#000', minHeight: '60px' }}
                         fullWidth
                         onClick={() => setActiveStep(index)}
                       >
