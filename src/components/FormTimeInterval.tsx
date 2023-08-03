@@ -1,14 +1,14 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import {
-    Select,
-    InputLabel,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
+  Select,
+  InputLabel,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from '@mui/material';
 
 import { FormInputProps } from "./FormInputProps";
@@ -19,7 +19,7 @@ import {
   fetchResponseOptionsByTemplateId
 } from "../model/ResponseOptions";
 
-export const FormTimeInterval = ({recordInfo, qtype, data, onChange}: FormInputProps) => {
+export const FormTimeInterval = ({ recordInfo, qtype, data, onChange }: FormInputProps) => {
   const [questionsInterval, setQuestionsInterval] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
 
@@ -49,16 +49,24 @@ export const FormTimeInterval = ({recordInfo, qtype, data, onChange}: FormInputP
     return found.name;
   }
 
-  //console.log("--FormTimeInterval--", templateId, data)
   return (
-    <div>
-      <InputLabel style={{ marginTop: '12px', fontSize: '14px' }}>{questionsInterval.length > 0 && questionsInterval[0].name}</InputLabel>
-      <TableContainer component={Paper} sx={{marginBottom: '16px'}}>
-        <Table sx={{width: '100%'}} size="small" aria-label="simple table">
+    <>
+      <InputLabel sx={{ marginTop: '12px', fontSize: '16px', color: '#000' }} required={data.EA_SA_cbRequiredQuestion ? true : false}>
+        {questionsInterval.length > 0 && questionsInterval[0].name}
+      </InputLabel>
+      <TableContainer component={Paper} sx={{ marginBottom: '16px', border: '1px solid #000' }}>
+        <Table sx={{ width: '100%' }} size="small">
           <TableHead>
-            <TableRow>
-              <TableCell style={{width: '20%'}}>Time Interval</TableCell>
-              <TableCell style={{width: '80%'}}>Impact</TableCell>
+            <TableRow
+              sx={{
+                backgroundColor: "#9cc1ff33",
+                "& th": {
+                  fontSize: "1.25rem"
+                }
+              }}
+            >
+              <TableCell style={{ width: '20%' }}>Time Interval</TableCell>
+              <TableCell style={{ width: '80%' }}>Impact</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -67,11 +75,11 @@ export const FormTimeInterval = ({recordInfo, qtype, data, onChange}: FormInputP
                 <TableCell>
                   {qa.EA_SA_rfTimeInterval}
                 </TableCell>
-                <TableCell style={{padding: '0px'}}>
+                <TableCell style={{ padding: '0px' }}>
                   {recordInfo.crudAction === 'edit' &&
                     <Select
                       sx={{ width: '100%' }}
-                      style={{ fontSize: '14px'}}
+                      style={{ fontSize: '14px' }}
                       name={qa.id}
                       native
                       defaultValue={qa.EA_SA_rsAssessmentResponseOptions}
@@ -80,7 +88,7 @@ export const FormTimeInterval = ({recordInfo, qtype, data, onChange}: FormInputP
                       }}
                     >
                       <option aria-label="None" value="">Select Impact</option>
-                      {quesResponseOptions.length > 0 && quesResponseOptions.map((item:any) => {
+                      {quesResponseOptions.length > 0 && quesResponseOptions.map((item: any) => {
                         return <option value={item.id}>{item.name}</option>
                       })}
                     </Select>
@@ -95,6 +103,6 @@ export const FormTimeInterval = ({recordInfo, qtype, data, onChange}: FormInputP
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </>
   );
 };
