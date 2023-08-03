@@ -10,7 +10,7 @@ import {
   AlertTitle,
 } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faCheckCircle, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FormProvider, useForm } from "react-hook-form";
 import { updateQuestionWithResponse } from './model/Questions';
 import { updateStatusJSON } from './model/SectionStatus';
@@ -62,11 +62,8 @@ export default function MultiSteps({ recordInfo }) {
 
   const handleSkip = () => {
     if (!isStepOptional(activeStep)) {
-      // You probably want to guard against something like this,
-      // it should never occur unless someone's actively trying to break something.
       throw new Error("You can't skip a step that isn't optional.");
     }
-
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped((prevSkipped) => {
       const newSkipped = new Set(prevSkipped.values());
@@ -78,13 +75,24 @@ export default function MultiSteps({ recordInfo }) {
   const sectionTabColor = (currIdx, activeIdx, stepId) => {
     const objKey = `type-${stepId}`;
     const step = sectionStatus.hasOwnProperty(objKey) ? sectionStatus[objKey] : null;
-    console.log("---tabColor---", objKey, sectionStatus, currIdx, activeIdx)
     if (activeIdx == currIdx) {
       return 'active';
     } else if (step && step == 'completed') {
       return 'completed';
     } else {
       return 'neutral';
+    }
+  }
+
+  const sectionTabIcon = (currIdx, activeIdx, stepId) => {
+    const objKey = `type-${stepId}`;
+    const step = sectionStatus.hasOwnProperty(objKey) ? sectionStatus[objKey] : null;
+    if (step == 'completed') {
+      return (
+        <FontAwesomeIcon icon={faCheckCircle} />
+      )
+    } else {
+      return null;
     }
   }
 
@@ -99,7 +107,7 @@ export default function MultiSteps({ recordInfo }) {
       //console.log("--useEffect:data--", data)
       //setQuestionTypes((prevData) => ([...prevData, ...data]));
       setQuestionTypes(data);
-      console.log("--questionTypes---", questionTypes)
+      //console.log("--questionTypes---", questionTypes)
     });
   }, []);
 
@@ -189,6 +197,7 @@ export default function MultiSteps({ recordInfo }) {
                         style={{ textTransform: 'none', color: activeStep == index ? '#FFF' : '#000', minHeight: '60px' }}
                         fullWidth
                         onClick={() => setActiveStep(index)}
+                        endIcon={sectionTabIcon(index, activeStep, label.id)}
                       >
                         {label.name}
                       </Button>

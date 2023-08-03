@@ -52,7 +52,7 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange }: FormInpu
       <InputLabel sx={{ marginTop: '12px', fontSize: '16px', color: '#000' }} required={data.EA_SA_cbRequiredQuestion ? true : false}>
         {questionsInterval.length > 0 && questionsInterval[0].name}
       </InputLabel>
-      <TableContainer component={Paper} sx={{ marginBottom: '16px', border: '1px solid #000', width: 'inherit' }}>
+      <TableContainer component={Paper} sx={{ marginBottom: '10px', border: '1px solid #000', width: 'inherit' }}>
         <Table sx={{ width: '100%' }} size="small">
           <TableHead>
             <TableRow

@@ -38,7 +38,7 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange }: FormInputPr
   return (
     <>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-        <FormControl fullWidth sx={{ marginTop: '12px' }} variant="standard">
+        <FormControl fullWidth sx={{ marginTop: '20px' }} variant="standard">
           <TextField
             sx={{ m: 0 }}
             required={data.EA_SA_cbRequiredQuestion == 0}
@@ -47,7 +47,11 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange }: FormInputPr
             label={data.EA_SA_txtaQuestion}
             name={aq.id}
             value={fieldValue}
-            InputProps={recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }}
+            InputProps={{
+              style: { fontSize: '14px' },
+              ...recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }
+            }}
+            InputLabelProps={{ style: { backgroundColor: '#FFF' } }}
             onChange={(event: any) => {
               const { name, value } = event.target;
               setFieldValue(value);
