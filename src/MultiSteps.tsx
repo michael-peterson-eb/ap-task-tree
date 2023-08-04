@@ -1,9 +1,9 @@
-import { useState, useEffect, Fragment, ReactNode } from 'react';
-import Stepper from '@mui/material/Stepper';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+import { useState, useEffect, Fragment, ReactNode, useRef } from 'react';
 import {
+  Stepper,
+  Grid,
+  Button,
+  Typography,
   Box,
   ThemeProvider,
   Alert,
@@ -23,9 +23,10 @@ export default function MultiSteps({ recordInfo }) {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set<number>());
   const [questionTypes, setQuestionTypes] = useState([]);
-  //const [formUpdated, setFormUpdated] = useState(false);
   const [formValues, setFormValues] = useState({});
   const [sectionStatus, setSectionStatus] = useState(recordInfo.sectionStatusesJSON);
+  const updateFields = useRef({});
+  const [recordsLoaded, setRecordsLoaded] = useState(false);
 
   const questionResponseFields = {
     MSP: "EA_SA_txtaResponse",
@@ -41,7 +42,7 @@ export default function MultiSteps({ recordInfo }) {
 
   const handleNext = () => {
     let newSkipped = skipped;
-    console.log("--handleNext--", formValues)
+    //console.log("--handleNext--", formValues)
     handleSubmit();
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
@@ -100,30 +101,33 @@ export default function MultiSteps({ recordInfo }) {
     setActiveStep(0);
   };
 
-  useEffect(() => {
-    //console.log("--useEffect:recordInfo-->", recordInfo)
-    getQuestionTypes(recordInfo).then((data) => {
+  const handleSubmitButton = (event: any) => {
+    if (event.target.innerText == 'Submit') handleSubmit();
+  };
 
-      //console.log("--useEffect:data--", data)
-      //setQuestionTypes((prevData) => ([...prevData, ...data]));
+  useEffect(() => {
+    // window event hook from outside outside Submit button
+    window.addEventListener('click', handleSubmitButton);
+
+    getQuestionTypes(recordInfo).then((data) => {
       setQuestionTypes(data);
-      //console.log("--questionTypes---", questionTypes)
+      setRecordsLoaded(true);
     });
+
+    // remove window event listener
+    return () => window.removeEventListener('click', handleSubmitButton);
   }, []);
 
   /** React Form Hook */
-
   const handleSubmit = async () => {
-    const formFields = Object.keys(formValues);
-    let newFormValues = { ...formValues }
-    //console.log("--handleSubmit--", formFields, newFormValues)
-    await updateQuestionWithResponse(formValues, questionResponseFields);
+    const updatedRecs = updateFields.current;
+    //console.log("--handleSubmit--", updatedRecs)
+    await updateQuestionWithResponse(updatedRecs, questionResponseFields);
     await updateStatusObject();
   }
 
-  const handleChange = (type: any, event: any) => {
+  const handleChange = async (type: any, event: any) => {
     const { name, value } = event.target;
-    //console.log("--handleChange--", event)
     trackUpdatedQuestions(type, name, value);
   }
 
@@ -134,15 +138,16 @@ export default function MultiSteps({ recordInfo }) {
   }
 
   const trackUpdatedQuestions = (fieldType: any, aqId: any, value: any) => {
-    //setFormUpdated(true);
-    setFormValues({
-      ...formValues,
+    const currentUpdatedFields = updateFields.current;
+    const newUpdatedFields = {
+      ...currentUpdatedFields,
       [aqId]: {
-        ...formValues[aqId],
+        ...currentUpdatedFields[aqId],
         type: fieldType,
-        value
+        value: value
       }
-    });
+    };
+    updateFields.current = newUpdatedFields;
   }
 
   const formMethods = useForm();
@@ -155,9 +160,10 @@ export default function MultiSteps({ recordInfo }) {
     let newValue: any = {};
     const activeType = questionTypes[activeStep]
     const typeId = activeType.id;
+    const updatedTrack = updateFields.current;
     // check if section status has been updated
-    if (formValues.hasOwnProperty(typeId)) {
-      const status = formValues[typeId];
+    if (updatedTrack.hasOwnProperty(typeId)) {
+      const status = updatedTrack[typeId];
       const newStatus = status.value ? "completed" : "not-started";
       newValue[`type-${typeId}`] = newStatus;
       //console.log("--updateStatusObject:NewStatus--", sectionStatus, newValue)
@@ -207,11 +213,11 @@ export default function MultiSteps({ recordInfo }) {
               })}
             </Grid>
           </Stepper>
-          {activeStep === questionTypes.length ? (
+          {questionTypes.length == 0 ? (
             <Fragment>
               <Typography sx={{ mt: 2, mb: 1 }}>
                 <Alert sx={{ marginTop: '12px' }} severity="warning">
-                  <AlertTitle>No assessment questions record found!</AlertTitle>
+                  <AlertTitle>No assessment questions found!</AlertTitle>
                 </Alert>
               </Typography>
             </Fragment>
