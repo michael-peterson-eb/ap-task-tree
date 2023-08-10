@@ -17,8 +17,6 @@ import { FormTimeInterval } from './components/FormTimeInterval';
 import { FormInputDate } from './components/FormInputDate';
 import { CustomFontTheme } from './common/CustomTheme';
 
-import { fetchResponseOptionsByTemplateId } from './model/ResponseOptions';
-
 import { getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
 
 const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, customChangedHandler }) => {
@@ -48,17 +46,11 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
       }
     });
   }
-  console.log("--QAForm--", recordInfo, qtype)
+  //console.log("--QAForm--", recordInfo, qtype)
   useEffect(() => {
     setTypeCompleted(qtype.status === 'completed' ? true : false);
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
-      //const options = await fetchResponseOptionsByTemplateId(qtype.id);
       setTableData(data);
-      //setFormValues(data);
-      //console.log('--questionTemplate:QType--', qtype)
-      //console.log('--questionTemplate:Data--', data)
-      //console.log('--questionTemplateOptions--',options)
-      //console.log('--questionTemplate:TableData--', tableData)
     });
   }, [qtype.id]);
 

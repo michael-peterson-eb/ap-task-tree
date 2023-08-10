@@ -8,6 +8,7 @@ import {
   ThemeProvider,
   Alert,
   AlertTitle,
+  CircularProgress,
 } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
@@ -158,20 +159,22 @@ export default function MultiSteps({ recordInfo }) {
 
   const updateStatusObject = async () => {
     let newValue: any = {};
-    const activeType = questionTypes[activeStep]
-    const typeId = activeType.id;
-    const updatedTrack = updateFields.current;
-    // check if section status has been updated
-    if (updatedTrack.hasOwnProperty(typeId)) {
-      const status = updatedTrack[typeId];
-      const newStatus = status.value ? "completed" : "not-started";
-      newValue[`type-${typeId}`] = newStatus;
-      //console.log("--updateStatusObject:NewStatus--", sectionStatus, newValue)
-      const newSectionStatus = { ...sectionStatus, ...newValue }
+    if (questionTypes.length > 0) {
+      const activeType = questionTypes[activeStep]
+      const typeId = activeType.id;
+      const updatedTrack = updateFields.current;
+      // check if section status has been updated
+      if (updatedTrack.hasOwnProperty(typeId)) {
+        const status = updatedTrack[typeId];
+        const newStatus = status.value ? "completed" : "not-started";
+        newValue[`type-${typeId}`] = newStatus;
+        //console.log("--updateStatusObject:NewStatus--", sectionStatus, newValue)
+        const newSectionStatus = { ...sectionStatus, ...newValue }
 
-      // update section status state
-      setSectionStatus(newSectionStatus);
-      await updateStatusJSON(recordInfo, newSectionStatus);
+        // update section status state
+        setSectionStatus(newSectionStatus);
+        await updateStatusJSON(recordInfo, newSectionStatus);
+      }
     }
   };
 
@@ -216,9 +219,12 @@ export default function MultiSteps({ recordInfo }) {
           {questionTypes.length == 0 ? (
             <Fragment>
               <Typography sx={{ mt: 2, mb: 1 }}>
-                <Alert sx={{ marginTop: '12px' }} severity="warning">
-                  <AlertTitle>No assessment questions found!</AlertTitle>
-                </Alert>
+                {recordsLoaded && questionTypes.length == 0 &&
+                  <Alert sx={{ marginTop: '12px' }} severity="warning">
+                    <AlertTitle>No assessment questions found!</AlertTitle>
+                  </Alert>
+                }
+                {!recordsLoaded && <CircularProgress />}
               </Typography>
             </Fragment>
           ) : (
