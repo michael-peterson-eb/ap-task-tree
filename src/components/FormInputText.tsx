@@ -6,35 +6,39 @@ import {
   fetchAssessQuestionsByTemplateId
 } from "../model/Questions";
 
-export const FormInputText = ({ recordInfo, qtype, data, onChange }: FormInputProps) => {
+const initValue = (record: any, resp: any) => {
+  if (record.crudAction == 'view' && (resp == null || resp == '')) {
+    return 'No Answer';
+  } else {
+    return resp;
+  }
+};
 
+export const FormInputText = ({ recordInfo, qtype, data, onChange }: FormInputProps) => {
   const [assessQuestions, setAssessQuestion] = useState([]);
-  const [fieldValue, setFieldValue] = useState(data.EA_SA_txtaResponse);
+  const [fieldValue, setFieldValue] = useState('');
 
   const templateId = data.id;
 
   useEffect(() => {
-    // declare the async data fetching function
     const fetchQuestionsAndOptions = async () => {
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
       setAssessQuestion(assessQuestions);
 
       if (assessQuestions && assessQuestions.length > 0) {
         const fieldValue = assessQuestions[0].EA_SA_txtaResponse;
-        setFieldValue(fieldValue);
+        setFieldValue(initValue(recordInfo, fieldValue));
       }
     }
 
-    // call the function and catch any error
-    fetchQuestionsAndOptions()
-      .catch(console.error);
+    fetchQuestionsAndOptions().catch(console.error);
 
   }, [templateId])
 
   return (
     <>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-        <FormControl fullWidth sx={{ marginTop: '12px' }} variant="standard">
+        <FormControl fullWidth sx={{ marginTop: '20px' }} variant="standard">
           <TextField
             sx={{ m: 0 }}
             required={data.EA_SA_cbRequiredQuestion == 0}
@@ -43,7 +47,11 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange }: FormInputPr
             label={data.EA_SA_txtaQuestion}
             name={aq.id}
             value={fieldValue}
-            InputProps={recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }}
+            InputProps={{
+              style: { fontSize: '14px' },
+              ...recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }
+            }}
+            InputLabelProps={{ style: { backgroundColor: '#FFF' } }}
             onChange={(event: any) => {
               const { name, value } = event.target;
               setFieldValue(value);

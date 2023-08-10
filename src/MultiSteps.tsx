@@ -1,16 +1,17 @@
-import { useState, useEffect, Fragment, ReactNode } from 'react';
-import Stepper from '@mui/material/Stepper';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+import { useState, useEffect, Fragment, ReactNode, useRef } from 'react';
 import {
+  Stepper,
+  Grid,
+  Button,
+  Typography,
   Box,
   ThemeProvider,
   Alert,
   AlertTitle,
+  CircularProgress,
 } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faCheckCircle, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FormProvider, useForm } from "react-hook-form";
 import { updateQuestionWithResponse } from './model/Questions';
 import { updateStatusJSON } from './model/SectionStatus';
@@ -23,9 +24,10 @@ export default function MultiSteps({ recordInfo }) {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set<number>());
   const [questionTypes, setQuestionTypes] = useState([]);
-  //const [formUpdated, setFormUpdated] = useState(false);
   const [formValues, setFormValues] = useState({});
   const [sectionStatus, setSectionStatus] = useState(recordInfo.sectionStatusesJSON);
+  const updateFields = useRef({});
+  const [recordsLoaded, setRecordsLoaded] = useState(false);
 
   const questionResponseFields = {
     MSP: "EA_SA_txtaResponse",
@@ -41,7 +43,7 @@ export default function MultiSteps({ recordInfo }) {
 
   const handleNext = () => {
     let newSkipped = skipped;
-    console.log("--handleNext--", formValues)
+    //console.log("--handleNext--", formValues)
     handleSubmit();
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
@@ -62,11 +64,8 @@ export default function MultiSteps({ recordInfo }) {
 
   const handleSkip = () => {
     if (!isStepOptional(activeStep)) {
-      // You probably want to guard against something like this,
-      // it should never occur unless someone's actively trying to break something.
       throw new Error("You can't skip a step that isn't optional.");
     }
-
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped((prevSkipped) => {
       const newSkipped = new Set(prevSkipped.values());
@@ -75,34 +74,61 @@ export default function MultiSteps({ recordInfo }) {
     });
   };
 
+  const sectionTabColor = (currIdx, activeIdx, stepId) => {
+    const objKey = `type-${stepId}`;
+    const step = sectionStatus.hasOwnProperty(objKey) ? sectionStatus[objKey] : null;
+    if (activeIdx == currIdx) {
+      return 'active';
+    } else if (step && step == 'completed') {
+      return 'completed';
+    } else {
+      return 'neutral';
+    }
+  }
+
+  const sectionTabIcon = (currIdx, activeIdx, stepId) => {
+    const objKey = `type-${stepId}`;
+    const step = sectionStatus.hasOwnProperty(objKey) ? sectionStatus[objKey] : null;
+    if (step == 'completed') {
+      return (
+        <FontAwesomeIcon icon={faCheckCircle} />
+      )
+    } else {
+      return null;
+    }
+  }
+
   const handleReset = () => {
     setActiveStep(0);
   };
 
-  useEffect(() => {
-    //console.log("--useEffect:recordInfo-->", recordInfo)
-    getQuestionTypes(recordInfo).then((data) => {
+  const handleSubmitButton = (event: any) => {
+    if (event.target.innerText == 'Submit') handleSubmit();
+  };
 
-      //console.log("--useEffect:data--", data)
-      //setQuestionTypes((prevData) => ([...prevData, ...data]));
+  useEffect(() => {
+    // window event hook from outside outside Submit button
+    window.addEventListener('click', handleSubmitButton);
+
+    getQuestionTypes(recordInfo).then((data) => {
       setQuestionTypes(data);
-      console.log("--questionTypes---", questionTypes)
+      setRecordsLoaded(true);
     });
+
+    // remove window event listener
+    return () => window.removeEventListener('click', handleSubmitButton);
   }, []);
 
   /** React Form Hook */
-
   const handleSubmit = async () => {
-    const formFields = Object.keys(formValues);
-    let newFormValues = { ...formValues }
-    //console.log("--handleSubmit--", formFields, newFormValues)
-    await updateQuestionWithResponse(formValues, questionResponseFields);
+    const updatedRecs = updateFields.current;
+    //console.log("--handleSubmit--", updatedRecs)
+    await updateQuestionWithResponse(updatedRecs, questionResponseFields);
     await updateStatusObject();
   }
 
-  const handleChange = (type: any, event: any) => {
+  const handleChange = async (type: any, event: any) => {
     const { name, value } = event.target;
-    //console.log("--handleChange--", event)
     trackUpdatedQuestions(type, name, value);
   }
 
@@ -113,15 +139,16 @@ export default function MultiSteps({ recordInfo }) {
   }
 
   const trackUpdatedQuestions = (fieldType: any, aqId: any, value: any) => {
-    //setFormUpdated(true);
-    setFormValues({
-      ...formValues,
+    const currentUpdatedFields = updateFields.current;
+    const newUpdatedFields = {
+      ...currentUpdatedFields,
       [aqId]: {
-        ...formValues[aqId],
+        ...currentUpdatedFields[aqId],
         type: fieldType,
-        value
+        value: value
       }
-    });
+    };
+    updateFields.current = newUpdatedFields;
   }
 
   const formMethods = useForm();
@@ -132,19 +159,22 @@ export default function MultiSteps({ recordInfo }) {
 
   const updateStatusObject = async () => {
     let newValue: any = {};
-    const activeType = questionTypes[activeStep]
-    const typeId = activeType.id;
-    // check if section status has been updated
-    if (formValues.hasOwnProperty(typeId)) {
-      const status = formValues[typeId];
-      const newStatus = status.value ? "completed" : "not-started";
-      newValue[`type-${typeId}`] = newStatus;
-      //console.log("--updateStatusObject:NewStatus--", sectionStatus, newValue)
-      const newSectionStatus = { ...sectionStatus, ...newValue }
+    if (questionTypes.length > 0) {
+      const activeType = questionTypes[activeStep]
+      const typeId = activeType.id;
+      const updatedTrack = updateFields.current;
+      // check if section status has been updated
+      if (updatedTrack.hasOwnProperty(typeId)) {
+        const status = updatedTrack[typeId];
+        const newStatus = status.value ? "completed" : "not-started";
+        newValue[`type-${typeId}`] = newStatus;
+        //console.log("--updateStatusObject:NewStatus--", sectionStatus, newValue)
+        const newSectionStatus = { ...sectionStatus, ...newValue }
 
-      // update section status state
-      setSectionStatus(newSectionStatus);
-      await updateStatusJSON(recordInfo, newSectionStatus);
+        // update section status state
+        setSectionStatus(newSectionStatus);
+        await updateStatusJSON(recordInfo, newSectionStatus);
+      }
     }
   };
 
@@ -171,11 +201,12 @@ export default function MultiSteps({ recordInfo }) {
                   <Grid item xs={(12 / questionTypes.length)}>
                     <ThemeProvider theme={NavButtonTheme}>
                       <Button
-                        color={activeStep == index ? 'active' : 'neutral'}
+                        color={sectionTabColor(index, activeStep, label.id)}
                         variant="contained"
-                        style={{ textTransform: 'none', color: activeStep == index ? '#FFF' : '#000' }}
+                        style={{ textTransform: 'none', color: activeStep == index ? '#FFF' : '#000', minHeight: '60px' }}
                         fullWidth
                         onClick={() => setActiveStep(index)}
+                        endIcon={sectionTabIcon(index, activeStep, label.id)}
                       >
                         {label.name}
                       </Button>
@@ -185,12 +216,15 @@ export default function MultiSteps({ recordInfo }) {
               })}
             </Grid>
           </Stepper>
-          {activeStep === questionTypes.length ? (
+          {questionTypes.length == 0 ? (
             <Fragment>
               <Typography sx={{ mt: 2, mb: 1 }}>
-                <Alert sx={{ marginTop: '12px' }} severity="warning">
-                  <AlertTitle>No assessment questions record found!</AlertTitle>
-                </Alert>
+                {recordsLoaded && questionTypes.length == 0 &&
+                  <Alert sx={{ marginTop: '12px' }} severity="warning">
+                    <AlertTitle>No assessment questions found!</AlertTitle>
+                  </Alert>
+                }
+                {!recordsLoaded && <CircularProgress />}
               </Typography>
             </Fragment>
           ) : (
