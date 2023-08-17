@@ -7,7 +7,11 @@ import {
   fetchAssessmentQuestionTypes,
 } from "./QuestionType";
 import { fetchTypesOfAssessmentQuestion } from "./Questions";
-import { fetchObjectSectionStatuses, updateStatusJSON } from "./SectionStatus";
+import {
+  fetchObjectSectionStatuses,
+  fetchOpSectionStatus,
+  updateStatusJSON,
+} from "./SectionStatus";
 
 /**
  *
@@ -62,6 +66,13 @@ const getTypeSectionStatus = (typeId: any, sectionStatus: any) => {
   }
 };
 
+const getOpSectionStatus = (opId: any, secStatuses: any) => {
+  console.log("--getOpSectionStatus--", opId, secStatuses);
+  return secStatuses.find(
+    (st: any) => st.EA_SA_rsAssessmentQuestionType === opId
+  );
+};
+
 /**
  *
  * @param recordInfo
@@ -73,34 +84,45 @@ export const getQuestionTypes = async (recordInfo: any) => {
   let currentSectionStatus = {};
   let aqTypes = [];
 
-  // Get Assessment Type by Related Assessment Question
+  // Get Assessment Type by Related Assessment Question (EA_SA_AssessmentQuestion)
   const qCondition = `${recordInfo.questionRelName} IN (${recordInfo.id})`;
+  console.log("--assessmentTypes:condition--", qCondition);
   const assessmentTypes = await fetchTypesOfAssessmentQuestion(qCondition);
 
+  console.log("--assessmentTypes--", assessmentTypes);
   if (assessmentTypes.length > 0) {
     let hasStatusJSON = recordInfo?.sectionStatusesJSON != "";
 
     // Get Object Status Section JSON
+    /*
     let sectionStatus = await fetchObjectSectionStatuses(recordInfo);
     if (hasStatusJSON) {
       currentSectionStatus = JSON.parse(
         sectionStatus.EA_SA_txtaSectionStatuses
       );
     }
-
+    */
+    let currentSectionStatus = await fetchOpSectionStatus(
+      recordInfo,
+      "EA_SA_Impact"
+    );
+    console.log("--currentSectionStatus--", currentSectionStatus);
     const aTypeIds: any[] = [];
     assessmentTypes.forEach((type: any) => {
       aTypeIds.push(type.EA_SA_rfQuestionType);
     });
 
+    // get Assessment Question Type (EA_SA_AssessmentQuestionType)
     const assessQTypes = await fetchAssessmentQuestionTypeByIds(aTypeIds);
+    console.log("--getAssessQTypes--", assessQTypes, aTypeIds);
     aqTypes = assessQTypes.map((type: any) => {
       return {
         ...type,
-        status: getTypeSectionStatus(type.id, currentSectionStatus),
+        //status: getTypeSectionStatus(type.id, currentSectionStatus),
+        opsSection: getOpSectionStatus(type.id, currentSectionStatus),
       };
     });
-
+    console.log("--getgetQuestionTypes--", aqTypes);
     // Validate Section statuses and updates when empty
     if (!hasStatusJSON) {
       await updateStatusJSON(recordInfo, currentSectionStatus);

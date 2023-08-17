@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FormProvider, useForm } from "react-hook-form";
 import { updateQuestionWithResponse } from './model/Questions';
-import { updateStatusJSON } from './model/SectionStatus';
+import { updateOpSectionStatus, updateStatusJSON } from './model/SectionStatus';
 
 import QandAForm from './QandAForm';
 import { getQuestionTypes } from './model/Assessment';
@@ -25,7 +25,7 @@ export default function MultiSteps({ recordInfo }) {
   const [skipped, setSkipped] = useState(new Set<number>());
   const [questionTypes, setQuestionTypes] = useState([]);
   const [formValues, setFormValues] = useState({});
-  const [sectionStatus, setSectionStatus] = useState(recordInfo.sectionStatusesJSON);
+  const [sectionStatus, setSectionStatus] = useState([]);
   const updateFields = useRef({});
   const [recordsLoaded, setRecordsLoaded] = useState(false);
 
@@ -74,22 +74,22 @@ export default function MultiSteps({ recordInfo }) {
     });
   };
 
-  const sectionTabColor = (currIdx, activeIdx, stepId) => {
-    const objKey = `type-${stepId}`;
-    const step = sectionStatus.hasOwnProperty(objKey) ? sectionStatus[objKey] : null;
+  const sectionTabColor = (currIdx: any, activeIdx: any, tabButton: any) => {
+    //const objKey = `type-${stepId}`;
+    //const step = sectionStatus.hasOwnProperty(objKey) ? sectionStatus[objKey] : null;
     if (activeIdx == currIdx) {
       return 'active';
-    } else if (step && step == 'completed') {
+    } else if (tabButton.opsSection && tabButton.opsSection.status == 'completed') {
       return 'completed';
     } else {
       return 'neutral';
     }
   }
 
-  const sectionTabIcon = (currIdx, activeIdx, stepId) => {
-    const objKey = `type-${stepId}`;
-    const step = sectionStatus.hasOwnProperty(objKey) ? sectionStatus[objKey] : null;
-    if (step == 'completed') {
+  const sectionTabIcon = (currIdx, activeIdx, tabButton) => {
+    //const objKey = `type-${stepId}`;
+    //const step = sectionStatus.hasOwnProperty(objKey) ? sectionStatus[objKey] : null;
+    if (tabButton.opsSection && tabButton.opsSection.status == 'completed') {
       return (
         <FontAwesomeIcon icon={faCheckCircle} />
       )
@@ -103,7 +103,10 @@ export default function MultiSteps({ recordInfo }) {
   };
 
   const handleSubmitButton = (event: any) => {
-    if (event.target.innerText == 'Submit') handleSubmit();
+    if (event.target.innerText == 'Submit') {
+      event.stopPropagation();
+      handleSubmit();
+    }
   };
 
   useEffect(() => {
@@ -116,13 +119,16 @@ export default function MultiSteps({ recordInfo }) {
     });
 
     // remove window event listener
-    return () => window.removeEventListener('click', handleSubmitButton);
+    return () => {
+      window.removeEventListener('submit', handleSubmitButton);
+      window.removeEventListener('click', handleSubmitButton);
+    }
   }, []);
 
   /** React Form Hook */
   const handleSubmit = async () => {
     const updatedRecs = updateFields.current;
-    //console.log("--handleSubmit--", updatedRecs)
+    console.log("--handleSubmit--", updatedRecs)
     await updateQuestionWithResponse(updatedRecs, questionResponseFields);
     await updateStatusObject();
   }
@@ -158,7 +164,7 @@ export default function MultiSteps({ recordInfo }) {
   }
 
   const updateStatusObject = async () => {
-    let newValue: any = {};
+    //let newValue: any = {};
     if (questionTypes.length > 0) {
       const activeType = questionTypes[activeStep]
       const typeId = activeType.id;
@@ -167,13 +173,20 @@ export default function MultiSteps({ recordInfo }) {
       if (updatedTrack.hasOwnProperty(typeId)) {
         const status = updatedTrack[typeId];
         const newStatus = status.value ? "completed" : "not-started";
-        newValue[`type-${typeId}`] = newStatus;
+        //newValue[`type-${typeId}`] = newStatus;
         //console.log("--updateStatusObject:NewStatus--", sectionStatus, newValue)
-        const newSectionStatus = { ...sectionStatus, ...newValue }
+        //const newSectionStatus = { ...sectionStatus, ...newValue }
 
         // update section status state
-        setSectionStatus(newSectionStatus);
-        await updateStatusJSON(recordInfo, newSectionStatus);
+        const newActiveType = {
+          ...activeType,
+          opsSection: {
+            ...activeType.opsSection,
+            status: newStatus
+          }};
+        await updateOpSectionStatus(newActiveType.opsSection, newStatus);
+        const newQuestionTypes = await getQuestionTypes(recordInfo);
+        setQuestionTypes(newQuestionTypes);
       }
     }
   };
@@ -201,12 +214,12 @@ export default function MultiSteps({ recordInfo }) {
                   <Grid item xs={(12 / questionTypes.length)}>
                     <ThemeProvider theme={NavButtonTheme}>
                       <Button
-                        color={sectionTabColor(index, activeStep, label.id)}
+                        color={sectionTabColor(index, activeStep, label)}
                         variant="contained"
                         style={{ textTransform: 'none', color: activeStep == index ? '#FFF' : '#000', minHeight: '60px' }}
                         fullWidth
                         onClick={() => setActiveStep(index)}
-                        endIcon={sectionTabIcon(index, activeStep, label.id)}
+                        endIcon={sectionTabIcon(index, activeStep, label)}
                       >
                         {label.name}
                       </Button>

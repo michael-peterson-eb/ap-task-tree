@@ -48,7 +48,7 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
   }
   //console.log("--QAForm--", recordInfo, qtype)
   useEffect(() => {
-    setTypeCompleted(qtype.status === 'completed' ? true : false);
+    setTypeCompleted(qtype.opsSection.status === 'completed' ? true : false);
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
       setTableData(data);
     });
