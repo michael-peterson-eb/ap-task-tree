@@ -44,7 +44,10 @@ export const NavButtonTheme = createTheme({
       main: "#0572ed",
     },
     completed: {
-      main: "#0FC27D"
-    }
+      main: "#0FC27D",
+    },
+    submit: {
+      main: "#ef5b18",
+    },
   },
 });

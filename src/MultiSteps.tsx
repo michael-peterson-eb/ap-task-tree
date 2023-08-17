@@ -14,10 +14,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FormProvider, useForm } from "react-hook-form";
 import { updateQuestionWithResponse } from './model/Questions';
-import { updateOpSectionStatus, updateStatusJSON } from './model/SectionStatus';
+import { updateOpSectionStatus } from './model/SectionStatus';
 
 import QandAForm from './QandAForm';
-import { getQuestionTypes } from './model/Assessment';
+import { getOperationStatus } from './model/Assessment';
 import { NavButtonTheme } from './common/CustomTheme';
 
 export default function MultiSteps({ recordInfo }) {
@@ -25,7 +25,6 @@ export default function MultiSteps({ recordInfo }) {
   const [skipped, setSkipped] = useState(new Set<number>());
   const [questionTypes, setQuestionTypes] = useState([]);
   const [formValues, setFormValues] = useState({});
-  const [sectionStatus, setSectionStatus] = useState([]);
   const updateFields = useRef({});
   const [recordsLoaded, setRecordsLoaded] = useState(false);
 
@@ -75,21 +74,17 @@ export default function MultiSteps({ recordInfo }) {
   };
 
   const sectionTabColor = (currIdx: any, activeIdx: any, tabButton: any) => {
-    //const objKey = `type-${stepId}`;
-    //const step = sectionStatus.hasOwnProperty(objKey) ? sectionStatus[objKey] : null;
     if (activeIdx == currIdx) {
       return 'active';
-    } else if (tabButton.opsSection && tabButton.opsSection.status == 'completed') {
+    } else if (tabButton && tabButton.status == 'completed') {
       return 'completed';
     } else {
       return 'neutral';
     }
   }
 
-  const sectionTabIcon = (currIdx, activeIdx, tabButton) => {
-    //const objKey = `type-${stepId}`;
-    //const step = sectionStatus.hasOwnProperty(objKey) ? sectionStatus[objKey] : null;
-    if (tabButton.opsSection && tabButton.opsSection.status == 'completed') {
+  const sectionTabIcon = (_currIdx, _activeIdx, tabButton) => {
+    if (tabButton && tabButton.status == 'completed') {
       return (
         <FontAwesomeIcon icon={faCheckCircle} />
       )
@@ -104,33 +99,27 @@ export default function MultiSteps({ recordInfo }) {
 
   const handleSubmitButton = (event: any) => {
     if (event.target.innerText == 'Submit') {
-      event.stopPropagation();
       handleSubmit();
     }
   };
 
   useEffect(() => {
-    // window event hook from outside outside Submit button
-    window.addEventListener('click', handleSubmitButton);
-
-    getQuestionTypes(recordInfo).then((data) => {
+    getOperationStatus(recordInfo).then((data) => {
       setQuestionTypes(data);
       setRecordsLoaded(true);
     });
-
-    // remove window event listener
-    return () => {
-      window.removeEventListener('submit', handleSubmitButton);
-      window.removeEventListener('click', handleSubmitButton);
-    }
   }, []);
 
   /** React Form Hook */
-  const handleSubmit = async () => {
+  const handleClose = () => {
+    window.location = localStorage.getItem("impactAssessViewURL");
+  }
+
+  const handleSubmit = async (thenClose = false) => {
     const updatedRecs = updateFields.current;
-    console.log("--handleSubmit--", updatedRecs)
     await updateQuestionWithResponse(updatedRecs, questionResponseFields);
     await updateStatusObject();
+    if ( thenClose ) handleClose();
   }
 
   const handleChange = async (type: any, event: any) => {
@@ -164,7 +153,6 @@ export default function MultiSteps({ recordInfo }) {
   }
 
   const updateStatusObject = async () => {
-    //let newValue: any = {};
     if (questionTypes.length > 0) {
       const activeType = questionTypes[activeStep]
       const typeId = activeType.id;
@@ -173,20 +161,13 @@ export default function MultiSteps({ recordInfo }) {
       if (updatedTrack.hasOwnProperty(typeId)) {
         const status = updatedTrack[typeId];
         const newStatus = status.value ? "completed" : "not-started";
-        //newValue[`type-${typeId}`] = newStatus;
-        //console.log("--updateStatusObject:NewStatus--", sectionStatus, newValue)
-        //const newSectionStatus = { ...sectionStatus, ...newValue }
-
-        // update section status state
         const newActiveType = {
           ...activeType,
-          opsSection: {
-            ...activeType.opsSection,
-            status: newStatus
-          }};
-        await updateOpSectionStatus(newActiveType.opsSection, newStatus);
-        const newQuestionTypes = await getQuestionTypes(recordInfo);
-        setQuestionTypes(newQuestionTypes);
+          status: newStatus
+          };
+
+        await updateOpSectionStatus(newActiveType, newStatus);
+        setQuestionTypes(await getOperationStatus(recordInfo));
       }
     }
   };
@@ -195,6 +176,14 @@ export default function MultiSteps({ recordInfo }) {
     <FormProvider {...formMethods}>
       <form onSubmit={handleSubmit}>
         <Box sx={{ width: '100%' }}>
+          {questionTypes.length > 0 && recordInfo.crudAction == "edit" &&
+            <Box m={1} display="flex" justifyContent="space-between" alignItems="right">
+              <ThemeProvider theme={NavButtonTheme}>
+                <Button color="primary" onClick={handleClose} variant="outlined" size="small">Close</Button>
+                <Button color="submit" onClick={() => handleSubmit(true)} variant="outlined" size="small">Submit</Button>
+              </ThemeProvider>
+            </Box>
+          }
           <Stepper activeStep={activeStep}>
             <Grid container spacing={1}>
               {questionTypes.length > 0 && questionTypes.map((label, index) => {
@@ -248,19 +237,21 @@ export default function MultiSteps({ recordInfo }) {
                 handleFormValues={setFormValues}
                 handleOnChange={handleChange}
                 customChangedHandler={customChangedHandler} />
-              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1 }}>
-                <Button
-                  color="inherit"
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
-                  sx={{ mr: 1, backgroundColor: '#DDD', fontSize: '1.2rem' }}
-                >
-                  <FontAwesomeIcon icon={faChevronLeft} />
-                </Button>
-                <Button onClick={handleNext} sx={{ backgroundColor: '#DDD', fontSize: '1.2rem' }}>
-                  <FontAwesomeIcon icon={faChevronRight} />
-                </Button>
-              </Box>
+              {questionTypes.length > 1 &&
+                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1 }}>
+                  <Button
+                    color="inherit"
+                    disabled={activeStep === 0}
+                    onClick={handleBack}
+                    sx={{ mr: 1, backgroundColor: '#DDD', fontSize: '1.2rem' }}
+                  >
+                    <FontAwesomeIcon icon={faChevronLeft} />
+                  </Button>
+                  <Button onClick={handleNext} sx={{ backgroundColor: '#DDD', fontSize: '1.2rem' }}>
+                    <FontAwesomeIcon icon={faChevronRight} />
+                  </Button>
+                </Box>
+              }
             </Fragment>
           )}
         </Box>

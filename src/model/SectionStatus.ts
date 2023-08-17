@@ -59,7 +59,7 @@ export const fetchOpSectionStatus = async (
  * @param sectionType e.g. EA_SA_Impact, EA_SA_Dependency, EA_SA_Resource
  * @returns
  */
-export const fetchProcessOpsSectionStatus = async (
+export const xfetchProcessOpsSectionStatus = async (
   recordInfo: any,
   sectionType: string
 ) => {
@@ -73,7 +73,7 @@ export const fetchProcessOpsSectionStatus = async (
  * @param sectionType e.g. EA_SA_Impact, EA_SA_Dependency, EA_SA_Resource
  * @returns
  */
-export const fetchPSOpsSectStatus = async (
+export const xfetchPSOpsSectStatus = async (
   recordInfo: any,
   sectionType: string
 ) => {
@@ -87,7 +87,7 @@ export const fetchPSOpsSectStatus = async (
  * @param sectionType e.g. EA_SA_Impact, EA_SA_Dependency, EA_SA_Resource
  * @returns
  */
-export const fetchAppOpsSectStatus = async (
+export const xfetchAppOpsSectStatus = async (
   recordInfo: any,
   sectionType: string
 ) => {

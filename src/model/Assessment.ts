@@ -20,7 +20,7 @@ import {
  * @param hasStatusJSON
  */
 
-const getAssessmentQuestionType = async (
+const xgetAssessmentQuestionType = async (
   questionTypeID: any,
   sectionStatusesJSON: any,
   hasStatusJSON: any,
@@ -53,7 +53,7 @@ const getAssessmentQuestionType = async (
   });
 };
 
-const getTypeSectionStatus = (typeId: any, sectionStatus: any) => {
+const xgetTypeSectionStatus = (typeId: any, sectionStatus: any) => {
   const objKey = `type-${typeId}`;
   if (
     sectionStatus != undefined &&
@@ -93,15 +93,6 @@ export const getQuestionTypes = async (recordInfo: any) => {
   if (assessmentTypes.length > 0) {
     let hasStatusJSON = recordInfo?.sectionStatusesJSON != "";
 
-    // Get Object Status Section JSON
-    /*
-    let sectionStatus = await fetchObjectSectionStatuses(recordInfo);
-    if (hasStatusJSON) {
-      currentSectionStatus = JSON.parse(
-        sectionStatus.EA_SA_txtaSectionStatuses
-      );
-    }
-    */
     let currentSectionStatus = await fetchOpSectionStatus(
       recordInfo,
       "EA_SA_Impact"
@@ -130,4 +121,10 @@ export const getQuestionTypes = async (recordInfo: any) => {
   }
 
   return aqTypes; // return empty array or arrays of question types
+};
+
+export const getOperationStatus = async (recordInfo: any) => {
+  const opSection = await fetchOpSectionStatus(recordInfo, "EA_SA_Impact");
+
+  return opSection;
 };
