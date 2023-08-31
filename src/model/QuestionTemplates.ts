@@ -29,8 +29,7 @@ export const getAssessmentQuestionTemplateByIds = async (ids: any) => {
 };
 
 export const getAssessmentQuestionTemplateByType = async (qtype) => {
-  //console.log("--getAssessmentQuestionTemplateByType--", qtype);
-  const qryCondition = `EA_SA_rsAssessmentQuestionType = ${qtype.id} ORDER BY EA_SA_intDisplayOrder ASC`;
+  const qryCondition = `EA_SA_rsAssessmentQuestionType = ${qtype.EA_SA_rsAssessmentQuestionType} ORDER BY EA_SA_intDisplayOrder ASC`;
 
   return await _RB.selectQuery(
     templateFields,

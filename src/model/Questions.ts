@@ -26,7 +26,7 @@ export const fetchQuestionsByQuestionTypeId = async (
     queryCondition += ` AND EA_SA_rfQuestionType=${questionTypeId}`;
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate <> 'null'`;
 
-    const fields = [
+    const xfields = [
       "id",
       "name",
       "EA_SA_rfQuestionType",
@@ -40,7 +40,7 @@ export const fetchQuestionsByQuestionTypeId = async (
     ];
 
     const results = await _RB.selectQuery(
-      fields,
+      AssessmentQuestionFields,
       "EA_SA_AssessmentQuestion",
       queryCondition,
       10000,
@@ -95,7 +95,7 @@ export const fetchQuestionsIntervalsByTemplateId = async (
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
     queryCondition += ` AND EA_SA_rsTimeInterval <> 'null' ORDER BY EA_SA_rfTimeInSeconds ASC`;
 
-    const fields = [
+    const xfields = [
       "id",
       "name",
       "EA_SA_rfQuestionType",
@@ -110,7 +110,7 @@ export const fetchQuestionsIntervalsByTemplateId = async (
     ];
 
     const results = await _RB.selectQuery(
-      fields,
+      AssessmentQuestionFields,
       "EA_SA_AssessmentQuestion",
       queryCondition,
       10000,
@@ -147,27 +147,6 @@ export const fetchTypesOfAssessmentQuestion = async (
     return results;
   } catch (error) {
     console.log("Error: fetchTypesOfAssessmentQuestion ", error);
-  }
-};
-
-/**
- * fetchAssessmentQuestionType
- * @param id
- * @returns
- */
-export const xfetchAssessmentQuestionType = async (id: any) => {
-  try {
-    const condition = `id=${id}`;
-    const results = await _RB.selectQuery(
-      ["name"],
-      "EA_SA_AssessmentQuestionType",
-      condition,
-      1,
-      true
-    );
-    return results;
-  } catch (error) {
-    console.log("Error: fetchAssessmentQuestionType ", error);
   }
 };
 
