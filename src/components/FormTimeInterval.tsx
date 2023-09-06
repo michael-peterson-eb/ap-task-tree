@@ -42,10 +42,12 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange }: FormInpu
   }, [templateId])
 
   const getNameValue = (options: any, id: any) => {
-    if (!id) return "No Answer";
+    if ( !id ) return "No Answer";
     const found = options.find(opt => opt.id == id);
     return found.name;
   }
+
+  if ( questionsInterval.length == 0 ) return "";
 
   return (
     <>
@@ -91,9 +93,8 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange }: FormInpu
                       })}
                     </Select>
                   }
-
                   {recordInfo.crudAction === 'view' &&
-                    <div>{getNameValue(quesResponseOptions, qa.EA_SA_rsAssessmentResponseOptions)}</div>
+                    <div style={{padding: '0px 16px'}}>{getNameValue(quesResponseOptions, qa.EA_SA_rsAssessmentResponseOptions)}</div>
                   }
                 </TableCell>
               </TableRow>

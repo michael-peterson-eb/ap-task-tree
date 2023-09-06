@@ -89,11 +89,12 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
               onChange={(event: any) => {
                 const checked = event.target.checked;
                 qtype.status = checked ? "completed" : "on-going";
-                if (recordInfo.crudAction == 'edit') {
+                if (recordInfo.crudAction === 'edit') {
                   setTypeCompleted(checked);
                   customChangedHandler('STATUS', event, { name: qtype.id, value: checked });
                 }
               }}
+              disabled={recordInfo.crudAction === 'view'}
               inputProps={{ 'aria-label': 'controlled' }} />
           } label={`Checked if ${qtype.name} Impact Assessment is complete!`} />
         </Alert>
