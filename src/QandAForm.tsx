@@ -80,7 +80,7 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
           }
         })}
         <Alert sx={{ marginTop: '12px', marginBottom: '12px' }} severity="info">
-          <AlertTitle>Impact Assessment</AlertTitle>
+          <AlertTitle>{recordInfo.objectTitle}</AlertTitle>
           <FormControlLabel control={
             <Checkbox
               id={qtype.id}
@@ -96,7 +96,7 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
               }}
               disabled={recordInfo.crudAction === 'view'}
               inputProps={{ 'aria-label': 'controlled' }} />
-          } label={`Checked if ${qtype.name} Impact Assessment is complete!`} />
+          } label={`Checked if ${qtype.name} ${recordInfo.objectTitle} is complete!`} />
         </Alert>
       </Box>
     </ThemeProvider>

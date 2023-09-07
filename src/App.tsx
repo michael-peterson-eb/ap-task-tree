@@ -24,7 +24,7 @@ export default function App({ recordInfo }) {
   }, []);
 
   return (
-    <Container maxWidth="xl" disableGutters>
+    <Container maxWidth={false} disableGutters>
       <Box sx={{ my: 1 }}>
         <MultiStep recordInfo={recordInfo} />
       </Box>
