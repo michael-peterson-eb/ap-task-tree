@@ -11,6 +11,7 @@ const recordInfo = {
   crudAction: (recordArr[1] || 'view'),
   objectIntegrationName: recordArr[2] || '',
   questionRelName: recordArr[3] || '',
+  objectTitle: recordArr[4] || 'Impact Assessment',
 }
 
 const rootId = document.getElementById(`${recordInfo.crudAction}-jsroot`) as HTMLElement;
