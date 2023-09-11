@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   TextField,
   Autocomplete,
+  FormControl,
 } from "@mui/material";
 import { FormInputProps } from "./FormInputProps";
 import {
@@ -11,7 +12,9 @@ import {
   fetchResponseOptionsByTemplateId
 } from "../model/ResponseOptions";
 
-export const FormMultiSelect = ({ recordInfo, qtype, data, onChange }: FormInputProps) => {
+import { getArrayValue } from '../common/Utils';
+
+export const FormMultiSelect = ({ recordInfo, qtype, data, onChange, lookup }: FormInputProps) => {
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
   const [defaultValues, setDefaultValues] = useState([]);
@@ -31,8 +34,8 @@ export const FormMultiSelect = ({ recordInfo, qtype, data, onChange }: FormInput
     if (assessQuestions && assessQuestions.length > 0) {
       const stringValues = assessQuestions[0].EA_SA_txtaResponse;
       const defaultValue = getDefaultValue(responseOptions, stringValues);
-      //console.log("--fetchQuestionsIntervalsByTemplateId:default--", stringValues, responseOptions, defaultValue)
-      setDefaultValues(defaultValue);
+      console.log("--fetchQuestionsIntervalsByTemplateId:default--", stringValues, responseOptions, defaultValue)
+      setDefaultValues(getArrayValue(lookup, assessQuestions[0].id, defaultValue));
     }
   }
 
@@ -57,35 +60,37 @@ export const FormMultiSelect = ({ recordInfo, qtype, data, onChange }: FormInput
   return (
     <div>
       {assessQuestions.map((aq) => (
-        <Autocomplete
-          sx={{ marginTop: '10px' }}
-          multiple
-          id={aq.id}
-          options={quesResponseOptions}
-          value={defaultValues}
-          getOptionLabel={(option) => option.name}
-          disableCloseOnSelect
-          renderOption={(props, option) => {
-            return (
-              <li {...props} key={option.id}>
-                {option.name}
-              </li>
-            );
-          }}
-          onChange={(event: any, newValue: any | null) => {
-            setDefaultValues([...newValue])
-            onChange('MSP', event, { name: aq.id, value: newValue });
-          }}
-          readOnly={recordInfo.crudAction == 'view' ? true : false}
-          renderInput={(params) => (
-            <TextField
-              sx={{ marginTop: '12px' }}
-              {...params}
-              name={aq.id}
-              label={aq.name}
-            />
-          )}
-        />
+        <FormControl fullWidth sx={{ marginTop: 4 }}>
+          <Autocomplete
+            sx={{ fontSize: '14px' }}
+            multiple
+            id={aq.id}
+            options={quesResponseOptions}
+            value={defaultValues}
+            getOptionLabel={(option) => option.name}
+            disableCloseOnSelect
+            renderOption={(props, option) => {
+              return (
+                <li {...props} key={option.id}>
+                  {option.name}
+                </li>
+              );
+            }}
+            onChange={(event: any, newValue: any | null) => {
+              setDefaultValues([...newValue])
+              onChange('MSP', event, { name: aq.id, value: newValue });
+            }}
+            readOnly={recordInfo.crudAction == 'view' ? true : false}
+            renderInput={(params) => (
+              <TextField
+                sx={{ marginTop: '12px' }}
+                {...params}
+                name={aq.id}
+                label={aq.name}
+              />
+            )}
+          />
+        </FormControl>
       ))}
     </div>
   );

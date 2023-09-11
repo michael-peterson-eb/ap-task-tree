@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme, makeStyles } from "@mui/material";
 
 export const CustomFontTheme = () => {
   return createTheme({
@@ -9,14 +9,24 @@ export const CustomFontTheme = () => {
       MuiInputLabel: {
         defaultProps: {
           sx: {
-            fontSize: "18px",
+            fontSize: "14px",
           },
         },
       },
       MuiOutlinedInput: {
         defaultProps: {
           sx: {
-            fontSize: "18px",
+            fontSize: "14px",
+          },
+        },
+      },
+      MuiSelect: {
+        styleOverrides: {
+          root: {
+            "&.Mui-disabled": {
+              color: "black !important",
+              "-webkit-text-fill-color": "black !important",
+            },
           },
         },
       },

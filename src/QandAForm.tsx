@@ -19,7 +19,7 @@ import { CustomFontTheme } from './common/CustomTheme';
 
 import { getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
 
-const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, customChangedHandler }) => {
+const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, customChangedHandler, lookupFV }) => {
 
   const [tableData, setTableData] = useState([]);
   const [isTypeCompleted, setTypeCompleted] = useState(false);
@@ -59,16 +59,20 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
       <Box sx={{ margin: 'auto', maxHeight: 900, overflow: 'auto' }}>
         {tableData.length > 0 && tableData.map((data) => {
           // Single-Select Picklist
+          if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 0) {
+            return <FormSingleSelect recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} lookup={lookupFV} />
+          }
+          // Time Interval
           if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 1) {
-            return <FormTimeInterval recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} />
+            return <FormTimeInterval recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} lookup={lookupFV} />
           }
           // Text Response
           if (data.EA_SA_ddlResponseFormat === 'FRES') {
-            return <FormInputText recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} />
+            return <FormInputText recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} lookup={lookupFV} />
           }
           // MSP - Multi-Select
           if (data.EA_SA_ddlResponseFormat === 'MSP') {
-            return <FormMultiSelect recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler} />
+            return <FormMultiSelect recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler} lookup={lookupFV} />
           }
           // CCY - Currency
           if (data.EA_SA_ddlResponseFormat === 'CCY') {
@@ -76,7 +80,7 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
           }
           // DATE - Date
           if (data.EA_SA_ddlResponseFormat === 'DATE') {
-            return <FormInputDate recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler} />
+            return <FormInputDate recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler} lookup={lookupFV} />
           }
         })}
         <Alert sx={{ marginTop: '12px', marginBottom: '12px' }} severity="info">

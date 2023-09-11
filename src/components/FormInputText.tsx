@@ -6,7 +6,9 @@ import {
   fetchAssessQuestionsByTemplateId
 } from "../model/Questions";
 
-const initValue = (record: any, resp: any) => {
+import { initSelectValue, getValue } from '../common/Utils';
+
+const XinitValue = (record: any, resp: any) => {
   if (record.crudAction == 'view' && (resp == null || resp == '')) {
     return 'No Answer';
   } else {
@@ -14,7 +16,7 @@ const initValue = (record: any, resp: any) => {
   }
 };
 
-export const FormInputText = ({ recordInfo, qtype, data, onChange }: FormInputProps) => {
+export const FormInputText = ({ recordInfo, qtype, data, onChange, lookup }: FormInputProps) => {
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
 
@@ -26,8 +28,16 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange }: FormInputPr
       setAssessQuestion(assessQuestions);
 
       if (assessQuestions && assessQuestions.length > 0) {
-        const fieldValue = assessQuestions[0].EA_SA_txtaResponse;
-        setFieldValue(initValue(recordInfo, fieldValue));
+        const aqFieldValue = assessQuestions[0].EA_SA_txtaResponse;
+       // console.log("---aqFieldValue--", aqFieldValue )
+        let responseValue = aqFieldValue ? aqFieldValue : '';
+        const lookupValue = lookup(assessQuestions[0].id);
+
+        if ( lookupValue || lookupValue == '' ) responseValue = lookupValue;
+
+        const respValue = getValue(lookup, assessQuestions[0].id, aqFieldValue);
+
+        setFieldValue(initSelectValue(recordInfo, respValue));
       }
     }
 
@@ -38,12 +48,12 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange }: FormInputPr
   return (
     <>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-        <FormControl fullWidth sx={{ marginTop: '20px' }} variant="standard">
+        <FormControl fullWidth sx={{ marginTop: 4 }} variant="standard">
           <TextField
             sx={{ m: 0 }}
             required={data.EA_SA_cbRequiredQuestion == 0}
             helperText={data.EA_SA_txtaHelpText}
-            id={aq.id}
+            id={data.id}
             label={data.EA_SA_txtaQuestion}
             name={aq.id}
             value={fieldValue}
@@ -51,7 +61,7 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange }: FormInputPr
               style: { fontSize: '14px' },
               ...recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }
             }}
-            InputLabelProps={{ style: { backgroundColor: '#FFF' } }}
+            InputLabelProps={{ style: { fontSize: '14px', backgroundColor: '#FFF' } }}
             onChange={(event: any) => {
               const { name, value } = event.target;
               setFieldValue(value);

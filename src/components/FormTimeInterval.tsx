@@ -19,7 +19,9 @@ import {
   fetchResponseOptionsByTemplateId
 } from "../model/ResponseOptions";
 
-export const FormTimeInterval = ({ recordInfo, qtype, data, onChange }: FormInputProps) => {
+import { getNameValue, getValue } from '../common/Utils';
+
+export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: FormInputProps) => {
   const [questionsInterval, setQuestionsInterval] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
 
@@ -41,20 +43,14 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange }: FormInpu
 
   }, [templateId])
 
-  const getNameValue = (options: any, id: any) => {
-    if ( !id ) return "No Answer";
-    const found = options.find(opt => opt.id == id);
-    return found.name;
-  }
-
   if ( questionsInterval.length == 0 ) return "";
 
   return (
-    <>
-      <InputLabel sx={{ marginTop: '12px', color: '#000' }} required={data.EA_SA_cbRequiredQuestion ? true : false}>
+    <div>
+      <InputLabel sx={{ marginTop: 4, color: '#000' }} required={data.EA_SA_cbRequiredQuestion ? true : false}>
         {questionsInterval.length > 0 && questionsInterval[0].name}
       </InputLabel>
-      <TableContainer component={Paper} sx={{ marginBottom: '10px', border: '1px solid #000', width: 'inherit' }}>
+      <TableContainer component={Paper} sx={{ border: '1px solid #CCC', width: 'inherit' }}>
         <Table sx={{ width: '100%' }} size="small">
           <TableHead>
             <TableRow
@@ -82,7 +78,7 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange }: FormInpu
                       style={{ fontSize: '14px' }}
                       name={qa.id}
                       native
-                      defaultValue={qa.EA_SA_rsAssessmentResponseOptions}
+                      defaultValue={getValue(lookup, qa.id, qa.EA_SA_rsAssessmentResponseOptions)}
                       onChange={(event: any) => {
                         onChange('SSP', event);
                       }}
@@ -102,6 +98,6 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange }: FormInpu
           </TableBody>
         </Table>
       </TableContainer>
-    </>
+    </div>
   );
 };

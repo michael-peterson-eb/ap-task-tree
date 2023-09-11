@@ -13,9 +13,11 @@ import {
     MenuItem,
     FormHelperText,
     InputLabel,
+    OutlinedInput,
 } from '@mui/material';
+import { getValue } from '../common/Utils';
 
-export const FormSingleSelect = ({recordInfo, qtype, data, onChange}: FormInputProps) => {
+export const FormSingleSelect = ({recordInfo, qtype, data, onChange, lookup}: FormInputProps) => {
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
 
@@ -25,9 +27,10 @@ export const FormSingleSelect = ({recordInfo, qtype, data, onChange}: FormInputP
     const fetchQuestionsAndOptions = async () => {
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
       setAssessQuestion(assessQuestions);
+      console.log("--fetchAssessQuestionsByTemplateId--", assessQuestions)
 
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-      console.log("--fetchQuestionsIntervalsByTemplateId:options--", responseOptions)
+      console.log("--fetchResponseOptionsByTemplateId--", responseOptions)
 
       setQuesResponseOptions(responseOptions);
     }
@@ -37,24 +40,35 @@ export const FormSingleSelect = ({recordInfo, qtype, data, onChange}: FormInputP
       .catch(console.error);
 
   }, [templateId])
+
   return (
-    <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-      <InputLabel id="demo-simple-select-required-label">{data.EA_SA_txtaQuestion}</InputLabel>
-      <Select
-        labelId="demo-simple-select-required-label"
-        id="demo-simple-select-required"
-        value={data.value}
-        label={data.EA_SA_txtaQuestion}
-        onChange={onChange}
-      >
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
-        {data.items.map((item:any) => {
-          return <MenuItem value={item.value}>{item.name}</MenuItem>
-        })}
-      </Select>
-      <FormHelperText>Required</FormHelperText>
-    </FormControl>
+    <div>
+      {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
+        <FormControl sx={{  marginTop: 4, width: '100%' }}>
+          <InputLabel id={`single-select-${aq.id}`} size={'normal'} sx={{ background: '#FFF', paddingRight: '4px'}}>
+            {aq.name.trim()}
+          </InputLabel>
+          <Select
+            labelId={`single-select-${aq.id}`}
+            id={aq.id}
+            sx={{
+              width: '100%',
+              fontSize: '14px',
+            }}
+            name={aq.id}
+            onChange={(event: any) => {
+              onChange('SSP', event);
+            }}
+            inputProps={{ readOnly: recordInfo.crudAction === 'view' ? true : false }}
+            defaultValue={getValue(lookup, aq.id, aq.EA_SA_rsAssessmentResponseOptions)}
+          >
+            <MenuItem value="">Select option</MenuItem>
+            {quesResponseOptions.length > 0 && quesResponseOptions.map((item: any) => (
+              <MenuItem value={item.id} sx={{fontSize: '14px'}}>{item.name}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ))}
+    </div>
   );
 };

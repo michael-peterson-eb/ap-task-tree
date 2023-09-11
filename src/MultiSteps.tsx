@@ -19,6 +19,7 @@ import { updateOpSectionStatus } from './model/SectionStatus';
 import QandAForm from './QandAForm';
 import { getOperationStatus } from './model/Assessment';
 import { NavButtonTheme } from './common/CustomTheme';
+import { dateMMDDYYYYFormat, dateYYYYMMDDFormat } from './common/Utils';
 
 export default function MultiSteps({ recordInfo }) {
   const [activeStep, setActiveStep] = useState(0);
@@ -42,7 +43,6 @@ export default function MultiSteps({ recordInfo }) {
 
   const handleNext = () => {
     let newSkipped = skipped;
-    //console.log("--handleNext--", formValues)
     handleSubmit();
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
@@ -112,6 +112,9 @@ export default function MultiSteps({ recordInfo }) {
 
   /** React Form Hook */
   const handleClose = () => {
+    // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals
+    rbf_updateRecord(recordInfo.objectIntegrationName, recordInfo.id, {EA_SA_txtLastAssessmentCalculation: new Date()});
+
     window.location = localStorage.getItem("impactAssessViewURL");
   }
 
@@ -128,8 +131,8 @@ export default function MultiSteps({ recordInfo }) {
   }
 
   const customChangedHandler = (type: any, _event: any, autoComplete: any) => {
-    const { name, value } = autoComplete;
-    //console.log("--customChangedHandler--", value)
+    let { name, value } = autoComplete;
+    if ( type === "DATE" ) value = value ? dateYYYYMMDDFormat(value.toString()) : "";
     trackUpdatedQuestions(type, name, value);
   }
 
@@ -143,7 +146,17 @@ export default function MultiSteps({ recordInfo }) {
         value: value
       }
     };
+    console.log("--trackUpdatedQuestions--", newUpdatedFields)
     updateFields.current = newUpdatedFields;
+  }
+
+  const lookupFieldValue = (aqId: any) => {
+    const touchedFields:any = updateFields.current;
+    if ( touchedFields.hasOwnProperty(aqId) ) {
+      return touchedFields[aqId].value;
+    } else {
+      return null;
+    }
   }
 
   const formMethods = useForm();
@@ -179,8 +192,21 @@ export default function MultiSteps({ recordInfo }) {
           {questionTypes.length > 0 && recordInfo.crudAction == "edit" &&
             <Box m={1} display="flex" justifyContent="space-between" alignItems="right">
               <ThemeProvider theme={NavButtonTheme}>
-                <Button color="primary" onClick={handleClose} variant="outlined" size="small">Close</Button>
-                <Button color="submit" onClick={() => handleSubmit(true)} variant="outlined" size="small">Submit</Button>
+                <Button
+                  color="primary"
+                  onClick={handleClose}
+                  variant="contained"
+                  size="small"
+                  sx={{borderRadius: '0px'}}>Close
+                </Button>
+
+                <Button
+                  color="warning"
+                  onClick={() => handleSubmit(true)}
+                  variant="contained"
+                  size="small"
+                  sx={{borderRadius: '0px'}}>Submit
+                </Button>
               </ThemeProvider>
             </Box>
           }
@@ -236,7 +262,8 @@ export default function MultiSteps({ recordInfo }) {
                 qtype={questionTypes[activeStep]}
                 handleFormValues={setFormValues}
                 handleOnChange={handleChange}
-                customChangedHandler={customChangedHandler} />
+                customChangedHandler={customChangedHandler}
+                lookupFV={lookupFieldValue} />
               {questionTypes.length > 1 &&
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1 }}>
                   <Button
