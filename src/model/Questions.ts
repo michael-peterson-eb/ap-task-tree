@@ -3,6 +3,7 @@ const AssessmentQuestionFields = [
   "name",
   "EA_SA_rfQuestionType",
   "EA_SA_txtaResponse",
+  "EA_SA_txtaQuestion",
   "EA_SA_ddResponse",
   "EA_SA_curResponse",
   "EA_SA_txtaAdditionalInformation",
@@ -112,7 +113,7 @@ export const updateQuestionWithResponse = async (updatedResponses: any, response
     if (responseFields.hasOwnProperty(recordType)) {
       let value = record.value;
       if (recordType === "MSP") value = concatObjectIds(value);
-      //console.log("--updateValue--", value, recordType);
+      console.log("--updateValue--", recordId, value, recordType, responseFields[recordType]);
       fields[responseFields[recordType]] = value;
       await updateQuestion(recordId, fields);
     }

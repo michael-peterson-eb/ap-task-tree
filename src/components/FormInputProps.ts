@@ -8,4 +8,5 @@ export interface FormInputProps {
   qtype?: any;
   templateId?: any;
   recordInfo?: any;
+  lookup?: any;
 }

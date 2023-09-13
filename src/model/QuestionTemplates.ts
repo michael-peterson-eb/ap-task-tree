@@ -15,13 +15,7 @@ export const getAssessmentQuestionTemplateByIds = async (ids: any) => {
   try {
     const qryCondition = `id IN (${ids}) ORDER BY EA_SA_intDisplayOrder ASC`;
 
-    const results = await _RB.selectQuery(
-      templateFields,
-      "EA_SA_AssessmentQuestionTemplate",
-      qryCondition,
-      10000,
-      true
-    );
+    const results = await _RB.selectQuery(templateFields, "EA_SA_AssessmentQuestionTemplate", qryCondition, 10000, true);
     return results;
   } catch (error) {
     console.log("Error: fetchAssessmentQuestionTemplate ", error);
@@ -30,12 +24,6 @@ export const getAssessmentQuestionTemplateByIds = async (ids: any) => {
 
 export const getAssessmentQuestionTemplateByType = async (qtype) => {
   const qryCondition = `EA_SA_rsAssessmentQuestionType = ${qtype.EA_SA_rsAssessmentQuestionType} ORDER BY EA_SA_intDisplayOrder ASC`;
-
-  return await _RB.selectQuery(
-    templateFields,
-    "EA_SA_AssessmentQuestionTemplate",
-    qryCondition,
-    10000,
-    true
-  );
+  console.log("--getAssessmentQuestionTemplateByType--", qryCondition);
+  return await _RB.selectQuery(templateFields, "EA_SA_AssessmentQuestionTemplate", qryCondition, 10000, true);
 };
