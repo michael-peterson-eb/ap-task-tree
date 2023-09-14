@@ -11,6 +11,9 @@ const AssessmentQuestionFields = [
   "EA_SA_rsAssessmentResponseOptions",
   "EA_SA_rsAssessmentQuestionTemplate",
   "EA_SA_rfTimeInterval",
+  "EA_SA_rfQuestion",
+  "EA_SA_rfRequiredQuestion",
+  "EA_SA_cbRequiredQuestion",
 ];
 
 /**

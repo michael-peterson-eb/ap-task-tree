@@ -113,9 +113,11 @@ export default function MultiSteps({ recordInfo }) {
   /** React Form Hook */
   const handleClose = () => {
     // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals
-    rbf_updateRecord(recordInfo.objectIntegrationName, recordInfo.id, {EA_SA_txtLastAssessmentCalculation: new Date()});
+    rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, recordInfo.triggerId);
 
-    window.location = localStorage.getItem("impactAssessViewURL");
+    setTimeout(function() {
+      window.location.href = localStorage.getItem("impactAssessViewURL");
+    }, 2000);
   }
 
   const handleSubmit = async (thenClose = false) => {

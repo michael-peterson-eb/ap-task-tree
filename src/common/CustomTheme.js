@@ -9,7 +9,9 @@ export const CustomFontTheme = () => {
       MuiInputLabel: {
         defaultProps: {
           sx: {
-            fontSize: "14px",
+            fontSize: "18px",
+            backgroundColor: "#FFF",
+            color: "#000",
           },
         },
       },
@@ -27,6 +29,13 @@ export const CustomFontTheme = () => {
               color: "black !important",
               "-webkit-text-fill-color": "black !important",
             },
+          },
+        },
+      },
+      MuiInputBase: {
+        defaultProps: {
+          sx: {
+            fontSize: "14px",
           },
         },
       },
