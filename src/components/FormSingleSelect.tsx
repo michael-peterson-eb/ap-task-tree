@@ -45,7 +45,7 @@ export const FormSingleSelect = ({recordInfo, qtype, data, onChange, lookup}: Fo
     <div>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
         <FormControl sx={{  marginTop: 4, width: '100%' }}>
-          <InputLabel id={`single-select-${aq.id}`} size={'normal'} sx={{ background: '#FFF', paddingRight: '4px'}}>
+          <InputLabel id={`single-select-${aq.id}`} size={'normal'} sx={{ background: '#FFF', paddingRight: '4px', fontSize: '18px'}}>
             {aq.name.trim()}
           </InputLabel>
           <Select

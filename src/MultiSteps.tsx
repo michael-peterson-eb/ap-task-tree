@@ -267,17 +267,19 @@ export default function MultiSteps({ recordInfo }) {
                 customChangedHandler={customChangedHandler}
                 lookupFV={lookupFieldValue} />
               {questionTypes.length > 1 &&
-                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1, marginTop: 4, }}>
                   <Button
                     color="inherit"
                     disabled={activeStep === 0}
                     onClick={handleBack}
-                    sx={{ mr: 1, backgroundColor: '#DDD', fontSize: '1.2rem' }}
+                    sx={{ mr: 1, backgroundColor: '#DDD', fontSize: '1.2rem', borderRadius: '0px', ':hover': {bgcolor: '#ff5f01'} }}
                   >
                     <FontAwesomeIcon icon={faChevronLeft} />
                   </Button>
-                  <Button onClick={handleNext} sx={{ backgroundColor: '#DDD', fontSize: '1.2rem' }}>
-                    <FontAwesomeIcon icon={faChevronRight} />
+                  <Button
+                    onClick={handleNext}
+                    sx={{ backgroundColor: '#DDD', fontSize: '1.2rem', borderRadius: '0px', ':hover': {bgcolor: '#ff5f01'} }}>
+                      <FontAwesomeIcon icon={faChevronRight} />
                   </Button>
                 </Box>
               }

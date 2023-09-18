@@ -96,7 +96,7 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: 
         <InputLabel sx={{ color: `${timeIntervalUpdated ? "#000" : "#d32f2f"}` }} required={data.EA_SA_cbRequiredQuestion == 1}>
           {questionsInterval.length > 0 && removeHtmlElem(questionsInterval[0].EA_SA_rfQuestion)}
         </InputLabel>
-        <TableContainer component={Paper} sx={{ border: `1px solid ${timeIntervalUpdated ? "#000" : "#d32f2f"}`, width: 'inherit' }}>
+        <TableContainer component={Paper} sx={{ border: `1px solid ${timeIntervalUpdated ? "#CCC" : "#d32f2f"}`, width: 'inherit' }}>
           <Table sx={{ width: '100%' }} size="small">
             <TableHead>
               <TableRow
@@ -137,7 +137,7 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: 
                       </Select>
                     }
                     {recordInfo.crudAction === 'view' &&
-                      <div style={{padding: '0px 16px'}}>{getNameValue(quesResponseOptions, qa.EA_SA_rsAssessmentResponseOptions)}</div>
+                      <div style={{padding: '12px 16px'}}>{getNameValue(quesResponseOptions, qa.EA_SA_rsAssessmentResponseOptions)}</div>
                     }
                   </TableCell>
                 </TableRow>

@@ -83,25 +83,27 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
             return <FormInputDate recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler} lookup={lookupFV} />
           }
         })}
-        <Alert sx={{ marginTop: '12px', marginBottom: '12px' }} severity="info">
-          <AlertTitle>{recordInfo.objectTitle}</AlertTitle>
-          <FormControlLabel control={
-            <Checkbox
-              id={qtype.id}
-              name={qtype.id}
-              checked={isTypeCompleted}
-              onChange={(event: any) => {
-                const checked = event.target.checked;
-                qtype.status = checked ? "completed" : "on-going";
-                if (recordInfo.crudAction === 'edit') {
-                  setTypeCompleted(checked);
-                  customChangedHandler('STATUS', event, { name: qtype.id, value: checked });
-                }
-              }}
-              disabled={recordInfo.crudAction === 'view'}
-              inputProps={{ 'aria-label': 'controlled' }} />
-          } label={`Checked if ${qtype.name} ${recordInfo.objectTitle} is complete!`} />
-        </Alert>
+        {recordInfo.crudAction === 'edit' &&
+          <Alert sx={{ marginTop: '12px', marginBottom: '6px' }} severity="info">
+            <AlertTitle>{recordInfo.objectTitle}</AlertTitle>
+            <FormControlLabel control={
+              <Checkbox
+                id={qtype.id}
+                name={qtype.id}
+                checked={isTypeCompleted}
+                onChange={(event: any) => {
+                  const checked = event.target.checked;
+                  qtype.status = checked ? "completed" : "on-going";
+                  if (recordInfo.crudAction === 'edit') {
+                    setTypeCompleted(checked);
+                    customChangedHandler('STATUS', event, { name: qtype.id, value: checked });
+                  }
+                }}
+                disabled={recordInfo.crudAction === 'view'}
+                inputProps={{ 'aria-label': 'controlled' }} />
+            } label={`Checked if ${qtype.name} ${recordInfo.objectTitle} is complete!`} />
+          </Alert>
+        }
       </Box>
     </ThemeProvider>
   )
