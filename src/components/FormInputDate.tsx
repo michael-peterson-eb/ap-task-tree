@@ -42,26 +42,25 @@ export const FormInputDate = ({ recordInfo, qtype, data, onChange, lookup}: Form
     <div>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
         <ThemeProvider theme={CustomFontTheme}>
-        <FormControl fullWidth sx={{ marginTop: 4}} variant="standard">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label={aq.name}
-              //value={dateValue}
-              value={getDateValue(aq.id, aq.EA_SA_ddResponse)}
-              disablePast={true}
-              onChange={(newValue: any) => {
-                setDateValue(newValue);
-                onChange('DATE', null, {name: aq.id, value: newValue});
-              }}
-              readOnly={recordInfo.crudAction === 'view' ? true : false}
-              slotProps={{
-                actionBar: {
-                    actions: ["clear"],
-                },
-              }}
-            />
-          </LocalizationProvider>
-        </FormControl>
+          <FormControl fullWidth sx={{ marginTop: 4}} variant="standard">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label={aq.name}
+                value={getDateValue(aq.id, aq.EA_SA_ddResponse)}
+                disablePast={true}
+                onChange={(newValue: any) => {
+                  setDateValue(newValue);
+                  onChange('DATE', null, {name: aq.id, value: newValue});
+                }}
+                readOnly={recordInfo.crudAction === 'view' ? true : false}
+                slotProps={{
+                  actionBar: {
+                      actions: ["clear"],
+                  },
+                }}
+              />
+            </LocalizationProvider>
+          </FormControl>
         </ThemeProvider>
       ))}
     </div>

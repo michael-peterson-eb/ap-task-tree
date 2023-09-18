@@ -49,8 +49,22 @@ export const dateMMDDYYYYFormat = (stringDate: string) => {
 
 export const dateYYYYMMDDFormat = (stringDate: string) => {
   const date = new Date(stringDate);
-  const mon = date.getMonth() + 1;
-  const day = date.getDate();
+  const mon = "00" + (date.getMonth() + 1);
+  const day = "00" + date.getDate();
   const year = date.getFullYear();
-  return `${year}-${mon}-${day}`;
+  return `${year}-${mon.substr(-2)}-${day.substr(-2)}`;
+};
+
+export const removeHtmlElem = (text: string) => {
+  const doc = new DOMParser().parseFromString(text, "text/html");
+  const tagsToRemove = "input, img, div, strong, br, hr";
+  for (const elm of doc.querySelectorAll("*")) {
+    if (elm.matches(tagsToRemove)) {
+      elm.remove();
+    }
+    for (const attrib of [...elm.attributes]) {
+      elm.removeAttribute(attrib.name);
+    }
+  }
+  return doc.body.innerHTML;
 };

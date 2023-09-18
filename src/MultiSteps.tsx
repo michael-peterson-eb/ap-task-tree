@@ -113,9 +113,11 @@ export default function MultiSteps({ recordInfo }) {
   /** React Form Hook */
   const handleClose = () => {
     // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals
-    rbf_updateRecord(recordInfo.objectIntegrationName, recordInfo.id, {EA_SA_txtLastAssessmentCalculation: new Date()});
+    rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, recordInfo.triggerId);
 
-    window.location = localStorage.getItem("impactAssessViewURL");
+    setTimeout(function() {
+      window.location.href = localStorage.getItem("impactAssessViewURL");
+    }, 2000);
   }
 
   const handleSubmit = async (thenClose = false) => {
@@ -265,17 +267,19 @@ export default function MultiSteps({ recordInfo }) {
                 customChangedHandler={customChangedHandler}
                 lookupFV={lookupFieldValue} />
               {questionTypes.length > 1 &&
-                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1, marginTop: 4, }}>
                   <Button
                     color="inherit"
                     disabled={activeStep === 0}
                     onClick={handleBack}
-                    sx={{ mr: 1, backgroundColor: '#DDD', fontSize: '1.2rem' }}
+                    sx={{ mr: 1, backgroundColor: '#DDD', fontSize: '1.2rem', borderRadius: '0px', ':hover': {bgcolor: '#ff5f01'} }}
                   >
                     <FontAwesomeIcon icon={faChevronLeft} />
                   </Button>
-                  <Button onClick={handleNext} sx={{ backgroundColor: '#DDD', fontSize: '1.2rem' }}>
-                    <FontAwesomeIcon icon={faChevronRight} />
+                  <Button
+                    onClick={handleNext}
+                    sx={{ backgroundColor: '#DDD', fontSize: '1.2rem', borderRadius: '0px', ':hover': {bgcolor: '#ff5f01'} }}>
+                      <FontAwesomeIcon icon={faChevronRight} />
                   </Button>
                 </Box>
               }

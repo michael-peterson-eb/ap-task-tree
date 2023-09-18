@@ -3,6 +3,8 @@ import {
   TextField,
   Autocomplete,
   FormControl,
+  ThemeProvider,
+  FormGroup,
 } from "@mui/material";
 import { FormInputProps } from "./FormInputProps";
 import {
@@ -13,6 +15,7 @@ import {
 } from "../model/ResponseOptions";
 
 import { getArrayValue } from '../common/Utils';
+import { CustomFontTheme } from '../common/CustomTheme';
 
 export const FormMultiSelect = ({ recordInfo, qtype, data, onChange, lookup }: FormInputProps) => {
   const [assessQuestions, setAssessQuestion] = useState([]);
@@ -60,7 +63,8 @@ export const FormMultiSelect = ({ recordInfo, qtype, data, onChange, lookup }: F
   return (
     <div>
       {assessQuestions.map((aq) => (
-        <FormControl fullWidth sx={{ marginTop: 4 }}>
+        <ThemeProvider theme={CustomFontTheme}>
+        <FormGroup sx={{ paddingTop: 2 }}>
           <Autocomplete
             sx={{ fontSize: '14px' }}
             multiple
@@ -83,14 +87,15 @@ export const FormMultiSelect = ({ recordInfo, qtype, data, onChange, lookup }: F
             readOnly={recordInfo.crudAction == 'view' ? true : false}
             renderInput={(params) => (
               <TextField
-                sx={{ marginTop: '12px' }}
+                sx={{ marginTop: '12px', fontSize: '18px' }}
                 {...params}
                 name={aq.id}
                 label={aq.name}
               />
             )}
           />
-        </FormControl>
+        </FormGroup>
+        </ThemeProvider>
       ))}
     </div>
   );
