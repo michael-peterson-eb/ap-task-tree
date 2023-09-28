@@ -68,3 +68,8 @@ export const removeHtmlElem = (text: string) => {
   }
   return doc.body.innerHTML;
 };
+
+export const stripTextHtmlTags = (text: string) => {
+  const noTags = text.replace(/(<([^>]+)>)/gi, "");
+  return noTags.replace(/\&nbsp;/g, "");
+};
