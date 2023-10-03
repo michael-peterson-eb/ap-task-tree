@@ -116,7 +116,8 @@ export default function MultiSteps({ recordInfo }) {
     rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, recordInfo.triggerId);
 
     setTimeout(function() {
-      window.location.href = localStorage.getItem("impactAssessViewURL");
+      //window.location.href = localStorage.getItem("impactAssessViewURL");
+      window.history.go(-1)
     }, 2000);
   }
 

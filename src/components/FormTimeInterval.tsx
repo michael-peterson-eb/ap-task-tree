@@ -21,7 +21,7 @@ import {
   fetchResponseOptionsByTemplateId
 } from "../model/ResponseOptions";
 
-import { getNameValue, getValue, removeHtmlElem } from '../common/Utils';
+import { getNameValue, getValue, stripTextHtmlTags } from '../common/Utils';
 
 export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: FormInputProps) => {
   const [questionsInterval, setQuestionsInterval] = useState([]);
@@ -93,10 +93,16 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: 
   return (
     <div>
       <FormGroup sx={{ paddingTop: 2 }}>
-        <InputLabel sx={{ color: `${timeIntervalUpdated ? "#000" : "#d32f2f"}` }} required={data.EA_SA_cbRequiredQuestion == 1}>
-          {questionsInterval.length > 0 && removeHtmlElem(questionsInterval[0].EA_SA_rfQuestion)}
+        <InputLabel
+          sx={{ color:
+            `${!data.EA_SA_cbRequiredQuestion ? "#000" : "#d32f2f"}`,
+             whiteSpace: 'normal'
+          }}
+          required={data.EA_SA_cbRequiredQuestion == 1}
+        >
+          {questionsInterval.length > 0 && stripTextHtmlTags(questionsInterval[0].EA_SA_rfQuestion)}
         </InputLabel>
-        <TableContainer component={Paper} sx={{ border: `1px solid ${timeIntervalUpdated ? "#CCC" : "#d32f2f"}`, width: 'inherit' }}>
+        <TableContainer component={Paper} sx={{ border: `1px solid ${!data.EA_SA_cbRequiredQuestion ? "#CCC" : "#d32f2f"}`, width: 'inherit' }}>
           <Table sx={{ width: '100%' }} size="small">
             <TableHead>
               <TableRow
@@ -145,7 +151,7 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: 
             </TableBody>
           </Table>
         </TableContainer>
-        {!timeIntervalUpdated &&
+        {data.EA_SA_cbRequiredQuestion == 1 && !timeIntervalUpdated &&
           <InputLabel sx={{ fontSize: '12px' }} error={!timeIntervalUpdated}>
             {"This question is required!"}
           </InputLabel>
