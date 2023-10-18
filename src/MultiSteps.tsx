@@ -149,7 +149,7 @@ export default function MultiSteps({ recordInfo }) {
         value: value
       }
     };
-    console.log("--trackUpdatedQuestions--", newUpdatedFields)
+    //console.log("--trackUpdatedQuestions--", newUpdatedFields)
     updateFields.current = newUpdatedFields;
   }
 
