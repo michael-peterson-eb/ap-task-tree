@@ -14,7 +14,7 @@ const recordInfo = {
   objectTitle: recordArr[4] || 'Impact Assessment',
   triggerId: recordArr[5] || 'nnull',
 }
-console.log("--recordInfo--", recordInfo)
+//console.log("--recordInfo--", recordInfo)
 const rootId = document.getElementById(`${recordInfo.crudAction}-jsroot`) as HTMLElement;
 const root = ReactDOM.createRoot(rootId);
 
