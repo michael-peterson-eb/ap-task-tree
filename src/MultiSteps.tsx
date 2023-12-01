@@ -13,13 +13,19 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FormProvider, useForm } from "react-hook-form";
-import { updateQuestionWithResponse } from './model/Questions';
+import {
+  updateQuestionWithResponse,
+  fetchAssessQuestionsByTemplateId } from './model/Questions';
+
 import { updateOpSectionStatus } from './model/SectionStatus';
 
 import QandAForm from './QandAForm';
 import { getOperationStatus } from './model/Assessment';
+import { getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
+
 import { NavButtonTheme } from './common/CustomTheme';
 import { dateMMDDYYYYFormat, dateYYYYMMDDFormat } from './common/Utils';
+import { createSecureContext } from 'tls';
 
 export default function MultiSteps({ recordInfo }) {
   const [activeStep, setActiveStep] = useState(0);
@@ -27,6 +33,8 @@ export default function MultiSteps({ recordInfo }) {
   const [questionTypes, setQuestionTypes] = useState([]);
   const [formValues, setFormValues] = useState({});
   const updateFields = useRef({});
+  const allQuestions = useRef({});
+  const sectionQuestions = useRef({});
   const [recordsLoaded, setRecordsLoaded] = useState(false);
 
   const questionResponseFields = {
@@ -107,6 +115,9 @@ export default function MultiSteps({ recordInfo }) {
     getOperationStatus(recordInfo).then((data) => {
       setQuestionTypes(data);
       setRecordsLoaded(true);
+
+      // load all questions into a state variable
+      if (recordInfo.crudAction === "edit") loadAllQuestions(data);
     });
   }, []);
 
@@ -129,29 +140,90 @@ export default function MultiSteps({ recordInfo }) {
   }
 
   const handleChange = async (type: any, event: any) => {
-    const { name, value } = event.target;
-    trackUpdatedQuestions(type, name, value);
+    const { id, name, value } = event.target;     // id=typeId name=questionId
+    console.log("---handleChange---", type, id, name, value);
+    trackUpdatedQuestions(id, type, name, value);
+    setSectionQuestionAnswer(id, name, value);
   }
 
   const customChangedHandler = (type: any, _event: any, autoComplete: any) => {
-    let { name, value } = autoComplete;
+    let { id, name, value } = autoComplete;
     if ( type === "DATE" ) value = value ? dateYYYYMMDDFormat(value.toString()) : "";
-    trackUpdatedQuestions(type, name, value);
+
+    console.log("---customChangedHandler---", type, id, name, value);
+    trackUpdatedQuestions(id, type, name, value);
   }
 
-  const trackUpdatedQuestions = (fieldType: any, aqId: any, value: any) => {
-    const currentUpdatedFields = updateFields.current;
+  const trackUpdatedQuestions = (typeId: any, fieldType: any, aqId: any, value: any) => {
+    const currentUpdatedFields:any = updateFields.current;
     const newUpdatedFields = {
       ...currentUpdatedFields,
       [aqId]: {
         ...currentUpdatedFields[aqId],
+        typeId: typeId,
         type: fieldType,
         value: value
       }
     };
-    //console.log("--trackUpdatedQuestions--", newUpdatedFields)
+    console.log("--trackUpdatedQuestions:allQuestions--", newUpdatedFields)
     updateFields.current = newUpdatedFields;
   }
+
+  // set all section questions ref state
+  const setSectionQuestions = (secQs:any) => {
+    console.log("---loadSectionQuestions---", secQs);
+    let qObj = {};
+    for(let sQ of secQs) {
+      qObj = {
+        ...qObj,
+        [sQ.id]: {
+          fieldType: sQ.EA_SA_ddlResponseFormat,
+          isRequired: sQ.EA_SA_cbRequiredQuestion === 1,
+          isTimeInterval: sQ.EA_SA_cbAskPerTimeInterval === 1,
+          value: ""
+        }
+      }
+    }
+    sectionQuestions.current = qObj;
+  }
+
+  // update individual section question value
+  const setSectionQuestionAnswer = (typeId:any, ansId:any, qAns:any) => {
+    let secQAs:any = sectionQuestions.current;
+    if ( secQAs.hasOwnProperty(typeId) ) {
+      const currObj = secQAs[typeId];
+      secQAs = {...secQAs, [typeId]: {
+        ...currObj,
+        ...{value: qAns}
+      }}
+    }
+    sectionQuestions.current = secQAs;
+    console.log("---setSectionQuestionAnswer---", typeId, ansId, qAns, secQAs);
+  }
+
+  // load all the assessment questions to a ref state
+  const loadAllQuestions = (opSections:any) => {
+    for (let opSec of opSections) {
+      getAssessmentQuestionTemplateByType(opSec).then((typeQs) => {
+        for (let typeQ of typeQs) {
+          fetchAssessQuestionsByTemplateId(recordInfo, typeQ.id).then((assesQs) => {
+            for (let aQ of assesQs) {
+              const currentQuestions:any = allQuestions.current;
+              const newQuestions = {
+                ...currentQuestions,
+                [aQ.id]: {
+                  ...currentQuestions[aQ.id],
+                  isRequired: typeQ.EA_SA_cbRequiredQuestion,
+                  type: typeQ.EA_SA_ddlResponseFormat
+                }
+              };
+              allQuestions.current = newQuestions;
+            }
+          });
+        }
+      });
+    }
+  };
 
   const lookupFieldValue = (aqId: any) => {
     const touchedFields:any = updateFields.current;
@@ -208,7 +280,7 @@ export default function MultiSteps({ recordInfo }) {
                   onClick={() => handleSubmit(true)}
                   variant="contained"
                   size="small"
-                  sx={{borderRadius: '0px'}}>Submit
+                  sx={{borderRadius: '0px'}}>Save
                 </Button>
               </ThemeProvider>
             </Box>
@@ -266,7 +338,9 @@ export default function MultiSteps({ recordInfo }) {
                 handleFormValues={setFormValues}
                 handleOnChange={handleChange}
                 customChangedHandler={customChangedHandler}
-                lookupFV={lookupFieldValue} />
+                lookupFV={lookupFieldValue}
+                fnSecQs={setSectionQuestions}
+                fnSecQA={setSectionQuestionAnswer}/>
               {questionTypes.length > 1 &&
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1, marginTop: 4, }}>
                   <Button

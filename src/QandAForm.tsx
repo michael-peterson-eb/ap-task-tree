@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Box,
   ThemeProvider,
@@ -19,7 +19,16 @@ import { CustomFontTheme } from './common/CustomTheme';
 
 import { getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
 
-const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, customChangedHandler, lookupFV }) => {
+const QandAForm = (props:any) => {
+  const {
+    recordInfo,
+    qtype,
+    handleFormValues,
+    handleOnChange,
+    customChangedHandler,
+    lookupFV,
+    fnSecQs,
+    fnSecQA} = props;
 
   const [tableData, setTableData] = useState([]);
   const [isTypeCompleted, setTypeCompleted] = useState(false);
@@ -46,41 +55,89 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
       }
     });
   }
-  //console.log("--QAForm--", recordInfo, qtype)
+
   useEffect(() => {
     setTypeCompleted(qtype.status === 'completed' ? true : false);
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
+
       setTableData(data);
+
+      if ( recordInfo.crudAction === "edit" ) fnSecQs(data);  // track section questions state
     });
   }, [qtype.id]);
 
   return (
     <ThemeProvider theme={CustomFontTheme}>
-      <Box sx={{ margin: 'auto', maxHeight: 900, overflow: 'auto' }}>
+      <Box sx={{ margin: 'auto', overflow: 'auto' }}>
+        {recordInfo.crudAction === "view" && !isTypeCompleted &&
+          <Alert sx={{ marginTop: '12px' }} severity="warning">
+            <AlertTitle>{`${qtype.name} ${recordInfo.objectTitle} is in progress!`}</AlertTitle>
+          </Alert>
+        }
+        {recordInfo.crudAction === "view" && isTypeCompleted &&
+          <Alert sx={{ marginTop: '12px' }} severity="success">
+            <AlertTitle>{`${qtype.name} ${recordInfo.objectTitle} is complete!`}</AlertTitle>
+          </Alert>
+        }
+
         {tableData.length > 0 && tableData.map((data) => {
           // Single-Select Picklist
           if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 0) {
-            return <FormSingleSelect recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} lookup={lookupFV} />
+            return <FormSingleSelect
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={handleOnChange}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}/>
           }
+
           // Time Interval
           if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 1) {
-            return <FormTimeInterval recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} lookup={lookupFV} />
+            return <FormTimeInterval
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={handleOnChange}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}/>
           }
+
           // Text Response
           if (data.EA_SA_ddlResponseFormat === 'FRES') {
-            return <FormInputText recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} lookup={lookupFV} />
+            return <FormInputText
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={handleOnChange}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}/>
           }
+
           // MSP - Multi-Select
           if (data.EA_SA_ddlResponseFormat === 'MSP') {
-            return <FormMultiSelect recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler} lookup={lookupFV} />
+            return <FormMultiSelect
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={customChangedHandler}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA} />
           }
+
           // CCY - Currency
           if (data.EA_SA_ddlResponseFormat === 'CCY') {
             return <FormInputCurrency recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} />
           }
           // DATE - Date
           if (data.EA_SA_ddlResponseFormat === 'DATE') {
-            return <FormInputDate recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler} lookup={lookupFV} />
+            return <FormInputDate
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={customChangedHandler}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}/>
           }
         })}
         {recordInfo.crudAction === 'edit' &&

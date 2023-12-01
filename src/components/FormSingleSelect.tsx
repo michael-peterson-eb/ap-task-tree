@@ -17,11 +17,14 @@ import {
 } from '@mui/material';
 import { getValue } from '../common/Utils';
 
-export const FormSingleSelect = ({recordInfo, qtype, data, onChange, lookup}: FormInputProps) => {
+export const FormSingleSelect = (props: FormInputProps) => {
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA} = props;
+
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
 
   const templateId = data.id;
+
   useEffect(() => {
     // declare the async data fetching function
     const fetchQuestionsAndOptions = async () => {
@@ -44,6 +47,7 @@ export const FormSingleSelect = ({recordInfo, qtype, data, onChange, lookup}: Fo
   return (
     <div>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
+
         <FormControl sx={{  marginTop: 4, width: '100%' }}>
           <InputLabel id={`single-select-${aq.id}`} size={'normal'} sx={{ background: '#FFF', paddingRight: '4px', fontSize: '18px'}}>
             {aq.name.trim()}

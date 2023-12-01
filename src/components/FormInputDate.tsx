@@ -12,7 +12,8 @@ import {
 } from "../model/Questions";
 
 import { getValue } from '../common/Utils';
-export const FormInputDate = ({ recordInfo, qtype, data, onChange, lookup}: FormInputProps) => {
+export const FormInputDate = (props: FormInputProps) => {
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [dateValue, setDateValue] = useState<Dayjs | null>(null);
@@ -28,7 +29,7 @@ export const FormInputDate = ({ recordInfo, qtype, data, onChange, lookup}: Form
     const fetchQuestionsAndOptions = async () => {
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
       setAssessQuestion(assessQuestions);
-      console.log("----fetchQuestions----", assessQuestions)
+      //console.log("----fetchQuestions----", assessQuestions)
       if (assessQuestions && assessQuestions.length > 0 ) {
         setDateValue(dayjs(assessQuestions[0].EA_SA_ddResponse));
       }

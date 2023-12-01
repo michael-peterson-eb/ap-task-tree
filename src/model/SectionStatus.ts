@@ -3,13 +3,7 @@ export const fetchObjectSectionStatuses = async (recordInfo: any) => {
     let status = "{}";
     const queryCondition = `id=${recordInfo?.id}`;
 
-    const results = await _RB.selectQuery(
-      ["EA_SA_txtaSectionStatuses"],
-      recordInfo?.objectIntegrationName,
-      queryCondition,
-      1,
-      true
-    );
+    const results = await _RB.selectQuery(["EA_SA_txtaSectionStatuses"], recordInfo?.objectIntegrationName, queryCondition, 1, true);
 
     if (results.length > 0) status = results[0];
     return status;
@@ -23,23 +17,12 @@ export const fetchObjectSectionStatuses = async (recordInfo: any) => {
  * @param queryCondition
  * @returns
  */
-export const fetchOpSectionStatus = async (
-  recordInfo: any,
-  sectionType: any
-) => {
+export const fetchOpSectionStatus = async (recordInfo: any, sectionType: any) => {
   try {
-    let status = "{}";
     const queryCondition = `${recordInfo.questionRelName}=${recordInfo?.id} AND EA_SA_ddlSectionType#code='${sectionType}'`;
-    console.log("--fetchOpSectionStatus--", queryCondition);
+    // console.log("--fetchOpSectionStatus--", queryCondition);
     const results = await _RB.selectQuery(
-      [
-        "id",
-        "name",
-        "status#code",
-        "EA_SA_txtCode",
-        "EA_SA_rsAssessmentQuestionType",
-        "EA_SA_rsAssessmentQuestions",
-      ],
+      ["id", "name", "status#code", "EA_SA_txtCode", "EA_SA_rsAssessmentQuestionType", "EA_SA_rsAssessmentQuestions"],
       "EA_SA_OperationsSection",
       queryCondition,
       100,
@@ -59,10 +42,7 @@ export const fetchOpSectionStatus = async (
  * @param sectionType e.g. EA_SA_Impact, EA_SA_Dependency, EA_SA_Resource
  * @returns
  */
-export const xfetchProcessOpsSectionStatus = async (
-  recordInfo: any,
-  sectionType: string
-) => {
+export const xfetchProcessOpsSectionStatus = async (recordInfo: any, sectionType: string) => {
   const queryCondition = `EA_SA_rsProcess=${recordInfo?.id} AND EA_SA_ddlSectionType#code=${sectionType}`;
   return await fetchOpSectionStatus(queryCondition);
 };
@@ -73,10 +53,7 @@ export const xfetchProcessOpsSectionStatus = async (
  * @param sectionType e.g. EA_SA_Impact, EA_SA_Dependency, EA_SA_Resource
  * @returns
  */
-export const xfetchPSOpsSectStatus = async (
-  recordInfo: any,
-  sectionType: string
-) => {
+export const xfetchPSOpsSectStatus = async (recordInfo: any, sectionType: string) => {
   const queryCondition = `EA_SA_rsProductAndService=${recordInfo?.id} AND EA_SA_ddlSectionType#code=${sectionType}`;
   return await fetchOpSectionStatus(queryCondition);
 };
@@ -87,10 +64,7 @@ export const xfetchPSOpsSectStatus = async (
  * @param sectionType e.g. EA_SA_Impact, EA_SA_Dependency, EA_SA_Resource
  * @returns
  */
-export const xfetchAppOpsSectStatus = async (
-  recordInfo: any,
-  sectionType: string
-) => {
+export const xfetchAppOpsSectStatus = async (recordInfo: any, sectionType: string) => {
   const queryCondition = `EA_SA_rsApplication=${recordInfo?.id} AND EA_SA_ddlSectionType#code=${sectionType}`;
   return await fetchOpSectionStatus(queryCondition);
 };
@@ -103,13 +77,9 @@ export const xfetchAppOpsSectStatus = async (
  */
 export const updateOpSectionStatus = async (opSec: any, value: string) => {
   try {
-    const results = await _RB.updateRecord(
-      "EA_SA_OperationsSection",
-      opSec.id,
-      {
-        status: value,
-      }
-    );
+    const results = await _RB.updateRecord("EA_SA_OperationsSection", opSec.id, {
+      status: value,
+    });
     return results;
   } catch (error) {
     console.log("Error: updateOpSectionStatus ", error);
@@ -122,11 +92,7 @@ export const updateStatusJSON = async (recordInfo: any, value: any) => {
       EA_SA_txtaSectionStatuses: JSON.stringify(value),
     };
 
-    const results = await _RB.updateRecord(
-      recordInfo.objectIntegrationName,
-      recordInfo.id,
-      fields
-    );
+    const results = await _RB.updateRecord(recordInfo.objectIntegrationName, recordInfo.id, fields);
 
     return results;
   } catch (error) {

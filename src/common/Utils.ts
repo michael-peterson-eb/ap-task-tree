@@ -73,3 +73,9 @@ export const stripTextHtmlTags = (text: string) => {
   const noTags = text.replace(/(<([^>]+)>)/gi, "");
   return noTags.replace(/\&nbsp;/g, "");
 };
+
+export const appendQuestions = (addQs: any, aQuestions: any, fieldName: string) => {
+  aQuestions.map((aq: any) => {
+    addQs(aq.id, aq[fieldName]);
+  });
+};

@@ -9,4 +9,6 @@ export interface FormInputProps {
   templateId?: any;
   recordInfo?: any;
   lookup?: any;
+  fnSecQs?: any;
+  fnSecQA?: any;
 }

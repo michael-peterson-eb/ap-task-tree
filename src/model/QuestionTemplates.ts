@@ -22,8 +22,13 @@ export const getAssessmentQuestionTemplateByIds = async (ids: any) => {
   }
 };
 
-export const getAssessmentQuestionTemplateByType = async (qtype) => {
-  const qryCondition = `EA_SA_rsAssessmentQuestionType = ${qtype.EA_SA_rsAssessmentQuestionType} ORDER BY EA_SA_intDisplayOrder ASC`;
-  console.log("--getAssessmentQuestionTemplateByType--", qryCondition);
-  return await _RB.selectQuery(templateFields, "EA_SA_AssessmentQuestionTemplate", qryCondition, 10000, true);
+export const getAssessmentQuestionTemplateByType = async (qtype: any) => {
+  try {
+    const qryCondition = `EA_SA_rsAssessmentQuestionType = ${qtype.EA_SA_rsAssessmentQuestionType} ORDER BY EA_SA_intDisplayOrder ASC`;
+
+    //console.log("--getAssessmentQuestionTemplateByType--", qryCondition);
+    return await _RB.selectQuery(templateFields, "EA_SA_AssessmentQuestionTemplate", qryCondition, 10000, true);
+  } catch (error) {
+    console.log("Error: getAssessmentQuestionTemplateByType ", error);
+  }
 };
