@@ -23,7 +23,9 @@ import {
 
 import { getNameValue, getValue, stripTextHtmlTags } from '../common/Utils';
 
-export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: FormInputProps) => {
+export const FormTimeInterval = (props: FormInputProps) => {
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+
   const [questionsInterval, setQuestionsInterval] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
   const [timeIntervalUpdated, setTimeIntervalUpdated] = useState(false);
@@ -55,7 +57,11 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: 
       return quesInt.id == id;
     });
 
-    const updatedMap = {...found, ...{EA_SA_rsAssessmentResponseOptions: value == "" ? null : value}};
+    const updatedMap = {
+      ...found,
+      ...{EA_SA_rsAssessmentResponseOptions: value == "" ? null : value}
+    };
+
     const newQuesInterval:any = questionsInterval.map((qin) => {
       return qin.id == id ? updatedMap : qin;
     });
@@ -66,6 +72,24 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: 
   const doLookup = (id:any, optSelected:any) => {
     if (optSelected != null || optSelected != "") setTimeIntervalUpdated(true);
     return getValue(lookup, id, optSelected);
+  }
+
+  const isQuestionRequired = () => {
+    return data.EA_SA_cbRequiredQuestion == 1 && !timeIntervalUpdated;
+  }
+
+  const requiredColor = () => {
+    return isQuestionRequired() ? "#d32f2f" : "#000"
+  }
+
+  // check if at least one of the Time Interval question has value selected
+  const atLeastOneTimeIntervalHasValue = (tiQs:any) => {
+    let selected = "";
+    tiQs.forEach((tQ:any) => {
+     if ( getValue(lookup, tQ.id, tQ.EA_SA_rsAssessmentResponseOptions) != "" ) selected = "Yes";
+    });
+
+    return selected;
   }
 
   useEffect(() => {
@@ -79,6 +103,9 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: 
       setQuestionsInterval(intervalQuestions);
       setQuesResponseOptions(responseOptions);
       checkTimeIntervalHasValue();
+
+      const tiSelected = atLeastOneTimeIntervalHasValue(intervalQuestions);
+      fnSecQA(templateId, templateId, tiSelected);
     }
 
     fetchQuestionsAndOptions().catch(console.error);
@@ -95,14 +122,14 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: 
       <FormGroup sx={{ paddingTop: 2 }}>
         <InputLabel
           sx={{ color:
-            `${!data.EA_SA_cbRequiredQuestion ? "#000" : "#d32f2f"}`,
-             whiteSpace: 'normal'
+            `${requiredColor()}`,
+            whiteSpace: 'normal'
           }}
           required={data.EA_SA_cbRequiredQuestion == 1}
         >
           {questionsInterval.length > 0 && stripTextHtmlTags(questionsInterval[0].EA_SA_rfQuestion)}
         </InputLabel>
-        <TableContainer component={Paper} sx={{ border: `1px solid ${!data.EA_SA_cbRequiredQuestion ? "#CCC" : "#d32f2f"}`, width: 'inherit' }}>
+        <TableContainer component={Paper} sx={{ border: `1px solid ${requiredColor()}`, width: 'inherit' }}>
           <Table sx={{ width: '100%' }} size="small">
             <TableHead>
               <TableRow
@@ -126,14 +153,20 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: 
                   <TableCell style={{ padding: '0px' }}>
                     {recordInfo.crudAction === 'edit' &&
                       <Select
-                        sx={{ width: '100%' }}
+                        sx={{
+                          width: '100%',
+                          "& fieldset": {
+                            borderWidth: "0px",
+                          }, }}
                         style={{ fontSize: '14px' }}
                         name={qa.id}
+                        id={templateId}
                         native
                         defaultValue={getValue(lookup, qa.id, qa.EA_SA_rsAssessmentResponseOptions)}
                         onChange={(event: any) => {
                           onChange('SSP', event);
                           timeIntervalUpdate(qa.id, event);
+                          fnReqField();
                         }}
                       >
                         <option aria-label="None" value="">Select Impact</option>
@@ -151,7 +184,7 @@ export const FormTimeInterval = ({ recordInfo, qtype, data, onChange, lookup }: 
             </TableBody>
           </Table>
         </TableContainer>
-        {data.EA_SA_cbRequiredQuestion == 1 && !timeIntervalUpdated &&
+        {isQuestionRequired() &&
           <InputLabel sx={{ fontSize: '12px' }} error={!timeIntervalUpdated}>
             {"This question is required!"}
           </InputLabel>

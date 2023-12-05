@@ -6,15 +6,23 @@ import {
   fetchAssessQuestionsByTemplateId
 } from "../model/Questions";
 
-import { initSelectValue, getValue } from '../common/Utils';
+import { initSelectValue, getValue, appendQuestions } from '../common/Utils';
 
-const isRequired = (flag: any) => flag == 1;
+export const FormInputText = (props: FormInputProps) => {
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
 
-export const FormInputText = ({ recordInfo, qtype, data, onChange, lookup }: FormInputProps) => {
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
 
   const templateId = data.id;
+
+  const isQuestionRequired = (flag:any) => {
+    return flag == 1;
+  }
+
+  const requiredColor = () => {
+    return isQuestionRequired(data.EA_SA_rfRequiredQuestion) ? "#d32f2f" : "#000"
+  }
 
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
@@ -22,17 +30,22 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange, lookup }: For
       setAssessQuestion(assessQuestions);
 
       if (assessQuestions && assessQuestions.length > 0) {
+        const aqId = assessQuestions[0].id;
         const aqFieldValue = assessQuestions[0].EA_SA_txtaResponse;
+        const lookupValue = lookup(aqId);
+
         let responseValue = aqFieldValue ? aqFieldValue : '';
-        const lookupValue = lookup(assessQuestions[0].id);
-
         if ( lookupValue || lookupValue == '' ) responseValue = lookupValue;
-        const respValue = getValue(lookup, assessQuestions[0].id, aqFieldValue);
 
-        setFieldValue(initSelectValue(recordInfo, respValue));
+        const respValue = getValue(lookup, aqId, aqFieldValue);
+        const newValue = initSelectValue(recordInfo, respValue);
+        setFieldValue(newValue);
+
+        //fnSecQs(assessQuestions); // track section question states
+
+        //if (recordInfo.crudAction === "edit" ) fnSecQA(templateId, aqId, newValue);
       }
     }
-
     fetchQuestionsAndOptions().catch(console.error);
 
   }, [templateId])
@@ -43,11 +56,12 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange, lookup }: For
         <FormControl fullWidth sx={{ marginTop: 4 }} variant="standard">
           <TextField
             sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
-            required={isRequired(aq.EA_SA_rfRequiredQuestion)}
+            required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
             id={data.id}
             label={data.EA_SA_txtaQuestion}
             name={aq.id}
             value={fieldValue}
+
             InputProps={{
               style: { fontSize: '14px' },
               ...recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }
@@ -57,9 +71,10 @@ export const FormInputText = ({ recordInfo, qtype, data, onChange, lookup }: For
               const { name, value } = event.target;
               setFieldValue(value);
               onChange('FRES', event);
+              fnReqField();
             }}
-            error={isRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
-            helperText={isRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue ? "This question is required!" : ""}
+            error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
+            helperText={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue ? "This question is required!" : ""}
           />
         </FormControl>
       ))}

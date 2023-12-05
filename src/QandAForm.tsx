@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Box,
   ThemeProvider,
@@ -17,12 +17,32 @@ import { FormTimeInterval } from './components/FormTimeInterval';
 import { FormInputDate } from './components/FormInputDate';
 import { CustomFontTheme } from './common/CustomTheme';
 
-import { getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
+import {
+  getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
 
-const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, customChangedHandler, lookupFV }) => {
+import {
+  fetchAssessQuestionsByTemplateId,
+  fetchQuestionsIntervalsByTemplateId } from "./model/Questions";
+
+import { initSelectValue, getValue, getQuestionAnswer } from './common/Utils';
+
+const QandAForm = (props:any) => {
+  const {
+    recordInfo,
+    qtype,
+    handleFormValues,
+    handleOnChange,
+    customChangedHandler,
+    lookupFV,
+    fnSecQs,
+    fnSecQA,
+    fnDoneWithReqField} = props;
 
   const [tableData, setTableData] = useState([]);
   const [isTypeCompleted, setTypeCompleted] = useState(false);
+  const [isReqFieldValid, setReqFieldValid] = useState(true);
+
+  const editMode = recordInfo.crudAction === "edit";
 
   const setFormValues = (data: any) => {
     const formValues: any = {};
@@ -46,44 +66,126 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
       }
     });
   }
-  //console.log("--QAForm--", recordInfo, qtype)
+
+  const checkRequiredFields = () => {
+    const validRF = fnDoneWithReqField();
+    //console.log("--checkRequiredFields--", validRF)
+    if (isTypeCompleted && !validRF) {
+      customChangedHandler('STATUS', null, { name: qtype.id, value: false });
+      setTypeCompleted(false);
+    }
+    setReqFieldValid(validRF);
+  }
+
+  const getExistingAnswers = (templateData:any) => {
+    const asQs:any[] = [];
+    templateData.map(async (data:any) => {
+      const tId = data.id;
+      if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 1 ) {
+        const intervalQuestions = await fetchQuestionsIntervalsByTemplateId(recordInfo, tId);
+
+      } else {
+        const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, tId);
+        const [found, qaId, newValue] = getQuestionAnswer(recordInfo, lookupFV, assessQuestions, "EA_SA_txtaResponse");
+        if ( found ) fnSecQA(tId, qaId, newValue);
+      }
+    });
+  }
+
   useEffect(() => {
     setTypeCompleted(qtype.status === 'completed' ? true : false);
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
       setTableData(data);
+      if ( editMode ) {
+        fnSecQs(data);  // track section questions state
+        getExistingAnswers(data);
+
+        setTimeout(() => {
+          checkRequiredFields();
+        },500);
+
+      }
     });
   }, [qtype.id]);
 
   return (
     <ThemeProvider theme={CustomFontTheme}>
-      <Box sx={{ margin: 'auto', maxHeight: 900, overflow: 'auto' }}>
+      <Box sx={{ margin: 'auto', overflow: 'auto' }}>
+        {recordInfo.crudAction === "view" && !isTypeCompleted &&
+          <Alert sx={{ marginTop: '12px' }} severity="warning">
+            <AlertTitle>{`${qtype.name} ${recordInfo.objectTitle} is in progress!`}</AlertTitle>
+          </Alert>
+        }
+        {recordInfo.crudAction === "view" && isTypeCompleted &&
+          <Alert sx={{ marginTop: '12px' }} severity="success">
+            <AlertTitle>{`${qtype.name} ${recordInfo.objectTitle} is complete!`}</AlertTitle>
+          </Alert>
+        }
+
         {tableData.length > 0 && tableData.map((data) => {
           // Single-Select Picklist
           if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 0) {
-            return <FormSingleSelect recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} lookup={lookupFV} />
+            return <FormSingleSelect
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={handleOnChange}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}/>
           }
+
           // Time Interval
           if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 1) {
-            return <FormTimeInterval recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} lookup={lookupFV} />
+            return <FormTimeInterval
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={handleOnChange}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
+
           // Text Response
           if (data.EA_SA_ddlResponseFormat === 'FRES') {
-            return <FormInputText recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} lookup={lookupFV} />
+            return <FormInputText
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={handleOnChange}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
+
           // MSP - Multi-Select
           if (data.EA_SA_ddlResponseFormat === 'MSP') {
-            return <FormMultiSelect recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler} lookup={lookupFV} />
+            return <FormMultiSelect
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={customChangedHandler}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA} />
           }
+
           // CCY - Currency
           if (data.EA_SA_ddlResponseFormat === 'CCY') {
             return <FormInputCurrency recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} />
           }
           // DATE - Date
           if (data.EA_SA_ddlResponseFormat === 'DATE') {
-            return <FormInputDate recordInfo={recordInfo} qtype={qtype} data={data} onChange={customChangedHandler} lookup={lookupFV} />
+            return <FormInputDate
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={customChangedHandler}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}/>
           }
         })}
-        {recordInfo.crudAction === 'edit' &&
+
+        {editMode &&
           <Alert sx={{ marginTop: '12px', marginBottom: '6px' }} severity="info">
             <AlertTitle>{recordInfo.objectTitle}</AlertTitle>
             <FormControlLabel control={
@@ -99,7 +201,7 @@ const QandAForm = ({ recordInfo, qtype, handleFormValues, handleOnChange, custom
                     customChangedHandler('STATUS', event, { name: qtype.id, value: checked });
                   }
                 }}
-                disabled={recordInfo.crudAction === 'view'}
+                disabled={!isReqFieldValid}
                 inputProps={{ 'aria-label': 'controlled' }} />
             } label={`Checked if ${qtype.name} ${recordInfo.objectTitle} is complete!`} />
           </Alert>

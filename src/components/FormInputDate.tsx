@@ -12,7 +12,8 @@ import {
 } from "../model/Questions";
 
 import { getValue } from '../common/Utils';
-export const FormInputDate = ({ recordInfo, qtype, data, onChange, lookup}: FormInputProps) => {
+export const FormInputDate = (props: FormInputProps) => {
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [dateValue, setDateValue] = useState<Dayjs | null>(null);
@@ -20,15 +21,18 @@ export const FormInputDate = ({ recordInfo, qtype, data, onChange, lookup}: Form
   const templateId = data.id;
 
   const getDateValue = (id: any, fieldValue: any) => {
+    let returnValue = null;
     const dvalue = getValue(lookup, id, fieldValue);
-    return dayjs(dvalue);
+
+    if ( dvalue != "" ) returnValue = dayjs(dvalue);
+    return returnValue;
   }
 
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
       setAssessQuestion(assessQuestions);
-      console.log("----fetchQuestions----", assessQuestions)
+      //console.log("----fetchQuestions----", assessQuestions)
       if (assessQuestions && assessQuestions.length > 0 ) {
         setDateValue(dayjs(assessQuestions[0].EA_SA_ddResponse));
       }
@@ -55,7 +59,7 @@ export const FormInputDate = ({ recordInfo, qtype, data, onChange, lookup}: Form
                 readOnly={recordInfo.crudAction === 'view' ? true : false}
                 slotProps={{
                   actionBar: {
-                      actions: ["clear"],
+                    actions: ["clear"],
                   },
                 }}
               />
