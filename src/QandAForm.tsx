@@ -69,7 +69,7 @@ const QandAForm = (props:any) => {
 
   const checkRequiredFields = () => {
     const validRF = fnDoneWithReqField();
-    console.log("--checkRequiredFields--", validRF)
+    //console.log("--checkRequiredFields--", validRF)
     if (isTypeCompleted && !validRF) {
       customChangedHandler('STATUS', null, { name: qtype.id, value: false });
       setTypeCompleted(false);
@@ -88,10 +88,8 @@ const QandAForm = (props:any) => {
         const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, tId);
         const [found, qaId, newValue] = getQuestionAnswer(recordInfo, lookupFV, assessQuestions, "EA_SA_txtaResponse");
         if ( found ) fnSecQA(tId, qaId, newValue);
-        console.log("--getExistingAnswers:2--", tId, qaId, newValue)
       }
     });
-    console.log("--getExistingAnswers--", asQs, templateData)
   }
 
   useEffect(() => {

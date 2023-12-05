@@ -127,7 +127,6 @@ export default function MultiSteps({ recordInfo }) {
     rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, recordInfo.triggerId);
 
     setTimeout(function() {
-      //window.location.href = localStorage.getItem("impactAssessViewURL");
       window.history.go(-1)
     }, 2000);
   }
@@ -141,7 +140,7 @@ export default function MultiSteps({ recordInfo }) {
 
   const handleChange = async (type: any, event: any) => {
     const { id, name, value } = event.target;     // id=typeId name=questionId
-    console.log("---handleChange---", type, id, name, value);
+    //console.log("---handleChange---", type, id, name, value);
     trackUpdatedQuestions(id, type, name, value);
     setSectionQuestionAnswer(id, name, value);
   }
@@ -150,7 +149,7 @@ export default function MultiSteps({ recordInfo }) {
     let { id, name, value } = autoComplete;
     if ( type === "DATE" ) value = value ? dateYYYYMMDDFormat(value.toString()) : "";
 
-    console.log("---customChangedHandler---", type, id, name, value);
+    //console.log("---customChangedHandler---", type, id, name, value);
     trackUpdatedQuestions(id, type, name, value);
   }
 
@@ -165,13 +164,13 @@ export default function MultiSteps({ recordInfo }) {
         value: value
       }
     };
-    console.log("--trackUpdatedQuestions:allQuestions--", newUpdatedFields)
+    //console.log("--trackUpdatedQuestions:allQuestions--", newUpdatedFields)
     updateFields.current = newUpdatedFields;
   }
 
   // set all section questions ref state
   const setSectionQuestions = (secQs:any) => {
-    console.log("---loadSectionQuestions---", secQs);
+    //console.log("---loadSectionQuestions---", secQs);
     let qObj = {};
     for(let sQ of secQs) {
       qObj = {
@@ -198,7 +197,7 @@ export default function MultiSteps({ recordInfo }) {
       }}
     }
     sectionQuestions.current = secQAs;
-    console.log("---setSectionQuestionAnswer---", typeId, ansId, qAns, secQAs);
+    //console.log("---setSectionQuestionAnswer---", typeId, ansId, qAns, secQAs);
   }
 
   const doneReqField = () => {
@@ -207,9 +206,7 @@ export default function MultiSteps({ recordInfo }) {
     for (const sQS in secQAs) {
       const sQAV = secQAs[sQS];
       if ( sQAV.isRequired && sQAV.value == "") nValid++;
-      console.log("---doneREquiered:1---", sQAV);
     }
-    console.log("---doneREquiered---", nValid === 0);
     return nValid === 0;
   }
 
@@ -275,16 +272,16 @@ export default function MultiSteps({ recordInfo }) {
   return (
     <FormProvider {...formMethods}>
       <form onSubmit={handleSubmit}>
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '100%'}}>
           {questionTypes.length > 0 && recordInfo.crudAction == "edit" &&
-            <Box m={1} display="flex" justifyContent="space-between" alignItems="right">
+            <Box mb={1} display="flex" justifyContent="space-between" alignItems="right">
               <ThemeProvider theme={NavButtonTheme}>
                 <Button
                   color="primary"
                   onClick={handleClose}
                   variant="contained"
                   size="small"
-                  sx={{borderRadius: '0px'}}>Close
+                  sx={{borderRadius: '0px'}}>Cancel
                 </Button>
 
                 <Button
