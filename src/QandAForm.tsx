@@ -17,7 +17,14 @@ import { FormTimeInterval } from './components/FormTimeInterval';
 import { FormInputDate } from './components/FormInputDate';
 import { CustomFontTheme } from './common/CustomTheme';
 
-import { getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
+import {
+  getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
+
+import {
+  fetchAssessQuestionsByTemplateId,
+  fetchQuestionsIntervalsByTemplateId } from "./model/Questions";
+
+import { initSelectValue, getValue, getQuestionAnswer } from './common/Utils';
 
 const QandAForm = (props:any) => {
   const {
@@ -28,10 +35,14 @@ const QandAForm = (props:any) => {
     customChangedHandler,
     lookupFV,
     fnSecQs,
-    fnSecQA} = props;
+    fnSecQA,
+    fnDoneWithReqField} = props;
 
   const [tableData, setTableData] = useState([]);
   const [isTypeCompleted, setTypeCompleted] = useState(false);
+  const [isReqFieldValid, setReqFieldValid] = useState(true);
+
+  const editMode = recordInfo.crudAction === "edit";
 
   const setFormValues = (data: any) => {
     const formValues: any = {};
@@ -56,13 +67,46 @@ const QandAForm = (props:any) => {
     });
   }
 
+  const checkRequiredFields = () => {
+    const validRF = fnDoneWithReqField();
+    console.log("--checkRequiredFields--", validRF)
+    if (isTypeCompleted && !validRF) {
+      customChangedHandler('STATUS', null, { name: qtype.id, value: false });
+      setTypeCompleted(false);
+    }
+    setReqFieldValid(validRF);
+  }
+
+  const getExistingAnswers = (templateData:any) => {
+    const asQs:any[] = [];
+    templateData.map(async (data:any) => {
+      const tId = data.id;
+      if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 1 ) {
+        const intervalQuestions = await fetchQuestionsIntervalsByTemplateId(recordInfo, tId);
+
+      } else {
+        const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, tId);
+        const [found, qaId, newValue] = getQuestionAnswer(recordInfo, lookupFV, assessQuestions, "EA_SA_txtaResponse");
+        if ( found ) fnSecQA(tId, qaId, newValue);
+        console.log("--getExistingAnswers:2--", tId, qaId, newValue)
+      }
+    });
+    console.log("--getExistingAnswers--", asQs, templateData)
+  }
+
   useEffect(() => {
     setTypeCompleted(qtype.status === 'completed' ? true : false);
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
-
       setTableData(data);
+      if ( editMode ) {
+        fnSecQs(data);  // track section questions state
+        getExistingAnswers(data);
 
-      if ( recordInfo.crudAction === "edit" ) fnSecQs(data);  // track section questions state
+        setTimeout(() => {
+          checkRequiredFields();
+        },500);
+
+      }
     });
   }, [qtype.id]);
 
@@ -100,7 +144,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={handleOnChange}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // Text Response
@@ -111,7 +156,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={handleOnChange}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // MSP - Multi-Select
@@ -140,7 +186,8 @@ const QandAForm = (props:any) => {
               fnSecQA={fnSecQA}/>
           }
         })}
-        {recordInfo.crudAction === 'edit' &&
+
+        {editMode &&
           <Alert sx={{ marginTop: '12px', marginBottom: '6px' }} severity="info">
             <AlertTitle>{recordInfo.objectTitle}</AlertTitle>
             <FormControlLabel control={
@@ -156,7 +203,7 @@ const QandAForm = (props:any) => {
                     customChangedHandler('STATUS', event, { name: qtype.id, value: checked });
                   }
                 }}
-                disabled={recordInfo.crudAction === 'view'}
+                disabled={!isReqFieldValid}
                 inputProps={{ 'aria-label': 'controlled' }} />
             } label={`Checked if ${qtype.name} ${recordInfo.objectTitle} is complete!`} />
           </Alert>

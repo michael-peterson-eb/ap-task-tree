@@ -21,8 +21,11 @@ export const FormInputDate = (props: FormInputProps) => {
   const templateId = data.id;
 
   const getDateValue = (id: any, fieldValue: any) => {
+    let returnValue = null;
     const dvalue = getValue(lookup, id, fieldValue);
-    return dayjs(dvalue);
+
+    if ( dvalue != "" ) returnValue = dayjs(dvalue);
+    return returnValue;
   }
 
   useEffect(() => {
@@ -56,7 +59,7 @@ export const FormInputDate = (props: FormInputProps) => {
                 readOnly={recordInfo.crudAction === 'view' ? true : false}
                 slotProps={{
                   actionBar: {
-                      actions: ["clear"],
+                    actions: ["clear"],
                   },
                 }}
               />

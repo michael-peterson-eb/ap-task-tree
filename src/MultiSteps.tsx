@@ -201,6 +201,18 @@ export default function MultiSteps({ recordInfo }) {
     console.log("---setSectionQuestionAnswer---", typeId, ansId, qAns, secQAs);
   }
 
+  const doneReqField = () => {
+    const secQAs:any = sectionQuestions.current;
+    let nValid:any = 0;
+    for (const sQS in secQAs) {
+      const sQAV = secQAs[sQS];
+      if ( sQAV.isRequired && sQAV.value == "") nValid++;
+      console.log("---doneREquiered:1---", sQAV);
+    }
+    console.log("---doneREquiered---", nValid === 0);
+    return nValid === 0;
+  }
+
   // load all the assessment questions to a ref state
   const loadAllQuestions = (opSections:any) => {
     for (let opSec of opSections) {
@@ -340,7 +352,8 @@ export default function MultiSteps({ recordInfo }) {
                 customChangedHandler={customChangedHandler}
                 lookupFV={lookupFieldValue}
                 fnSecQs={setSectionQuestions}
-                fnSecQA={setSectionQuestionAnswer}/>
+                fnSecQA={setSectionQuestionAnswer}
+                fnDoneWithReqField={doneReqField}/>
               {questionTypes.length > 1 &&
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1, marginTop: 4, }}>
                   <Button

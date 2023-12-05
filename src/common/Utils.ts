@@ -79,3 +79,20 @@ export const appendQuestions = (addQs: any, aQuestions: any, fieldName: string) 
     addQs(aq.id, aq[fieldName]);
   });
 };
+
+export const getQuestionAnswer = (recordInfo: any, lookup: any, qAnswer: any, valueField: any) => {
+  if (qAnswer && qAnswer.length > 0) {
+    const aqId = qAnswer[0].id;
+    const aqFieldValue = qAnswer[0][valueField];
+
+    const lookupValue = lookup(aqId);
+
+    let responseValue = aqFieldValue ? aqFieldValue : "";
+    if (lookupValue || lookupValue == "") responseValue = lookupValue;
+
+    const respValue = getValue(lookup, aqId, aqFieldValue);
+    const newValue = initSelectValue(recordInfo, respValue);
+    return [true, aqId, newValue];
+  }
+  return [false, null, null];
+};

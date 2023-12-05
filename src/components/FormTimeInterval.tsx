@@ -24,7 +24,7 @@ import {
 import { getNameValue, getValue, stripTextHtmlTags } from '../common/Utils';
 
 export const FormTimeInterval = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA} = props;
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
 
   const [questionsInterval, setQuestionsInterval] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
@@ -84,7 +84,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
 
   // check if at least one of the Time Interval question has value selected
   const atLeastOneTimeIntervalHasValue = (tiQs:any) => {
-    let selected = "No";
+    let selected = "";
     tiQs.forEach((tQ:any) => {
      if ( getValue(lookup, tQ.id, tQ.EA_SA_rsAssessmentResponseOptions) != "" ) selected = "Yes";
     });
@@ -123,7 +123,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
         <InputLabel
           sx={{ color:
             `${requiredColor()}`,
-             whiteSpace: 'normal'
+            whiteSpace: 'normal'
           }}
           required={data.EA_SA_cbRequiredQuestion == 1}
         >
@@ -153,7 +153,11 @@ export const FormTimeInterval = (props: FormInputProps) => {
                   <TableCell style={{ padding: '0px' }}>
                     {recordInfo.crudAction === 'edit' &&
                       <Select
-                        sx={{ width: '100%' }}
+                        sx={{
+                          width: '100%',
+                          "& fieldset": {
+                            borderWidth: "0px",
+                          }, }}
                         style={{ fontSize: '14px' }}
                         name={qa.id}
                         id={templateId}
@@ -162,6 +166,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
                         onChange={(event: any) => {
                           onChange('SSP', event);
                           timeIntervalUpdate(qa.id, event);
+                          fnReqField();
                         }}
                       >
                         <option aria-label="None" value="">Select Impact</option>

@@ -9,7 +9,7 @@ import {
 import { initSelectValue, getValue, appendQuestions } from '../common/Utils';
 
 export const FormInputText = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA} = props;
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
@@ -38,12 +38,12 @@ export const FormInputText = (props: FormInputProps) => {
         if ( lookupValue || lookupValue == '' ) responseValue = lookupValue;
 
         const respValue = getValue(lookup, aqId, aqFieldValue);
-        const newValue = initSelectValue(recordInfo, respValue)
+        const newValue = initSelectValue(recordInfo, respValue);
         setFieldValue(newValue);
 
         //fnSecQs(assessQuestions); // track section question states
 
-        if (recordInfo.crudAction === "edit" ) fnSecQA(templateId, aqId, newValue);
+        //if (recordInfo.crudAction === "edit" ) fnSecQA(templateId, aqId, newValue);
       }
     }
     fetchQuestionsAndOptions().catch(console.error);
@@ -71,6 +71,7 @@ export const FormInputText = (props: FormInputProps) => {
               const { name, value } = event.target;
               setFieldValue(value);
               onChange('FRES', event);
+              fnReqField();
             }}
             error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
             helperText={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue ? "This question is required!" : ""}

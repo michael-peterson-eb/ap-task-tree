@@ -11,4 +11,6 @@ export interface FormInputProps {
   lookup?: any;
   fnSecQs?: any;
   fnSecQA?: any;
+  fnDoneWithReqField?: any;
+  fnReqField?: any;
 }
