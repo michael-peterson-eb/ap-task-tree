@@ -21,6 +21,8 @@ import {
   fetchResponseOptionsByTemplateId
 } from "../model/ResponseOptions";
 
+import DOMPurify from "dompurify";
+
 import { getNameValue, getValue, stripTextHtmlTags } from '../common/Utils';
 
 export const FormTimeInterval = (props: FormInputProps) => {
@@ -92,6 +94,12 @@ export const FormTimeInterval = (props: FormInputProps) => {
     return selected;
   }
 
+  const cleanLabel = (htmlLabel:string) => {
+    return DOMPurify.sanitize(htmlLabel, {
+      USE_PROFILES: { html: true },
+    })
+  };
+
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
       const intervalQuestions = await fetchQuestionsIntervalsByTemplateId(recordInfo, data.id);
@@ -127,8 +135,11 @@ export const FormTimeInterval = (props: FormInputProps) => {
           }}
           required={data.EA_SA_cbRequiredQuestion == 1}
         >
-          {questionsInterval.length > 0 && stripTextHtmlTags(questionsInterval[0].EA_SA_rfQuestion)}
+          {questionsInterval.length > 0 && <div dangerouslySetInnerHTML={{
+          __html: cleanLabel(questionsInterval[0].EA_SA_rfQuestion)
+          }} />}
         </InputLabel>
+
         <TableContainer component={Paper} sx={{ border: `1px solid ${requiredColor()}`, width: 'inherit' }}>
           <Table sx={{ width: '100%' }} size="small">
             <TableHead>

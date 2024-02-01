@@ -21,7 +21,7 @@ export const FormInputDate = (props: FormInputProps) => {
   const templateId = data.id;
 
   const getDateValue = (id: any, fieldValue: any) => {
-    let returnValue = null;
+    let returnValue:any = null;
     const dvalue = getValue(lookup, id, fieldValue);
 
     if ( dvalue != "" ) returnValue = dayjs(dvalue);

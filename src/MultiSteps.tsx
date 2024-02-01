@@ -315,7 +315,7 @@ export default function MultiSteps({ recordInfo }) {
                       <Button
                         color={sectionTabColor(index, activeStep, label)}
                         variant="contained"
-                        style={{ textTransform: 'none', color: activeStep == index ? '#FFF' : '#000', minHeight: '60px' }}
+                        style={{ textTransform: 'none', color: activeStep == index ? '#FFF' : '#000', minHeight: '60px', lineHeight: '1.2' }}
                         fullWidth
                         onClick={() => setActiveStep(index)}
                         endIcon={sectionTabIcon(index, activeStep, label)}
