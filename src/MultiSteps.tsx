@@ -38,6 +38,8 @@ export default function MultiSteps({ recordInfo }) {
   const [recordsLoaded, setRecordsLoaded] = useState(false);
 
   const questionResponseFields = {
+    INT: "EA_SA_intResponse",
+    DEC: "EA_SA_decResponse",
     MSP: "EA_SA_txtaResponse",
     SSP: "EA_SA_rsAssessmentResponseOptions",
     CCY: "EA_SA_curResponse",
@@ -140,17 +142,28 @@ export default function MultiSteps({ recordInfo }) {
 
   const handleChange = async (type: any, event: any) => {
     const { id, name, value } = event.target;     // id=typeId name=questionId
-    //console.log("---handleChange---", type, id, name, value);
     trackUpdatedQuestions(id, type, name, value);
     setSectionQuestionAnswer(id, name, value);
   }
 
   const customChangedHandler = (type: any, _event: any, autoComplete: any) => {
     let { id, name, value } = autoComplete;
-    if ( type === "DATE" ) value = value ? dateYYYYMMDDFormat(value.toString()) : "";
+    switch (type) {
+      case 'DATE':
+        value = dateYYYYMMDDFormat(value.toString());
+        break;
+      case 'INT':
+        value = Math.round(Number(value.replace(/[^\d.-]/g, '')));
+        break;
+      case 'DEC':
+        value = Number(value.replace(/[^\d.-]/g, ''));
+        break;
+      default:
+        value = value;
+    }
 
-    //console.log("---customChangedHandler---", type, id, name, value);
     trackUpdatedQuestions(id, type, name, value);
+    setSectionQuestionAnswer(id, name, value);
   }
 
   const trackUpdatedQuestions = (typeId: any, fieldType: any, aqId: any, value: any) => {
@@ -164,13 +177,12 @@ export default function MultiSteps({ recordInfo }) {
         value: value
       }
     };
-    //console.log("--trackUpdatedQuestions:allQuestions--", newUpdatedFields)
+    console.log("--trackUpdatedQuestions:allQuestions--", newUpdatedFields)
     updateFields.current = newUpdatedFields;
   }
 
   // set all section questions ref state
   const setSectionQuestions = (secQs:any) => {
-    //console.log("---loadSectionQuestions---", secQs);
     let qObj = {};
     for(let sQ of secQs) {
       qObj = {

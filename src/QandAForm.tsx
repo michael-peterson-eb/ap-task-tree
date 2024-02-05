@@ -16,6 +16,9 @@ import { FormSingleSelect } from './components/FormSingleSelect';
 import { FormTimeInterval } from './components/FormTimeInterval';
 import { FormInputDate } from './components/FormInputDate';
 import { CustomFontTheme } from './common/CustomTheme';
+import { FormInputInteger } from './components/FormInputInteger';
+import { FormInputDecimal } from './components/FormInputDecimal';
+
 
 import {
   getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
@@ -122,7 +125,7 @@ const QandAForm = (props:any) => {
           </Alert>
         }
 
-        {tableData.length > 0 && tableData.map((data) => {
+        {tableData.length > 0 && tableData.map((data:any) => {
           // Single-Select Picklist
           if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 0) {
             return <FormSingleSelect
@@ -173,9 +176,32 @@ const QandAForm = (props:any) => {
           if (data.EA_SA_ddlResponseFormat === 'CCY') {
             return <FormInputCurrency recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} />
           }
+
           // DATE - Date
           if (data.EA_SA_ddlResponseFormat === 'DATE') {
             return <FormInputDate
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={customChangedHandler}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}/>
+          }
+
+          // INT - Integer
+          if (data.EA_SA_ddlResponseFormat === 'INT') {
+            return <FormInputInteger
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={customChangedHandler}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}/>
+          }
+
+          // DEC - Decimal
+          if (data.EA_SA_ddlResponseFormat === 'DEC') {
+            return <FormInputDecimal
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
