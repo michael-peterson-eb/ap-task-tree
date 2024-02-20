@@ -113,13 +113,14 @@ const concatObjectIds = (values: any) => {
 export const updateQuestionWithResponse = async (updatedResponses: any, responseFields: any) => {
   for (let recordId in updatedResponses) {
     const record = updatedResponses[recordId];
-    const fields = {};
+    const fields:any = {};
     const recordType:any = record.type;
     if (responseFields.hasOwnProperty(recordType)) {
       let value = record.value;
       if (recordType === "MSP") value = concatObjectIds(value);
-      //console.log("--updateValue--", recordId, value, recordType, responseFields[recordType]);
+      console.log("--updateValue--", recordId, value, recordType, responseFields[recordType]);
       fields[responseFields[recordType]] = value;
+      console.log("--updateQuestion--", fields)
       await updateQuestion(recordId, fields);
     }
   }

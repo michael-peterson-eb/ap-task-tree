@@ -31,9 +31,10 @@ export const FormInputDate = (props: FormInputProps) => {
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
-      setAssessQuestion(assessQuestions);
-      //console.log("----fetchQuestions----", assessQuestions)
+
       if (assessQuestions && assessQuestions.length > 0 ) {
+              setAssessQuestion(assessQuestions);
+
         setDateValue(dayjs(assessQuestions[0].EA_SA_ddResponse));
       }
     }
@@ -47,23 +48,32 @@ export const FormInputDate = (props: FormInputProps) => {
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
         <ThemeProvider theme={CustomFontTheme}>
           <FormControl fullWidth sx={{ marginTop: 4}} variant="standard">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
+             {recordInfo.crudAction == "edit" &&
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label={aq.name}
+                  value={getDateValue(aq.id, aq.EA_SA_ddResponse)}
+                  disablePast={true}
+                  onChange={(newValue: any) => {
+                    setDateValue(newValue);
+                    onChange('DATE', null, {name: aq.id, value: newValue});
+                  }}
+                  readOnly={recordInfo.crudAction === 'view' ? true : false}
+                  slotProps={{
+                    actionBar: {
+                      actions: ["clear"],
+                    },
+                  }}
+                />
+              </LocalizationProvider>
+            }
+            {recordInfo.crudAction == "view" &&
+              <TextField
                 label={aq.name}
-                value={getDateValue(aq.id, aq.EA_SA_ddResponse)}
-                disablePast={true}
-                onChange={(newValue: any) => {
-                  setDateValue(newValue);
-                  onChange('DATE', null, {name: aq.id, value: newValue});
-                }}
-                readOnly={recordInfo.crudAction === 'view' ? true : false}
-                slotProps={{
-                  actionBar: {
-                    actions: ["clear"],
-                  },
-                }}
+                value={dayjs(getDateValue(aq.id, aq.EA_SA_ddResponse)).format('MM/DD/YYYY')}
+                InputProps={{ readOnly: true }}
               />
-            </LocalizationProvider>
+            }
           </FormControl>
         </ThemeProvider>
       ))}
