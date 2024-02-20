@@ -18,7 +18,7 @@ import { FormInputDate } from './components/FormInputDate';
 import { CustomFontTheme } from './common/CustomTheme';
 import { FormInputInteger } from './components/FormInputInteger';
 import { FormInputDecimal } from './components/FormInputDecimal';
-
+import { FormYesNo } from './components/FormInputYesNo';
 
 import {
   getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
@@ -206,6 +206,17 @@ const QandAForm = (props:any) => {
               qtype={qtype}
               data={data}
               onChange={customChangedHandler}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}/>
+          }
+
+          // YN - Yes/No
+          if (data.EA_SA_ddlResponseFormat === 'YN') {
+            return <FormYesNo
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={handleOnChange}
               lookup={lookupFV}
               fnSecQA={fnSecQA}/>
           }

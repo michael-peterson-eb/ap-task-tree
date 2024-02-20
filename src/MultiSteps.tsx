@@ -11,7 +11,10 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheckCircle,
+  faChevronLeft,
+  faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FormProvider, useForm } from "react-hook-form";
 import {
   updateQuestionWithResponse,
@@ -24,8 +27,6 @@ import { getOperationStatus } from './model/Assessment';
 import { getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
 
 import { NavButtonTheme } from './common/CustomTheme';
-import { dateMMDDYYYYFormat, dateYYYYMMDDFormat } from './common/Utils';
-import { createSecureContext } from 'tls';
 
 export default function MultiSteps({ recordInfo }) {
   const [activeStep, setActiveStep] = useState(0);
@@ -93,7 +94,7 @@ export default function MultiSteps({ recordInfo }) {
     }
   }
 
-  const sectionTabIcon = (_currIdx, _activeIdx, tabButton) => {
+  const sectionTabIcon = (_currIdx:any, _activeIdx:any, tabButton:any) => {
     if (tabButton && tabButton.status == 'completed') {
       return (
         <FontAwesomeIcon icon={faCheckCircle} />
@@ -177,7 +178,6 @@ export default function MultiSteps({ recordInfo }) {
         value: value
       }
     };
-    console.log("--trackUpdatedQuestions:allQuestions--", newUpdatedFields)
     updateFields.current = newUpdatedFields;
   }
 
@@ -263,12 +263,13 @@ export default function MultiSteps({ recordInfo }) {
 
   const updateStatusObject = async () => {
     if (questionTypes.length > 0) {
-      const activeType = questionTypes[activeStep]
-      const typeId = activeType.id;
-      const updatedTrack = updateFields.current;
+      const activeType:any = questionTypes[activeStep]
+      const typeId:any = activeType.id;
+      const updatedTrack:any = updateFields.current;
+
       // check if section status has been updated
       if (updatedTrack.hasOwnProperty(typeId)) {
-        const status = updatedTrack[typeId];
+        const status:any = updatedTrack[typeId];
         const newStatus = status.value ? "completed" : "not-started";
         const newActiveType = {
           ...activeType,

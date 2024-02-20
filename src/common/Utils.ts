@@ -12,12 +12,15 @@ export const parseStatus = (strStatus: any) => {
 };
 
 export const getNameValue = (options: any, id: any) => {
-  if (!id) return "No Answer";
+  if ( !id || options.length == 0 ) return "No Answer";
+
   const found = options.find((opt: any) => opt.id == id);
+  console.log("--getName--", id, options, found)
   return found.name;
 };
 
 export const getValue = (lookup: any, aqId: any, initialValue: any) => {
+  console.log("--getValue--", aqId, initialValue)
   let responseValue = initialValue ? initialValue : "";
   const lookupValue = lookup(aqId);
   if (lookupValue || lookupValue == "") responseValue = lookupValue;
