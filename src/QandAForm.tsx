@@ -72,7 +72,6 @@ const QandAForm = (props:any) => {
 
   const checkRequiredFields = () => {
     const validRF = fnDoneWithReqField();
-    //console.log("--checkRequiredFields--", validRF)
     if (isTypeCompleted && !validRF) {
       customChangedHandler('STATUS', null, { name: qtype.id, value: false });
       setTypeCompleted(false);
@@ -134,7 +133,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={handleOnChange}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // Time Interval
@@ -169,7 +169,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={customChangedHandler}
               lookup={lookupFV}
-              fnSecQA={fnSecQA} />
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // CCY - Currency
@@ -185,7 +186,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={customChangedHandler}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // INT - Integer
@@ -196,7 +198,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={customChangedHandler}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // DEC - Decimal
@@ -207,7 +210,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={customChangedHandler}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // YN - Yes/No
@@ -218,7 +222,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={handleOnChange}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
         })}
 
@@ -235,7 +240,7 @@ const QandAForm = (props:any) => {
                   qtype.status = checked ? "completed" : "on-going";
                   if (recordInfo.crudAction === 'edit') {
                     setTypeCompleted(checked);
-                    customChangedHandler('STATUS', event, { name: qtype.id, value: checked });
+                    customChangedHandler('STATUS', event, { id: qtype.id, name: qtype.id, value: checked });
                   }
                 }}
                 disabled={!isReqFieldValid}

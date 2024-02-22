@@ -18,7 +18,7 @@ import { getArrayValue } from '../common/Utils';
 import { CustomFontTheme } from '../common/CustomTheme';
 
 export const FormMultiSelect = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA} = props;
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);

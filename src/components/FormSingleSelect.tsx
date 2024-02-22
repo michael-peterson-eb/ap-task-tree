@@ -18,7 +18,7 @@ import {
 import { getValue } from '../common/Utils';
 
 export const FormSingleSelect = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA} = props;
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
@@ -49,8 +49,11 @@ export const FormSingleSelect = (props: FormInputProps) => {
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
 
         <FormControl sx={{  marginTop: 4, width: '100%' }}>
-          <InputLabel id={`single-select-${aq.id}`} size={'normal'} sx={{ background: '#FFF', paddingRight: '4px', fontSize: '18px'}}>
-            {aq.name.trim()}
+          <InputLabel
+            id={`single-select-${aq.id}`}
+            size={'normal'}
+            sx={{ background: '#FFF', paddingRight: '4px', fontSize: '18px'}}>
+              {aq.name.trim()}
           </InputLabel>
           <Select
             labelId={`single-select-${aq.id}`}

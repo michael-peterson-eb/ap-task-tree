@@ -108,12 +108,6 @@ export default function MultiSteps({ recordInfo }) {
     setActiveStep(0);
   };
 
-  const handleSubmitButton = (event: any) => {
-    if (event.target.innerText == 'Submit') {
-      handleSubmit();
-    }
-  };
-
   useEffect(() => {
     getOperationStatus(recordInfo).then((data) => {
       setQuestionTypes(data);
@@ -257,27 +251,26 @@ export default function MultiSteps({ recordInfo }) {
 
   const formMethods = useForm();
 
-  const onSubmit = () => {
-    console.log("Submitted.....")
-  }
-
   const updateStatusObject = async () => {
     if (questionTypes.length > 0) {
-      const activeType:any = questionTypes[activeStep]
-      const typeId:any = activeType.id;
       const updatedTrack:any = updateFields.current;
 
       // check if section status has been updated
-      if (updatedTrack.hasOwnProperty(typeId)) {
-        const status:any = updatedTrack[typeId];
-        const newStatus = status.value ? "completed" : "not-started";
-        const newActiveType = {
-          ...activeType,
-          status: newStatus
+      for(const objName in updatedTrack) {
+        const updated:any = updatedTrack[objName];
+        const activeType:any = questionTypes.find((qtype:any) => qtype.id == objName);
+
+        if ( activeType != undefined && updated.type == "STATUS" ) {
+
+          const newStatus = updated.value ? "completed" : "not-started";
+          const newActiveType = {
+            ...activeType,
+            status: newStatus
           };
 
-        await updateOpSectionStatus(newActiveType, newStatus);
-        setQuestionTypes(await getOperationStatus(recordInfo));
+          await updateOpSectionStatus(newActiveType, newStatus);
+          setQuestionTypes(await getOperationStatus(recordInfo));
+        }
       }
     }
   };
@@ -326,6 +319,7 @@ export default function MultiSteps({ recordInfo }) {
                   <Grid item xs={(12 / questionTypes.length)}>
                     <ThemeProvider theme={NavButtonTheme}>
                       <Button
+                        id={label.id}
                         color={sectionTabColor(index, activeStep, label)}
                         variant="contained"
                         style={{ textTransform: 'none', color: activeStep == index ? '#FFF' : '#000', minHeight: '60px', lineHeight: '1.2' }}

@@ -13,7 +13,7 @@ import {
 
 import { getValue } from '../common/Utils';
 export const FormInputDate = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA} = props;
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [dateValue, setDateValue] = useState<Dayjs | null>(null);
@@ -33,9 +33,11 @@ export const FormInputDate = (props: FormInputProps) => {
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
 
       if (assessQuestions && assessQuestions.length > 0 ) {
-              setAssessQuestion(assessQuestions);
+        const respValue = assessQuestions[0].EA_SA_ddResponse;
+        setAssessQuestion(assessQuestions);
+        setDateValue(dayjs(respValue));
 
-        setDateValue(dayjs(assessQuestions[0].EA_SA_ddResponse));
+        fnSecQA(templateId, templateId, respValue);
       }
     }
 
@@ -57,6 +59,7 @@ export const FormInputDate = (props: FormInputProps) => {
                   onChange={(newValue: any) => {
                     setDateValue(newValue);
                     onChange('DATE', null, {name: aq.id, value: newValue});
+                    fnReqField();
                   }}
                   readOnly={recordInfo.crudAction === 'view' ? true : false}
                   slotProps={{

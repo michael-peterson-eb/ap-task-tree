@@ -41,9 +41,7 @@ export const FormInputText = (props: FormInputProps) => {
         const newValue = initSelectValue(recordInfo, respValue);
         setFieldValue(newValue);
 
-        //fnSecQs(assessQuestions); // track section question states
-
-        //if (recordInfo.crudAction === "edit" ) fnSecQA(templateId, aqId, newValue);
+        fnSecQA(aqFieldValue); // track section question states
       }
     }
     fetchQuestionsAndOptions().catch(console.error);
