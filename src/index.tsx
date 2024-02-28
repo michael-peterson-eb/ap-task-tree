@@ -12,9 +12,10 @@ const recordInfo = {
   objectIntegrationName: recordArr[2] || '',
   questionRelName: recordArr[3] || '',
   objectTitle: recordArr[4] || 'Impact Assessment',
-  triggerId: recordArr[5] || 'nnull',
+  triggerId: recordArr[5] || 'null',
+  sectionType: recordArr[6] || 'EA_SA_Impact',
 }
-//console.log("--recordInfo--", recordInfo)
+console.log("--recordInfo--", recordInfo)
 const rootId = document.getElementById(`${recordInfo.crudAction}-jsroot`) as HTMLElement;
 const root = ReactDOM.createRoot(rootId);
 

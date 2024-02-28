@@ -124,7 +124,7 @@ export const getQuestionTypes = async (recordInfo: any) => {
 };
 
 export const getOperationStatus = async (recordInfo: any) => {
-  const opSection = await fetchOpSectionStatus(recordInfo, "EA_SA_Impact");
+  const opSection = await fetchOpSectionStatus(recordInfo, recordInfo.sectionType);
 
   return opSection;
 };

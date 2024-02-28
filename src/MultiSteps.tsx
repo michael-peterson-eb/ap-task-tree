@@ -116,7 +116,7 @@ export default function MultiSteps({ recordInfo }) {
       // load all questions into a state variable
       if (recordInfo.crudAction === "edit") loadAllQuestions(data);
     });
-  }, []);
+  }, [activeStep]);
 
   /** React Form Hook */
   const handleClose = () => {
