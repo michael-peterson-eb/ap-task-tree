@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 
 import { FormInputCurrency } from './components/FormInputCurrency';
-import { FormInputNumber } from './components/FormInputNumber';
 import { FormInputText } from './components/FormInputText';
 import { FormMultiSelect } from './components/FormMultiSelect';
 import { FormSingleSelect } from './components/FormSingleSelect';
@@ -72,7 +71,6 @@ const QandAForm = (props:any) => {
 
   const checkRequiredFields = () => {
     const validRF = fnDoneWithReqField();
-    //console.log("--checkRequiredFields--", validRF)
     if (isTypeCompleted && !validRF) {
       customChangedHandler('STATUS', null, { name: qtype.id, value: false });
       setTypeCompleted(false);
@@ -97,6 +95,8 @@ const QandAForm = (props:any) => {
 
   useEffect(() => {
     setTypeCompleted(qtype.status === 'completed' ? true : false);
+
+    // get from EA_SA_AssessmentQuestionTemplate
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
       setTableData(data);
       if ( editMode ) {
@@ -127,18 +127,20 @@ const QandAForm = (props:any) => {
 
         {tableData.length > 0 && tableData.map((data:any) => {
           // Single-Select Picklist
-          if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 0) {
+          const askTimeIntval = data.EA_SA_cbAskPerTimeInterval;
+          if (data.EA_SA_ddlResponseFormat === 'SSP' && (askTimeIntval == 0 || askTimeIntval == null)) {
             return <FormSingleSelect
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
               onChange={handleOnChange}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // Time Interval
-          if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 1) {
+          if (data.EA_SA_ddlResponseFormat === 'SSP' && askTimeIntval == 1) {
             return <FormTimeInterval
               recordInfo={recordInfo}
               qtype={qtype}
@@ -169,7 +171,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={customChangedHandler}
               lookup={lookupFV}
-              fnSecQA={fnSecQA} />
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // CCY - Currency
@@ -185,7 +188,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={customChangedHandler}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // INT - Integer
@@ -196,7 +200,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={customChangedHandler}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // DEC - Decimal
@@ -207,7 +212,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={customChangedHandler}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
 
           // YN - Yes/No
@@ -218,7 +224,8 @@ const QandAForm = (props:any) => {
               data={data}
               onChange={handleOnChange}
               lookup={lookupFV}
-              fnSecQA={fnSecQA}/>
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
           }
         })}
 
@@ -235,7 +242,7 @@ const QandAForm = (props:any) => {
                   qtype.status = checked ? "completed" : "on-going";
                   if (recordInfo.crudAction === 'edit') {
                     setTypeCompleted(checked);
-                    customChangedHandler('STATUS', event, { name: qtype.id, value: checked });
+                    customChangedHandler('STATUS', event, { id: qtype.id, name: qtype.id, value: checked });
                   }
                 }}
                 disabled={!isReqFieldValid}

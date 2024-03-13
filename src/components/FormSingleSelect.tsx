@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {Fragment, useEffect, useState} from 'react';
 import { FormInputProps } from "./FormInputProps";
 import {
   fetchAssessQuestionsByTemplateId
@@ -11,23 +11,24 @@ import {
     FormControl,
     Select,
     MenuItem,
-    FormHelperText,
     InputLabel,
-    OutlinedInput,
+    TextField,
 } from '@mui/material';
-import { getValue } from '../common/Utils';
+import { getValue, getNameValue } from '../common/Utils';
 
 export const FormSingleSelect = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA} = props;
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
-
+  const [fieldValue, setFieldValue] = useState('');
   const templateId = data.id;
 
   useEffect(() => {
     // declare the async data fetching function
     const fetchQuestionsAndOptions = async () => {
+
+      // query EA_SA_AssessmentQuestion
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
       setAssessQuestion(assessQuestions);
       console.log("--fetchAssessQuestionsByTemplateId--", assessQuestions)
@@ -35,42 +36,66 @@ export const FormSingleSelect = (props: FormInputProps) => {
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
       console.log("--fetchResponseOptionsByTemplateId--", responseOptions)
 
+      const aqFieldValue = assessQuestions[0].EA_SA_rsAssessmentResponseOptions;
+      const aqId = assessQuestions[0].id;
+      const respValue = getValue(lookup, aqId, aqFieldValue);
+
+      fnSecQA(templateId, templateId, respValue);
+      setFieldValue(respValue);
       setQuesResponseOptions(responseOptions);
     }
 
     // call the function and catch any error
-    fetchQuestionsAndOptions()
-      .catch(console.error);
+    fetchQuestionsAndOptions().catch(console.error);
 
   }, [templateId])
 
   return (
     <div>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-
         <FormControl sx={{  marginTop: 4, width: '100%' }}>
-          <InputLabel id={`single-select-${aq.id}`} size={'normal'} sx={{ background: '#FFF', paddingRight: '4px', fontSize: '18px'}}>
-            {aq.name.trim()}
-          </InputLabel>
-          <Select
-            labelId={`single-select-${aq.id}`}
-            id={aq.id}
-            sx={{
-              width: '100%',
-              fontSize: '14px',
-            }}
-            name={aq.id}
-            onChange={(event: any) => {
-              onChange('SSP', event);
-            }}
-            inputProps={{ readOnly: recordInfo.crudAction === 'view' ? true : false }}
-            defaultValue={getValue(lookup, aq.id, aq.EA_SA_rsAssessmentResponseOptions)}
-          >
-            <MenuItem value="">Select option</MenuItem>
-            {quesResponseOptions.length > 0 && quesResponseOptions.map((item: any) => (
-              <MenuItem value={item.id} sx={{fontSize: '14px'}}>{item.name}</MenuItem>
-            ))}
-          </Select>
+          {recordInfo.crudAction == "edit" &&
+            <Fragment>
+              <InputLabel
+                id={`single-select-${aq.id}`}
+                size={'normal'}
+                sx={{color: '#000', background: '#FFF', paddingRight: '4px', fontSize: '18px'}}
+                error={aq.EA_SA_rfRequiredQuestion && (fieldValue == "" || fieldValue == null)}>
+                  {aq.name.trim()}
+              </InputLabel>
+              <Select
+                labelId={`single-select-${aq.id}`}
+                id={templateId}
+                sx={{
+                  width: '100%',
+                  fontSize: '14px',
+                }}
+                name={aq.id}
+                onChange={(event: any) => {
+                  const { id, name, value } = event.target;
+                  setFieldValue(value);
+                  onChange('SSP', event);
+                  fnReqField();
+                }}
+                native
+                inputProps={{ readOnly: recordInfo.crudAction === 'view' ? true : false }}
+                value={fieldValue}
+                required={data.EA_SA_cbRequiredQuestion == 1 ? true : false}
+              >
+                <option aria-label="" value="">Select option</option>
+                {quesResponseOptions.length > 0 && quesResponseOptions.map((item: any) => {
+                  return <option value={item.id}>{item.name}</option>
+                })}
+              </Select>
+            </Fragment>
+          }
+          {recordInfo.crudAction == "view" &&
+            <TextField
+              label={data.EA_SA_txtaQuestion}
+              value={getNameValue(quesResponseOptions, aq.EA_SA_rsAssessmentResponseOptions)}
+              InputProps={{ readOnly: true }}
+            />
+          }
         </FormControl>
       ))}
     </div>

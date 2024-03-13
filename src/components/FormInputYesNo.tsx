@@ -18,7 +18,7 @@ import {
 import { getValue, getNameValue } from '../common/Utils';
 
 export const FormYesNo = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA} = props;
+  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
@@ -68,6 +68,7 @@ export const FormYesNo = (props: FormInputProps) => {
                   const { id, name, value } = event.target;
                   setFieldValue(value);
                   onChange('SSP', event);
+                  fnReqField();
                 }}
                 native
                 inputProps={{ readOnly: recordInfo.crudAction === 'view' ? true : false }}

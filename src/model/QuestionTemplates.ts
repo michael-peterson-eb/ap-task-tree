@@ -9,6 +9,7 @@ const templateFields = [
   "EA_SA_cbRequiredQuestion",
   "EA_SA_cbIncludeFileUpload",
   "EA_SA_intQuestionWeighting",
+  "EA_SA_ddlAskPer#code"
 ];
 
 export const getAssessmentQuestionTemplateByIds = async (ids: any) => {

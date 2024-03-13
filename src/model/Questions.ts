@@ -96,6 +96,7 @@ export const fetchTypesOfAssessmentQuestion = async (assessmentQuestionCondition
  */
 export const updateQuestion = async (recordID: any, fields: any) => {
   try {
+  console.log("--about to update--", recordID, fields)
     const results = await _RB.updateRecord("EA_SA_AssessmentQuestion", recordID, fields);
     return results;
   } catch (error) {
