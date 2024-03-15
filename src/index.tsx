@@ -4,7 +4,7 @@ import App from './App';
 
 const paramId = document.getElementById('rjs-params') as HTMLElement;
 const dataRecord = paramId.getAttribute("data-record");
-const recordArr = dataRecord?.split("::");
+const recordArr:any = dataRecord?.split("::");
 
 const recordInfo = {
   id: (recordArr[0] || ''),

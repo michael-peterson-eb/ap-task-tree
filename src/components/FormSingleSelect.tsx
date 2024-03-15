@@ -14,7 +14,9 @@ import {
     InputLabel,
     TextField,
 } from '@mui/material';
-import { getValue, getNameValue } from '../common/Utils';
+
+import DOMPurify from "dompurify";
+import { getValue, getNameValue} from '../common/Utils';
 
 export const FormSingleSelect = (props: FormInputProps) => {
   const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
@@ -31,10 +33,8 @@ export const FormSingleSelect = (props: FormInputProps) => {
       // query EA_SA_AssessmentQuestion
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
       setAssessQuestion(assessQuestions);
-      console.log("--fetchAssessQuestionsByTemplateId--", assessQuestions)
 
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-      console.log("--fetchResponseOptionsByTemplateId--", responseOptions)
 
       const aqFieldValue = assessQuestions[0].EA_SA_rsAssessmentResponseOptions;
       const aqId = assessQuestions[0].id;
@@ -50,6 +50,22 @@ export const FormSingleSelect = (props: FormInputProps) => {
 
   }, [templateId])
 
+  const cleanLabel = (htmlLabel: string) => {
+    return DOMPurify.sanitize(htmlLabel, {
+      USE_PROFILES: { html: true },
+    });
+  };
+
+ const fieldLabel = (text: string) => {
+    return (
+      <div
+        dangerouslySetInnerHTML={{
+          __html: cleanLabel(text),
+        }}
+      />
+    );
+  };
+
   return (
     <div>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
@@ -61,7 +77,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
                 size={'normal'}
                 sx={{color: '#000', background: '#FFF', paddingRight: '4px', fontSize: '18px'}}
                 error={aq.EA_SA_rfRequiredQuestion && (fieldValue == "" || fieldValue == null)}>
-                  {aq.name.trim()}
+                  {fieldLabel(aq.name.trim())}
               </InputLabel>
               <Select
                 labelId={`single-select-${aq.id}`}
@@ -91,7 +107,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
           }
           {recordInfo.crudAction == "view" &&
             <TextField
-              label={data.EA_SA_txtaQuestion}
+              label={fieldLabel(data.EA_SA_txtaQuestion)}
               value={getNameValue(quesResponseOptions, aq.EA_SA_rsAssessmentResponseOptions)}
               InputProps={{ readOnly: true }}
             />

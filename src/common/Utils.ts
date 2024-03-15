@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify";
 export const parseStatus = (strStatus: any) => {
   if (typeof strStatus !== "string") return {};
 
@@ -15,7 +16,7 @@ export const getNameValue = (options: any, id: any) => {
   if ( !id || options.length == 0 ) return "No Answer";
 
   const found = options.find((opt: any) => opt.id == id);
-  return found.name;
+  return found == undefined ? "**" : found.name;
 };
 
 export const getValue = (lookup: any, aqId: any, initialValue: any) => {
@@ -96,4 +97,10 @@ export const getQuestionAnswer = (recordInfo: any, lookup: any, qAnswer: any, va
     return [true, aqId, newValue];
   }
   return [false, null, null];
+};
+
+export const cleanLabel = (htmlLabel:string) => {
+  return DOMPurify.sanitize(htmlLabel, {
+    USE_PROFILES: { html: true },
+  })
 };
