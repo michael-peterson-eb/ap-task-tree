@@ -119,7 +119,7 @@ export const updateQuestionWithResponse = async (updatedResponses: any, response
     if (responseFields.hasOwnProperty(recordType)) {
       let value = record.value;
       if (recordType === "MSP") value = concatObjectIds(value);
-      console.log("--updateValue--", recordId, value, recordType, responseFields[recordType]);
+
       fields[responseFields[recordType]] = value;
       console.log("--updateQuestion--", fields)
       await updateQuestion(recordId, fields);

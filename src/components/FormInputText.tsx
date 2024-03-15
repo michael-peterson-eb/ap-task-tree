@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { FormInputProps } from "./FormInputProps";
-import { TextField, FormControl } from '@mui/material';
+import { TextField, FormControl, Box, InputLabel } from '@mui/material';
 
 import {
   fetchAssessQuestionsByTemplateId
 } from "../model/Questions";
 
-import { initSelectValue, getValue, appendQuestions } from '../common/Utils';
+import { initSelectValue, getValue, appendQuestions, cleanLabel } from '../common/Utils';
+
+import DOMPurify from "dompurify";
 
 export const FormInputText = (props: FormInputProps) => {
   const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
@@ -18,6 +20,14 @@ export const FormInputText = (props: FormInputProps) => {
 
   const isQuestionRequired = (flag:any) => {
     return flag == 1;
+  }
+
+  const fieldLabel = (text:string) => {
+    return(
+      <div dangerouslySetInnerHTML={{
+        __html: cleanLabel(text)
+        }} />
+    )
   }
 
   const requiredColor = () => {
@@ -52,28 +62,45 @@ export const FormInputText = (props: FormInputProps) => {
     <>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
         <FormControl fullWidth sx={{ marginTop: 4 }} variant="standard">
-          <TextField
-            sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
-            required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
-            id={data.id}
-            label={data.EA_SA_txtaQuestion}
-            name={aq.id}
-            value={fieldValue}
-
-            InputProps={{
-              style: { fontSize: '14px' },
-              ...recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }
-            }}
-            InputLabelProps={{ style: { fontSize: '18px', backgroundColor: '#FFF' } }}
-            onChange={(event: any) => {
-              const { name, value } = event.target;
-              setFieldValue(value);
-              onChange('FRES', event);
-              fnReqField();
-            }}
-            error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
-            helperText={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue ? "This question is required!" : ""}
-          />
+          {recordInfo.crudAction == "edit" &&
+            <Box
+              component="form"
+              sx={{'& .MuiTextField-root': {width: '100%' },}}
+              noValidate
+              autoComplete="off"
+            >
+              <div>
+                <TextField
+                  sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
+                  required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
+                  id={templateId}
+                  label={data.EA_SA_txtaQuestion}
+                  name={aq.id}
+                  value={fieldValue}
+                  InputProps={{
+                    style: { fontSize: '14px' },
+                    ...recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }
+                  }}
+                  InputLabelProps={{ style: { fontSize: '18px', backgroundColor: '#FFF' } }}
+                  onChange={(event: any) => {
+                    const { name, value } = event.target;
+                    setFieldValue(value);
+                    onChange('FRES', event);
+                    fnReqField();
+                  }}
+                  error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
+                  helperText={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue ? "This question is required!" : ""}
+                />
+              </div>
+            </Box>
+          }
+          {recordInfo.crudAction == "view" &&
+            <TextField
+              label={fieldLabel(data.EA_SA_txtaQuestion)}
+              value={fieldValue}
+              InputProps={{ readOnly: true }}
+            />
+          }
         </FormControl>
       ))}
     </>

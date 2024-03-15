@@ -37,6 +37,7 @@ export default function MultiSteps({ recordInfo }) {
   const allQuestions = useRef({});
   const sectionQuestions = useRef({});
   const [recordsLoaded, setRecordsLoaded] = useState(false);
+  const [saveClicked, setSaveClicked] = useState(false);
 
   const questionResponseFields = {
     INT: "EA_SA_intResponse",
@@ -71,6 +72,11 @@ export default function MultiSteps({ recordInfo }) {
     handleSubmit();  // save any field(s) that were touched or updated
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
+  const handleTabClick = (idx:any) => {
+    handleSubmit();
+    setActiveStep(idx);
+  }
 
   const handleSkip = () => {
     if (!isStepOptional(activeStep)) {
@@ -108,16 +114,6 @@ export default function MultiSteps({ recordInfo }) {
     setActiveStep(0);
   };
 
-  useEffect(() => {
-    getOperationStatus(recordInfo).then((data) => {
-      setQuestionTypes(data);
-      setRecordsLoaded(true);
-
-      // load all questions into a state variable
-      if (recordInfo.crudAction === "edit") loadAllQuestions(data);
-    });
-  }, [activeStep]);
-
   /** React Form Hook */
   const handleClose = () => {
     // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals
@@ -130,9 +126,15 @@ export default function MultiSteps({ recordInfo }) {
 
   const handleSubmit = async (thenClose = false) => {
     const updatedRecs = updateFields.current;
+
     await updateQuestionWithResponse(updatedRecs, questionResponseFields);
     await updateStatusObject();
     if ( thenClose ) handleClose();
+  }
+
+  const saveButtonClicked = () => {
+    setSaveClicked(true);
+    handleSubmit(true);
   }
 
   const handleChange = async (type: any, event: any) => {
@@ -275,6 +277,16 @@ export default function MultiSteps({ recordInfo }) {
     }
   };
 
+  useEffect(() => {
+    getOperationStatus(recordInfo).then((data) => {
+      setQuestionTypes(data);
+      setRecordsLoaded(true);
+
+      // load all questions into a state variable
+      if (recordInfo.crudAction === "edit") loadAllQuestions(data);
+    });
+  }, [activeStep, saveClicked]);
+
   return (
     <FormProvider {...formMethods}>
       <form onSubmit={handleSubmit}>
@@ -287,15 +299,22 @@ export default function MultiSteps({ recordInfo }) {
                   onClick={handleClose}
                   variant="contained"
                   size="small"
-                  sx={{borderRadius: '0px'}}>Cancel
+                  sx={{borderRadius: '0px'}}>
+                    Cancel
                 </Button>
 
                 <Button
                   color="warning"
-                  onClick={() => handleSubmit(true)}
+                  onClick={saveButtonClicked}
                   variant="contained"
                   size="small"
-                  sx={{borderRadius: '0px'}}>Save
+                  sx={{borderRadius: '0px'}}>
+                    {saveClicked &&
+                      <span>
+                        <CircularProgress size="1em" style={{paddingRight: "4px", color: "#000"}}/><span>Saving...</span>
+                      </span>
+                    }
+                    {!saveClicked && <span>Save</span>}
                 </Button>
               </ThemeProvider>
             </Box>
@@ -324,7 +343,7 @@ export default function MultiSteps({ recordInfo }) {
                         variant="contained"
                         style={{ textTransform: 'none', color: activeStep == index ? '#FFF' : '#000', minHeight: '60px', lineHeight: '1.2' }}
                         fullWidth
-                        onClick={() => setActiveStep(index)}
+                        onClick={() => handleTabClick(index)}
                         endIcon={sectionTabIcon(index, activeStep, label)}
                       >
                         {label.name}
