@@ -14,7 +14,7 @@ import {
   fetchResponseOptionsByTemplateId
 } from "../model/ResponseOptions";
 
-import { getArrayValue } from '../common/Utils';
+import { getArrayValue, getNameValue, cleanLabel } from '../common/Utils';
 import { CustomFontTheme } from '../common/CustomTheme';
 
 export const FormMultiSelect = (props: FormInputProps) => {
@@ -62,42 +62,62 @@ export const FormMultiSelect = (props: FormInputProps) => {
     return matched;
   };
 
+   const fieldLabel = (text: string) => {
+    return (
+      <div
+        dangerouslySetInnerHTML={{
+          __html: cleanLabel(text),
+        }}
+      />
+    );
+  };
+
   return (
     <div>
-      {assessQuestions.map((aq) => (
-        <ThemeProvider theme={CustomFontTheme}>
-        <FormGroup sx={{ paddingTop: 2 }}>
-          <Autocomplete
-            sx={{ fontSize: '14px' }}
-            multiple
-            id={aq.id}
-            options={quesResponseOptions}
-            value={defaultValues}
-            getOptionLabel={(option) => option.name}
-            disableCloseOnSelect
-            renderOption={(props, option) => {
-              return (
-                <li {...props} key={option.id}>
-                  {option.name}
-                </li>
-              );
-            }}
-            onChange={(event: any, newValue: any | null) => {
-              setDefaultValues([...newValue])
-              onChange('MSP', event, { name: aq.id, value: newValue });
-            }}
-            readOnly={recordInfo.crudAction == 'view' ? true : false}
-            renderInput={(params) => (
-              <TextField
-                sx={{ marginTop: '12px', fontSize: '18px' }}
-                {...params}
-                name={aq.id}
-                label={aq.name}
-              />
-            )}
-          />
-        </FormGroup>
-        </ThemeProvider>
+      {assessQuestions.map((aq:any) => (
+        <FormControl sx={{  marginTop: 4, width: '100%' }}>
+          {recordInfo.crudAction == "edit" &&
+            <ThemeProvider theme={CustomFontTheme}>
+              <FormGroup sx={{ paddingTop: 2 }}>
+                <Autocomplete
+                  sx={{ fontSize: '14px' }}
+                  multiple
+                  id={aq.id}
+                  options={quesResponseOptions}
+                  value={defaultValues}
+                  getOptionLabel={(option: any) => option.name}
+                  disableCloseOnSelect
+                  renderOption={(props, option:any) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  onChange={(event: any, newValue: any | null) => {
+                    setDefaultValues([...newValue])
+                    onChange('MSP', event, { name: aq.id, value: newValue });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+
+                      {...params}
+                      name={aq.id}
+                      label={aq.name}
+                    />
+                  )}
+                />
+              </FormGroup>
+            </ThemeProvider>
+          }
+          {recordInfo.crudAction == "view" &&
+            <TextField
+              label={fieldLabel(data.EA_SA_txtaQuestion)}
+              value={getNameValue(quesResponseOptions, aq.EA_SA_rsAssessmentResponseOptions)}
+              InputProps={{ readOnly: true }}
+            />
+          }
+        </FormControl>
       ))}
     </div>
   );
