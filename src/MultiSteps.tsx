@@ -38,6 +38,7 @@ export default function MultiSteps({ recordInfo }) {
   const sectionQuestions = useRef({});
   const [recordsLoaded, setRecordsLoaded] = useState(false);
   const [saveClicked, setSaveClicked] = useState(false);
+  const [cancelClicked, setCancelClicked] = useState(false);
 
   const questionResponseFields = {
     INT: "EA_SA_intResponse",
@@ -114,10 +115,12 @@ export default function MultiSteps({ recordInfo }) {
     setActiveStep(0);
   };
 
-  /** React Form Hook */
   const handleClose = () => {
-    // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals
-    rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, recordInfo.triggerId);
+    // no trigger is called for Scenario Test
+    if ( recordInfo.objectIntegrationName !== "EA_OR_ScenarioTest" ) {;
+      // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals
+      rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, recordInfo.triggerId);
+    }
 
     setTimeout(function() {
       window.history.go(-1)
@@ -135,6 +138,11 @@ export default function MultiSteps({ recordInfo }) {
   const saveButtonClicked = () => {
     setSaveClicked(true);
     handleSubmit(true);
+  }
+
+  const cancelButtonClicked = () => {
+    setCancelClicked(true);
+    handleClose();
   }
 
   const handleChange = async (type: any, event: any) => {
@@ -296,25 +304,31 @@ export default function MultiSteps({ recordInfo }) {
               <ThemeProvider theme={NavButtonTheme}>
                 <Button
                   color="primary"
-                  onClick={handleClose}
+                  onClick={cancelButtonClicked}
                   variant="contained"
                   size="small"
                   sx={{borderRadius: '0px'}}>
-                    Cancel
+                    {cancelClicked ?
+                      <span>
+                        <CircularProgress size="1em" style={{paddingRight: "4px", color: "#000"}}/><span>Closing...</span>
+                      </span>
+                    :
+                      <span>Cancel</span>
+                    }
                 </Button>
-
                 <Button
                   color="warning"
                   onClick={saveButtonClicked}
                   variant="contained"
                   size="small"
                   sx={{borderRadius: '0px'}}>
-                    {saveClicked &&
+                    {saveClicked ?
                       <span>
                         <CircularProgress size="1em" style={{paddingRight: "4px", color: "#000"}}/><span>Saving...</span>
                       </span>
+                    :
+                      <span>Save</span>
                     }
-                    {!saveClicked && <span>Save</span>}
                 </Button>
               </ThemeProvider>
             </Box>

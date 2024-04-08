@@ -36,6 +36,24 @@ export const fetchOpSectionStatus = async (recordInfo: any, sectionType: any) =>
   }
 };
 
+export const fetchOpSectionBySource = async (recordInfo: any) => {
+  try {
+    const queryCondition = `${recordInfo.questionRelName}=${recordInfo?.id}`;
+    console.log("--fetchOpSectionBySource--", queryCondition);
+    const results = await _RB.selectQuery(
+      ["id", "name", "status#code", "EA_SA_txtCode", "EA_SA_rsAssessmentQuestionType", "EA_SA_rsAssessmentQuestions"],
+      "EA_SA_OperationsSection",
+      queryCondition,
+      100,
+      true
+    );
+
+    //if (results.length > 0) status = results[0];
+    return results;
+  } catch (error) {
+    console.log("Error: fetchOpSectionStatus ", error);
+  }
+};
 /**
  * get Process's section status
  * @param recordInfo Process record info

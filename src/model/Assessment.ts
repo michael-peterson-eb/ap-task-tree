@@ -9,6 +9,7 @@ import {
 import { fetchTypesOfAssessmentQuestion } from "./Questions";
 import {
   fetchObjectSectionStatuses,
+  fetchOpSectionBySource,
   fetchOpSectionStatus,
   updateStatusJSON,
 } from "./SectionStatus";
@@ -125,6 +126,6 @@ export const getQuestionTypes = async (recordInfo: any) => {
 
 export const getOperationStatus = async (recordInfo: any) => {
   const opSection = await fetchOpSectionStatus(recordInfo, recordInfo.sectionType);
-
   return opSection;
+  //return await fetchOpSectionBySource(recordInfo, "Impact");
 };
