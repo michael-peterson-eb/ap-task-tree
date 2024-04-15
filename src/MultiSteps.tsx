@@ -27,8 +27,9 @@ import { getOperationStatus } from './model/Assessment';
 import { getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
 
 import { NavButtonTheme } from './common/CustomTheme';
+import { RecordInfo } from './common/ObjectTypes';
 
-export default function MultiSteps({ recordInfo }) {
+export default function MultiSteps({recordInfo}) {
   const [activeStep, setActiveStep] = useState(0);
   const [skipped, setSkipped] = useState(new Set<number>());
   const [questionTypes, setQuestionTypes] = useState([]);
@@ -335,7 +336,7 @@ export default function MultiSteps({ recordInfo }) {
           }
           <Stepper activeStep={activeStep}>
             <Grid container spacing={1}>
-              {questionTypes.length > 0 && questionTypes.map((label, index) => {
+              {questionTypes.length > 0 && questionTypes.map((label:any, index) => {
                 const stepProps: { completed?: boolean } = {};
                 const labelProps: {
                   optional?: ReactNode;

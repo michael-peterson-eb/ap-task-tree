@@ -39,7 +39,7 @@ export const FormMultiSelect = (props: FormInputProps) => {
     if (assessQuestions && assessQuestions.length > 0) {
       const stringValues = assessQuestions[0].EA_SA_txtaResponse;
       const defaultValue = getDefaultValue(responseOptions, stringValues);
-      console.log("--fetchQuestionsIntervalsByTemplateId:default--", stringValues, responseOptions, defaultValue)
+      //console.log("--fetchQuestionsIntervalsByTemplateId:default--", stringValues, responseOptions, defaultValue)
       setDefaultValues(getArrayValue(lookup, assessQuestions[0].id, defaultValue));
     }
   }
@@ -55,14 +55,13 @@ export const FormMultiSelect = (props: FormInputProps) => {
 
     if (stored == null) return [];
     const matched = options.filter((opt: any) => {
-      if (stored.indexOf(opt.id) >= 0) {
-        return opt;
-      }
+      if (stored.indexOf(opt.id) >= 0) return opt;
     });
+
     return matched;
   };
 
-   const fieldLabel = (text: string) => {
+  const fieldLabel = (text: string) => {
     return (
       <div
         dangerouslySetInnerHTML={{
@@ -100,7 +99,6 @@ export const FormMultiSelect = (props: FormInputProps) => {
                   }}
                   renderInput={(params) => (
                     <TextField
-
                       {...params}
                       name={aq.id}
                       label={aq.name}

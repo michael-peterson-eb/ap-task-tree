@@ -16,6 +16,7 @@ const AssessmentQuestionFields = [
   "EA_SA_rfQuestion",
   "EA_SA_rfRequiredQuestion",
   "EA_SA_cbRequiredQuestion",
+  "EA_SA_rfOperationSectionType",
 ];
 
 /**
@@ -25,7 +26,10 @@ const AssessmentQuestionFields = [
  */
 export const fetchQuestionsByQuestionTypeId = async (questionTypeId: any, recordInfo: any) => {
   try {
-    let queryCondition = `${recordInfo.questionRelName}=${recordInfo.id}`;
+    let queryCondition = '';
+
+    queryCondition += `${recordInfo.questionRelName}=${recordInfo.id}`;
+    queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
     queryCondition += ` AND EA_SA_rfQuestionType=${questionTypeId}`;
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate <> 'null'`;
 
@@ -38,8 +42,10 @@ export const fetchQuestionsByQuestionTypeId = async (questionTypeId: any, record
 
 export const fetchAssessQuestionsByTemplateId = async (recordInfo: any, templateID: any) => {
   try {
-    // EA_SA_rsProcess=${RECORD_INFO.id} AND
-    let queryCondition = `${recordInfo.questionRelName}=${recordInfo.id}`;
+    let queryCondition = '';
+
+    queryCondition += `${recordInfo.questionRelName}=${recordInfo.id}`;
+    queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate <> 'null'`;
 
@@ -59,8 +65,10 @@ export const fetchAssessQuestionsByTemplateId = async (recordInfo: any, template
  */
 export const fetchQuestionsIntervalsByTemplateId = async (recordInfo: any, templateID: any) => {
   try {
-    // EA_SA_rsProcess=${RECORD_INFO.id} AND
-    let queryCondition = `${recordInfo.questionRelName}=${recordInfo.id}`;
+    let queryCondition = '';
+
+    queryCondition += `${recordInfo.questionRelName}=${recordInfo.id}`;
+    queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
     queryCondition += ` AND EA_SA_rsTimeInterval <> 'null' ORDER BY EA_SA_rfTimeInSeconds ASC`;
 
