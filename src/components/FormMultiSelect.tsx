@@ -95,12 +95,13 @@ export const FormMultiSelect = (props: FormInputProps) => {
                   }}
                   onChange={(event: any, newValue: any | null) => {
                     setDefaultValues([...newValue])
-                    onChange('MSP', event, { name: aq.id, value: newValue });
+                    onChange('MSP', event, { id: aq.id, name: 'EA_SA_txtaResponse', value: newValue });
                   }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      name={aq.id}
+                      name={'EA_SA_txtaResponse'}
+                      id={aq.id}
                       label={aq.name}
                     />
                   )}

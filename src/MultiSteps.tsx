@@ -41,7 +41,7 @@ export default function MultiSteps({recordInfo}) {
   const [saveClicked, setSaveClicked] = useState(false);
   const [cancelClicked, setCancelClicked] = useState(false);
 
-  const questionResponseFields = {
+  const normalResponseFields = {
     INT: "EA_SA_intResponse",
     DEC: "EA_SA_decResponse",
     MSP: "EA_SA_txtaResponse",
@@ -49,6 +49,16 @@ export default function MultiSteps({recordInfo}) {
     CCY: "EA_SA_curResponse",
     DATE: "EA_SA_ddResponse",
     FRES: "EA_SA_txtaResponse",
+  };
+
+  const peakResponseFields = {
+    INT: "EA_OR_intResponse",
+    DEC: "EA_OR_decResponse",
+    MSP: "EA_OR_txtaResponse",
+    SSP: "EA_SA_rsPeakAssessmentResponseOptions",
+    CCY: "EA_OR_curResponse",
+    DATE: "EA_OR_ddResponse",
+    FRES: "EA_OR_txtaResponse",
   };
 
   const isStepOptional = (step: number) => (step === 1);
@@ -118,8 +128,7 @@ export default function MultiSteps({recordInfo}) {
 
   const handleClose = () => {
     // no trigger is called for Scenario Test
-    if( !cancelClicked ) {
-    //if ( recordInfo.objectIntegrationName !== "EA_OR_ScenarioTest" ) {;
+    if ( !cancelClicked ) {
       // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals
       rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, recordInfo.triggerId);
     }
@@ -132,7 +141,7 @@ export default function MultiSteps({recordInfo}) {
   const handleSubmit = async (thenClose = false) => {
     const updatedRecs = updateFields.current;
 
-    await updateQuestionWithResponse(updatedRecs, questionResponseFields);
+    await updateQuestionWithResponse(updatedRecs, normalResponseFields, peakResponseFields);
     await updateStatusObject();
     if ( thenClose ) handleClose();
   }
@@ -147,14 +156,17 @@ export default function MultiSteps({recordInfo}) {
     handleClose();
   }
 
-  const handleChange = async (type: any, event: any) => {
+  const handleChange = async (type:any, event:any, scope:any = "EA_OR_NORMAL") => {
     const { id, name, value } = event.target;     // id=typeId name=questionId
-    trackUpdatedQuestions(id, type, name, value);
-    setSectionQuestionAnswer(id, name, value);
+console.log("--handleChange--", id, name, value)
+
+    trackUpdatedQuestions(name, id, type, id, value, scope);
+    setSectionQuestionAnswer(name, id, name, value);
   }
 
-  const customChangedHandler = (type: any, _event: any, autoComplete: any) => {
-    let { id, name, value } = autoComplete;
+  const customChangedHandler = (type:any, _event:any, fieldValue:any, scope:any = "EA_OR_NORMAL" ) => {
+    let { id, name, value } = fieldValue;
+    console.log("--customChangedHandler--", fieldValue)
     switch (type) {
       case 'DATE':
         value = dateYYYYMMDDFormat(value.toString());
@@ -169,19 +181,23 @@ export default function MultiSteps({recordInfo}) {
         value = value;
     }
 
-    trackUpdatedQuestions(id, type, name, value);
-    setSectionQuestionAnswer(id, name, value);
+    trackUpdatedQuestions(name, id, type, id, value, scope);
+
+    setSectionQuestionAnswer(name, id, name, value);
   }
 
-  const trackUpdatedQuestions = (typeId: any, fieldType: any, aqId: any, value: any) => {
+  const trackUpdatedQuestions = (fieldName:string, typeId:any, fieldType:any, aqId:any, value:any, scope:any) => {
     const currentUpdatedFields:any = updateFields.current;
     const newUpdatedFields = {
       ...currentUpdatedFields,
       [aqId]: {
         ...currentUpdatedFields[aqId],
+        id: aqId,
         typeId: typeId,
         type: fieldType,
-        value: value
+        value: value,
+        scope: scope,
+        field: fieldName,
       }
     };
     updateFields.current = newUpdatedFields;
@@ -205,13 +221,13 @@ export default function MultiSteps({recordInfo}) {
   }
 
   // update individual section question value
-  const setSectionQuestionAnswer = (typeId:any, ansId:any, qAns:any) => {
+  const setSectionQuestionAnswer = (fieldName:string, typeId:any, ansId:any, qAns:any) => {
     let secQAs:any = sectionQuestions.current;
     if ( secQAs.hasOwnProperty(typeId) ) {
       const currObj = secQAs[typeId];
       secQAs = {...secQAs, [typeId]: {
         ...currObj,
-        ...{value: qAns}
+        ...{field: fieldName, value: qAns}
       }}
     }
     sectionQuestions.current = secQAs;

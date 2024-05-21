@@ -63,7 +63,7 @@ export const FormYesNo = (props: FormInputProps) => {
                   width: '100%',
                   fontSize: '14px',
                 }}
-                name={aq.id}
+                name={'EA_SA_rsAssessmentResponseOptions'}
                 onChange={(event: any) => {
                   const { id, name, value } = event.target;
                   setFieldValue(value);

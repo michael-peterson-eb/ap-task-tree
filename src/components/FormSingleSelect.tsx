@@ -27,7 +27,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
   const templateId = data.id;
 
   useEffect(() => {
-    // declare the async data fetching function
+
     const fetchQuestionsAndOptions = async () => {
 
       // query EA_SA_AssessmentQuestion
@@ -86,7 +86,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
                   width: '100%',
                   fontSize: '14px',
                 }}
-                name={aq.id}
+                name={"EA_SA_rsAssessmentResponseOptions"}
                 onChange={(event: any) => {
                   const { id, name, value } = event.target;
                   setFieldValue(value);

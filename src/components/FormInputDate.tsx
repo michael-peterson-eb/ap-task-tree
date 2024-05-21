@@ -58,7 +58,11 @@ export const FormInputDate = (props: FormInputProps) => {
                   disablePast={true}
                   onChange={(newValue: any) => {
                     setDateValue(newValue);
-                    onChange('DATE', null, {name: aq.id, value: newValue});
+                    onChange('DATE', null, {
+                      id: aq.id,
+                      name: 'EA_SA_ddResponse',
+                      value: newValue
+                    });
                     fnReqField();
                   }}
                   readOnly={recordInfo.crudAction === 'view' ? true : false}

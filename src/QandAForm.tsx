@@ -18,9 +18,11 @@ import { CustomFontTheme } from './common/CustomTheme';
 import { FormInputInteger } from './components/FormInputInteger';
 import { FormInputDecimal } from './components/FormInputDecimal';
 import { FormYesNo } from './components/FormInputYesNo';
+import { FormSeverityLevel } from './components/FormSeverityLevel';
 
 import {
-  getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
+  getAssessmentQuestionTemplateByType,
+  getAssessmentQuestionByType } from './model/QuestionTemplates'
 
 import {
   fetchAssessQuestionsByTemplateId,
@@ -96,7 +98,7 @@ const QandAForm = (props:any) => {
   useEffect(() => {
     setTypeCompleted(qtype.status === 'completed' ? true : false);
 
-    // get from EA_SA_AssessmentQuestionTemplate
+    // get from Assessement Question Template (EA_SA_AssessmentQuestionTemplate)
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
       setTableData(data);
       if ( editMode ) {
@@ -128,7 +130,10 @@ const QandAForm = (props:any) => {
         {tableData.length > 0 && tableData.map((data:any) => {
           // Single-Select Picklist
           const askTimeIntval = data.EA_SA_cbAskPerTimeInterval;
-          if (data.EA_SA_ddlResponseFormat === 'SSP' && (askTimeIntval == 0 || askTimeIntval == null)) {
+          const askPer = data.EA_SA_ddlAskPer;  // values are EA_SA_TimeInterval, EA_SA_SeverityLevel
+
+          //if (data.EA_SA_ddlResponseFormat === 'SSP' && (askTimeIntval == 0 || askTimeIntval == null)) {
+          if (data.EA_SA_ddlResponseFormat === 'SSP' && (askPer == null)) {
             return <FormSingleSelect
               recordInfo={recordInfo}
               qtype={qtype}
@@ -139,9 +144,22 @@ const QandAForm = (props:any) => {
               fnReqField={checkRequiredFields}/>
           }
 
-          // Time Interval
-          if (data.EA_SA_ddlResponseFormat === 'SSP' && askTimeIntval == 1) {
+          // askFor Time Interval
+          //if (data.EA_SA_ddlResponseFormat === 'SSP' && askTimeIntval == 1) {
+          if (data.EA_SA_ddlResponseFormat === 'SSP' && askPer == "EA_SA_TimeInterval") {
             return <FormTimeInterval
+              recordInfo={recordInfo}
+              qtype={qtype}
+              data={data}
+              onChange={handleOnChange}
+              lookup={lookupFV}
+              fnSecQA={fnSecQA}
+              fnReqField={checkRequiredFields}/>
+          }
+
+          // askFor Severity Level
+          if ( askPer == "EA_SA_SeverityLevel" ) {
+            return <FormSeverityLevel
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}

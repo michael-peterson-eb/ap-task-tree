@@ -12,7 +12,7 @@ export const FormInputCurrency = ({ recordInfo, qtype, data, onChange}: FormInpu
       <TextField
         label={data.EA_SA_txtaQuestion}
         id={data.id}
-        name={data.id}
+        name={'EA_SA_curResponse'}
         sx={{ m: 1 }}
         InputProps={{
           startAdornment: <InputAdornment position="start">US$</InputAdornment>,

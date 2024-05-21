@@ -1,6 +1,7 @@
 const AssessmentQuestionFields = [
   "id",
   "name",
+  "EA_SA_ddlAskPer#code",
   "EA_SA_rfQuestionType",
   "EA_SA_txtaResponse",
   "EA_SA_txtaQuestion",
@@ -17,6 +18,9 @@ const AssessmentQuestionFields = [
   "EA_SA_rfRequiredQuestion",
   "EA_SA_cbRequiredQuestion",
   "EA_SA_rfOperationSectionType",
+  "EA_OR_rsSeverityLevel",
+  "EA_OR_mddlPeriodsInScope#code",
+  "EA_OR_txtSeverityLevelName",
 ];
 
 /**
@@ -35,6 +39,7 @@ export const fetchQuestionsByQuestionTypeId = async (questionTypeId: any, record
 
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 10000, true);
     return results;
+
   } catch (error) {
     console.log("Error: fetchQuestions ", error);
   }
@@ -50,8 +55,10 @@ export const fetchAssessQuestionsByTemplateId = async (recordInfo: any, template
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate <> 'null'`;
 
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 1, true);
+    //console.log("fetchAssessQuestionsByTemplateId--", results);
 
     return await results;
+
   } catch (error) {
     console.log("Error: fetchAssessQuestionsByTemplateId ", error);
   }
@@ -81,6 +88,30 @@ export const fetchQuestionsIntervalsByTemplateId = async (recordInfo: any, templ
 };
 
 /**
+ * fetch Assessment Question by record Id and Template Id and Severity Level
+ * @param recordInfo
+ * @param templateID
+ * @returns
+ */
+export const fetchQuestionsSeverityByTemplateId = async (recordInfo: any, templateID: any) => {
+  try {
+    let queryCondition = '';
+
+    queryCondition += `${recordInfo.questionRelName}=${recordInfo.id}`;
+    queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
+    queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
+    queryCondition += ` AND EA_OR_rsSeverityLevel <> 'null'`;
+
+    //console.log("--fetchQuestionsSeverityByTemplateId--", queryCondition);
+    const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 10000, true);
+
+    return await results;
+  } catch (error) {
+    console.log("Error: fetchQuestionsSeverityByTemplateId ", error);
+  }
+};
+
+/**
  * fetchAssessmentQuestionTypes
  * @param assessmentQuestionCondition
  * @returns
@@ -104,9 +135,10 @@ export const fetchTypesOfAssessmentQuestion = async (assessmentQuestionCondition
  */
 export const updateQuestion = async (recordID: any, fields: any) => {
   try {
-  console.log("--about to update--", recordID, fields)
+    console.log("--about to update--", recordID, fields)
     const results = await _RB.updateRecord("EA_SA_AssessmentQuestion", recordID, fields);
     return results;
+
   } catch (error) {
     console.log("Error: updateQuestion ", error);
   }
@@ -119,17 +151,24 @@ const concatObjectIds = (values: any) => {
   return ids.join(",");
 };
 
-export const updateQuestionWithResponse = async (updatedResponses: any, responseFields: any) => {
+export const updateQuestionWithResponse = async (updatedResponses:any, defaultFields:any, peakFields:any) => {
   for (let recordId in updatedResponses) {
     const record = updatedResponses[recordId];
     const fields:any = {};
     const recordType:any = record.type;
-    if (responseFields.hasOwnProperty(recordType)) {
+console.log("--updateQuestionWithResponse:1--", record)
+    if (defaultFields.hasOwnProperty(recordType)) {
       let value = record.value;
       if (recordType === "MSP") value = concatObjectIds(value);
 
-      fields[responseFields[recordType]] = value;
-      console.log("--updateQuestion--", fields)
+      if ( record.scope == "EA_OR_PEAK") {
+        fields[peakFields[recordType]] = value;
+
+      } else {
+        fields[defaultFields[recordType]] = value;
+      }
+
+      console.log("--updateQuestionWithResponse:2--", fields);
       await updateQuestion(recordId, fields);
     }
   }
@@ -140,6 +179,7 @@ export const getRelatedResponseOptions = async (questionId: any) => {
     // R7996162=Assessment Question to Assessment Response Options
     const results = await _RB.getRelatedFields("R7996162", ",EA_SA_AssessmentQuestion", questionId, "id");
     return results;
+
   } catch (error) {
     console.log("Error: getRelatedResponseOptions ", error);
   }

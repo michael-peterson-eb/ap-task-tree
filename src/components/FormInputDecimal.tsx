@@ -55,7 +55,7 @@ export const FormInputDecimal = (props: FormInputProps) => {
             required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
             id={data.id}
             label={data.EA_SA_txtaQuestion}
-            name={aq.id}
+            name={'EA_SA_decResponse'}
             value={fieldValue}
             type="number"
             InputProps={{

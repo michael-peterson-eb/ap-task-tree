@@ -75,7 +75,7 @@ export const FormInputText = (props: FormInputProps) => {
                   required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
                   id={templateId}
                   label={data.EA_SA_txtaQuestion}
-                  name={aq.id}
+                  name={'EA_SA_txtaResponse'}
                   value={fieldValue}
                   InputProps={{
                     style: { fontSize: '14px' },

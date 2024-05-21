@@ -67,7 +67,7 @@ export const FormInputInteger = (props: FormInputProps) => {
               required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
               id={data.id}
               label={data.EA_SA_txtaQuestion}
-              name={aq.id}
+              name={'EA_SA_intResponse'}
               value={fieldValue}
               type="number"
               InputProps={{

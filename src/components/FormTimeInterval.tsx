@@ -170,7 +170,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
                             borderWidth: "0px",
                           }, }}
                         style={{ fontSize: '14px' }}
-                        name={qa.id}
+                        name={'EA_SA_rsAssessmentResponseOptions'}
                         id={templateId}
                         native
                         defaultValue={getValue(lookup, qa.id, qa.EA_SA_rsAssessmentResponseOptions)}
