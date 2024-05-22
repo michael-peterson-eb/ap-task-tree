@@ -18,7 +18,15 @@ import { getArrayValue, getNameValue, cleanLabel } from '../common/Utils';
 import { CustomFontTheme } from '../common/CustomTheme';
 
 export const FormMultiSelect = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    lookup,
+    fnSecQA,
+    fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
@@ -95,12 +103,12 @@ export const FormMultiSelect = (props: FormInputProps) => {
                   }}
                   onChange={(event: any, newValue: any | null) => {
                     setDefaultValues([...newValue])
-                    onChange('MSP', event, { id: aq.id, name: 'EA_SA_txtaResponse', value: newValue });
+                    onChange('MSP', event, { id: aq.id, name: fieldName, value: newValue });
                   }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      name={'EA_SA_txtaResponse'}
+                      name={fieldName}
                       id={aq.id}
                       label={aq.name}
                     />

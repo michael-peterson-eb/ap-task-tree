@@ -16,10 +16,19 @@ import {
 } from '@mui/material';
 
 import DOMPurify from "dompurify";
+
 import { getValue, getNameValue} from '../common/Utils';
 
 export const FormSingleSelect = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    lookup,
+    fnSecQA,
+    fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
@@ -86,7 +95,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
                   width: '100%',
                   fontSize: '14px',
                 }}
-                name={"EA_SA_rsAssessmentResponseOptions"}
+                name={fieldName}
                 onChange={(event: any) => {
                   const { id, name, value } = event.target;
                   setFieldValue(value);

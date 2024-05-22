@@ -11,7 +11,15 @@ import { initSelectValue, getValue, appendQuestions, cleanLabel } from '../commo
 import DOMPurify from "dompurify";
 
 export const FormInputText = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    lookup,
+    fnSecQA,
+    fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
@@ -74,8 +82,8 @@ export const FormInputText = (props: FormInputProps) => {
                   sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
                   required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
                   id={templateId}
-                  label={data.EA_SA_txtaQuestion}
-                  name={'EA_SA_txtaResponse'}
+                  label={fieldLabel(data.EA_SA_txtaQuestion)}
+                  name={fieldName}
                   value={fieldValue}
                   InputProps={{
                     style: { fontSize: '14px' },
@@ -106,3 +114,4 @@ export const FormInputText = (props: FormInputProps) => {
     </>
   );
 };
+

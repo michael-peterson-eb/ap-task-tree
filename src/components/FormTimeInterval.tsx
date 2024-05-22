@@ -26,7 +26,15 @@ import DOMPurify from "dompurify";
 import { getNameValue, getValue, stripTextHtmlTags } from '../common/Utils';
 
 export const FormTimeInterval = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    lookup,
+    fnSecQA,
+    fnReqField} = props;
 
   const [questionsInterval, setQuestionsInterval] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
@@ -170,7 +178,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
                             borderWidth: "0px",
                           }, }}
                         style={{ fontSize: '14px' }}
-                        name={'EA_SA_rsAssessmentResponseOptions'}
+                        name={fieldName}
                         id={templateId}
                         native
                         defaultValue={getValue(lookup, qa.id, qa.EA_SA_rsAssessmentResponseOptions)}

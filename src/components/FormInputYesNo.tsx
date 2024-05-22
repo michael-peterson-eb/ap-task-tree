@@ -18,7 +18,15 @@ import {
 import { getValue, getNameValue } from '../common/Utils';
 
 export const FormYesNo = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    lookup,
+    fnSecQA,
+    fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
@@ -63,7 +71,7 @@ export const FormYesNo = (props: FormInputProps) => {
                   width: '100%',
                   fontSize: '14px',
                 }}
-                name={'EA_SA_rsAssessmentResponseOptions'}
+                name={fieldName}
                 onChange={(event: any) => {
                   const { id, name, value } = event.target;
                   setFieldValue(value);

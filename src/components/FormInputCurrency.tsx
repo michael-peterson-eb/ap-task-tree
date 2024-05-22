@@ -6,13 +6,13 @@ import {
   InputAdornment
 } from '@mui/material';
 
-export const FormInputCurrency = ({ recordInfo, qtype, data, onChange}: FormInputProps) => {
+export const FormInputCurrency = ({ fieldName, recordInfo, qtype, data, onChange}: FormInputProps) => {
   return(
     <FormControl fullWidth sx={{ m: 1, fontSize: 18 }} variant="standard">
       <TextField
         label={data.EA_SA_txtaQuestion}
         id={data.id}
-        name={'EA_SA_curResponse'}
+        name={fieldName}
         sx={{ m: 1 }}
         InputProps={{
           startAdornment: <InputAdornment position="start">US$</InputAdornment>,

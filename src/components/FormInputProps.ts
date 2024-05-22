@@ -5,6 +5,7 @@ export interface FormInputProps {
   setValue?: any;
   data?: any;
   onChange?: any;
+  onChangeCustom?: any;
   qtype?: any;
   templateId?: any;
   recordInfo?: any;
@@ -13,4 +14,5 @@ export interface FormInputProps {
   fnSecQA?: any;
   fnDoneWithReqField?: any;
   fnReqField?: any;
+  fieldName?: string;
 }

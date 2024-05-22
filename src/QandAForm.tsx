@@ -135,6 +135,7 @@ const QandAForm = (props:any) => {
           //if (data.EA_SA_ddlResponseFormat === 'SSP' && (askTimeIntval == 0 || askTimeIntval == null)) {
           if (data.EA_SA_ddlResponseFormat === 'SSP' && (askPer == null)) {
             return <FormSingleSelect
+              fieldName={"EA_SA_rsAssessmentResponseOptions"}
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
@@ -148,6 +149,7 @@ const QandAForm = (props:any) => {
           //if (data.EA_SA_ddlResponseFormat === 'SSP' && askTimeIntval == 1) {
           if (data.EA_SA_ddlResponseFormat === 'SSP' && askPer == "EA_SA_TimeInterval") {
             return <FormTimeInterval
+              fieldName={"EA_SA_rsAssessmentResponseOptions"}
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
@@ -160,10 +162,12 @@ const QandAForm = (props:any) => {
           // askFor Severity Level
           if ( askPer == "EA_SA_SeverityLevel" ) {
             return <FormSeverityLevel
+              fieldName={"nothing"}
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
               onChange={handleOnChange}
+              onChangeCustom={customChangedHandler}
               lookup={lookupFV}
               fnSecQA={fnSecQA}
               fnReqField={checkRequiredFields}/>
@@ -172,6 +176,7 @@ const QandAForm = (props:any) => {
           // Text Response
           if (data.EA_SA_ddlResponseFormat === 'FRES') {
             return <FormInputText
+              fieldName={"EA_SA_txtaResponse"}
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
@@ -184,6 +189,7 @@ const QandAForm = (props:any) => {
           // MSP - Multi-Select
           if (data.EA_SA_ddlResponseFormat === 'MSP') {
             return <FormMultiSelect
+              fieldName={'EA_SA_txtaResponse'}
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
@@ -195,12 +201,18 @@ const QandAForm = (props:any) => {
 
           // CCY - Currency
           if (data.EA_SA_ddlResponseFormat === 'CCY') {
-            return <FormInputCurrency recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} />
+            return <FormInputCurrency
+            fieldName={"EA_SA_curResponse"}
+            recordInfo={recordInfo}
+            qtype={qtype}
+            data={data}
+            onChange={handleOnChange} />
           }
 
           // DATE - Date
           if (data.EA_SA_ddlResponseFormat === 'DATE') {
             return <FormInputDate
+              fieldName={"EA_SA_ddResponse"}
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
@@ -213,6 +225,7 @@ const QandAForm = (props:any) => {
           // INT - Integer
           if (data.EA_SA_ddlResponseFormat === 'INT') {
             return <FormInputInteger
+              fieldName={"EA_SA_intResponse"}
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
@@ -225,6 +238,7 @@ const QandAForm = (props:any) => {
           // DEC - Decimal
           if (data.EA_SA_ddlResponseFormat === 'DEC') {
             return <FormInputDecimal
+              fieldName={"EA_SA_decResponse"}
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
@@ -237,6 +251,7 @@ const QandAForm = (props:any) => {
           // YN - Yes/No
           if (data.EA_SA_ddlResponseFormat === 'YN') {
             return <FormYesNo
+              fieldName={"EA_SA_rsAssessmentResponseOptions"}
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}

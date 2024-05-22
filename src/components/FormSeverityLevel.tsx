@@ -29,10 +29,29 @@ import {
 import { getNameValue, getValue, stripTextHtmlTags } from '../common/Utils';
 
 import DOMPurify from "dompurify";
+
 import { TextAreaField } from './FieldSeverityLevel';
+import { FormInputCurrency } from './FormInputCurrency';
+import { FormInputText } from './FormInputText';
+import { FormMultiSelect } from './FormMultiSelect';
+import { FormSingleSelect } from './FormSingleSelect';
+import { FormTimeInterval } from './FormTimeInterval';
+import { FormInputDate } from './FormInputDate';
+import { FormInputInteger } from './FormInputInteger';
+import { FormInputDecimal } from './FormInputDecimal';
+import { FormYesNo } from './FormInputYesNo';
 
 export const FormSeverityLevel = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    onChangeCustom,
+    lookup,
+    fnSecQA,
+    fnReqField} = props;
 
   const severityLabelWidth = "40";
   const bothInScopeWidth = "30";
@@ -196,43 +215,31 @@ export const FormSeverityLevel = (props: FormInputProps) => {
                   </TableCell>
                   {periodInScopeHas(periodInScope, "EA_OR_Normal") &&
                     <TableCell style={{ padding: '0px' }}>
-                      <TextAreaField
-                        period={"EA_OR_NORMAL"}
-                        recordInfo={recordInfo}
-                        aq={qa} data={data}
-                        onChange={onChange}
-                        fnReqField={fnReqField}
-                        value={""} />
+                      {data.EA_SA_ddlResponseFormat === 'FRES' &&
+                        <FormInputText
+                          fieldName={"EA_SA_txtaResponse"}
+                          recordInfo={recordInfo}
+                          qtype={qtype}
+                          data={data}
+                          onChange={onChange}
+                          lookup={lookup}
+                          fnSecQA={fnSecQA}
+                          fnReqField={fnReqField}/>
+                      }
                     </TableCell>
                   }
                   {periodInScopeHas(periodInScope, "EA_OR_Peak") &&
                     <TableCell style={{ padding: '0px' }}>
-                      {recordInfo.crudAction === 'edit' &&
-                        <Select
-                          sx={{
-                            width: '100%',
-                            "& fieldset": {
-                              borderWidth: "0px",
-                            }, }}
-                          style={{ fontSize: '14px' }}
-                          name={qa.id}
-                          id={templateId}
-                          native
-                          defaultValue={getValue(lookup, qa.id, qa.EA_SA_rsAssessmentResponseOptions)}
-                          onChange={(event: any) => {
-                            onChange('SSP', event);
-                            severityLevelUpdate(qa.id, event, "EA_OR_Peak");
-                            fnReqField();
-                          }}
-                        >
-                          <option aria-label="None" value="">Select Impact</option>
-                          {quesResponseOptions.length > 0 && quesResponseOptions.map((item: any) => {
-                            return <option value={item.id}>{item.name}</option>
-                          })}
-                        </Select>
-                      }
-                      {recordInfo.crudAction === 'view' &&
-                        <div style={{padding: '12px 16px'}}>{getNameValue(quesResponseOptions, qa.EA_SA_rsAssessmentResponseOptions)}</div>
+                      {data.EA_SA_ddlResponseFormat === 'FRES' &&
+                        <FormInputText
+                          fieldName={"EA_OR_txtaResponse"}
+                          recordInfo={recordInfo}
+                          qtype={qtype}
+                          data={data}
+                          onChange={onChange}
+                          lookup={lookup}
+                          fnSecQA={fnSecQA}
+                          fnReqField={fnReqField}/>
                       }
                     </TableCell>
                   }

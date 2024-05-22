@@ -13,7 +13,15 @@ import {
 } from '../common/Utils';
 
 export const FormInputInteger = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    lookup,
+    fnSecQA,
+    fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
@@ -67,7 +75,7 @@ export const FormInputInteger = (props: FormInputProps) => {
               required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
               id={data.id}
               label={data.EA_SA_txtaQuestion}
-              name={'EA_SA_intResponse'}
+              name={fieldName}
               value={fieldValue}
               type="number"
               InputProps={{

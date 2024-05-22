@@ -13,7 +13,16 @@ import {
 
 import { getValue } from '../common/Utils';
 export const FormInputDate = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    lookup,
+    fnSecQA,
+    fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [dateValue, setDateValue] = useState<Dayjs | null>(null);
@@ -60,7 +69,7 @@ export const FormInputDate = (props: FormInputProps) => {
                     setDateValue(newValue);
                     onChange('DATE', null, {
                       id: aq.id,
-                      name: 'EA_SA_ddResponse',
+                      name: fieldName,
                       value: newValue
                     });
                     fnReqField();
