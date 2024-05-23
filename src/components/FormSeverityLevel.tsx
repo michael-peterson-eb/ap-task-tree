@@ -144,6 +144,10 @@ export const FormSeverityLevel = (props: FormInputProps) => {
     return inScope.indexOf(periodScope) >= 0;
   }
 
+  const injectTemplate = (valObj:any, payload:any) => {
+    return {...valObj, ...payload}
+  }
+
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
       const severityLevels = await fetchQuestionsSeverityByTemplateId(recordInfo, data.id);
@@ -174,86 +178,121 @@ export const FormSeverityLevel = (props: FormInputProps) => {
   return (
     <>
       {questionsSeverity.length > 0 &&
-      <FormGroup sx={{ paddingTop: 2 }}>
-        <InputLabel
-          sx={{ color:
-            `${requiredColor()}`,
-            whiteSpace: 'normal'
-          }}
-          required={data.EA_SA_cbRequiredQuestion == 1}
-        >
-          {questionsSeverity.length > 0 && <div dangerouslySetInnerHTML={{
-          __html: cleanLabel(questionsSeverity[0].EA_SA_rfQuestion)
-          }} />}
-        </InputLabel>
+        <FormGroup sx={{ paddingTop: 2 }}>
+          <InputLabel
+            sx={{ color:
+              `${requiredColor()}`,
+              whiteSpace: 'normal'
+            }}
+            required={data.EA_SA_cbRequiredQuestion == 1}
+          >
+            {questionsSeverity.length > 0 && <div dangerouslySetInnerHTML={{
+            __html: cleanLabel(questionsSeverity[0].EA_SA_rfQuestion)
+            }} />}
+          </InputLabel>
 
-        <TableContainer component={Paper} sx={{ border: `1px solid ${requiredColor()}`, width: 'inherit' }}>
-          <Table sx={{ width: '100%' }} size="small">
-            <TableHead>
-              <TableRow
-                sx={{
-                  backgroundColor: "#9cc1ff33",
-                  "& th": {
-                    fontSize: "1.25rem"
-                  }
-                }}
-              >
-                <TableCell style={{ width: severityLabelWidth }}>Severity Level</TableCell>
-                {periodInScopeHas(periodInScope, "EA_OR_Normal") &&
-                  <TableCell style={{ width: colWidth.current }}>Impact at Normal Period</TableCell>
-                }
-                {periodInScopeHas(periodInScope, "EA_OR_Peak") &&
-                  <TableCell style={{ width: colWidth.current }}>Impact at Peak Period</TableCell>
-                }
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {questionsSeverity.length > 0 && questionsSeverity.map((qa:any) => (
-                <TableRow key={qa.id}>
-                  <TableCell>
-                    {qa.EA_OR_txtSeverityLevelName}
-                  </TableCell>
+          <TableContainer component={Paper} sx={{ border: `1px solid ${requiredColor()}`, width: 'inherit' }}>
+            <Table sx={{ width: '100%' }} size="small">
+              <TableHead>
+                <TableRow
+                  sx={{
+                    backgroundColor: "#9cc1ff33",
+                    "& th": {
+                      fontSize: "1.25rem"
+                    }
+                  }}
+                >
+                  <TableCell style={{ width: severityLabelWidth }}>Severity Level</TableCell>
                   {periodInScopeHas(periodInScope, "EA_OR_Normal") &&
-                    <TableCell style={{ padding: '0px' }}>
-                      {data.EA_SA_ddlResponseFormat === 'FRES' &&
-                        <FormInputText
-                          fieldName={"EA_SA_txtaResponse"}
-                          recordInfo={recordInfo}
-                          qtype={qtype}
-                          data={data}
-                          onChange={onChange}
-                          lookup={lookup}
-                          fnSecQA={fnSecQA}
-                          fnReqField={fnReqField}/>
-                      }
-                    </TableCell>
+                    <TableCell style={{ width: colWidth.current }}>Impact at Normal Period</TableCell>
                   }
                   {periodInScopeHas(periodInScope, "EA_OR_Peak") &&
-                    <TableCell style={{ padding: '0px' }}>
-                      {data.EA_SA_ddlResponseFormat === 'FRES' &&
-                        <FormInputText
-                          fieldName={"EA_OR_txtaResponse"}
-                          recordInfo={recordInfo}
-                          qtype={qtype}
-                          data={data}
-                          onChange={onChange}
-                          lookup={lookup}
-                          fnSecQA={fnSecQA}
-                          fnReqField={fnReqField}/>
-                      }
-                    </TableCell>
+                    <TableCell style={{ width: colWidth.current }}>Impact at Peak Period</TableCell>
                   }
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        {isQuestionRequired() &&
-          <InputLabel sx={{ fontSize: '12px' }} error={!severityLevelUpdated}>
-            {"This question is required!"}
-          </InputLabel>
-        }
-      </FormGroup>
+              </TableHead>
+              <TableBody>
+                {questionsSeverity.length > 0 && questionsSeverity.map((asQ:any) => (
+                  <TableRow key={asQ.id}>
+                    <TableCell>
+                      {asQ.EA_OR_txtSeverityLevelName}
+                    </TableCell>
+                    {periodInScopeHas(periodInScope, "EA_OR_Normal") &&
+                      <TableCell style={{ padding: '0px' }}>
+                        {data.EA_SA_ddlResponseFormat === 'FRES' &&
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
+                            <FormInputText
+                              fieldName={"EA_SA_txtaResponse"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChange}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}/>
+                          </div>
+                        }
+                        {data.EA_SA_ddlResponseFormat === 'SSP' &&
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
+                              <FormSingleSelect
+                                fieldName={"EA_SA_rsAssessmentResponseOptions"}
+                                recordInfo={recordInfo}
+                                qtype={qtype}
+                                data={data}
+                                onChange={onChange}
+                                lookup={lookup}
+                                fnSecQA={fnSecQA}
+                                fnReqField={fnReqField}
+                                preloadedAQ={[asQ]}/>
+                          </div>
+                        }
+
+                      </TableCell>
+                    }
+                    {periodInScopeHas(periodInScope, "EA_OR_Peak") &&
+                      <TableCell style={{ padding: '0px' }}>
+                        {data.EA_SA_ddlResponseFormat === 'FRES' &&
+                          <div style={{ marginRight: 8 }}>
+                            <FormInputText
+                              fieldName={"EA_OR_txtaResponse"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChange}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}/>
+                          </div>
+                        }
+                        {data.EA_SA_ddlResponseFormat === 'SSP' &&
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
+                            <FormSingleSelect
+                              fieldName={"EA_OR_rsAssessmentResponseOptions"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChange}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}/>
+                          </div>
+                        }
+                      </TableCell>
+                    }
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          {isQuestionRequired() &&
+            <InputLabel sx={{ fontSize: '12px' }} error={!severityLevelUpdated}>
+              {"This question is required!"}
+            </InputLabel>
+          }
+        </FormGroup>
       }
     </>
   );

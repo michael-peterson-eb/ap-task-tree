@@ -18,6 +18,7 @@ const AssessmentQuestionFields = [
   "EA_SA_rfRequiredQuestion",
   "EA_SA_cbRequiredQuestion",
   "EA_SA_rfOperationSectionType",
+  "EA_OR_txtaResponse",
   "EA_OR_rsSeverityLevel",
   "EA_OR_mddlPeriodsInScope#code",
   "EA_OR_txtSeverityLevelName",
@@ -133,10 +134,10 @@ export const fetchTypesOfAssessmentQuestion = async (assessmentQuestionCondition
  * @param fields
  * @returns
  */
-export const updateQuestion = async (recordID: any, fields: any) => {
+export const updateQuestion = async (recordId: any, fields: any) => {
   try {
-    console.log("--about to update--", recordID, fields)
-    const results = await _RB.updateRecord("EA_SA_AssessmentQuestion", recordID, fields);
+    console.log("--about to update--", recordId, fields)
+    const results = await _RB.updateRecord("EA_SA_AssessmentQuestion", recordId, fields);
     return results;
 
   } catch (error) {
@@ -144,7 +145,7 @@ export const updateQuestion = async (recordID: any, fields: any) => {
   }
 };
 
-const concatObjectIds = (values: any) => {
+export const concatObjectIds = (values: any) => {
   const ids = values.map((opt: any) => {
     return opt.id;
   });
@@ -156,20 +157,21 @@ export const updateQuestionWithResponse = async (updatedResponses:any, defaultFi
     const record = updatedResponses[recordId];
     const fields:any = {};
     const recordType:any = record.type;
-console.log("--updateQuestionWithResponse:1--", record)
+    console.log("--updateQuestionWithResponse:1--", record)
+
     if (defaultFields.hasOwnProperty(recordType)) {
       let value = record.value;
+      /*
       if (recordType === "MSP") value = concatObjectIds(value);
-
       if ( record.scope == "EA_OR_PEAK") {
         fields[peakFields[recordType]] = value;
-
       } else {
         fields[defaultFields[recordType]] = value;
       }
+      */
 
-      console.log("--updateQuestionWithResponse:2--", fields);
-      await updateQuestion(recordId, fields);
+      console.log("--updateQuestionWithResponse:2--", record.fieldValue);
+      await updateQuestion(recordId, record.fieldValue);
     }
   }
 };

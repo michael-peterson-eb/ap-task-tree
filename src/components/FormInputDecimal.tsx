@@ -7,8 +7,9 @@ import {
 } from "../model/Questions";
 
 import {
-    initSelectValue,
-    getValue }
+  initSelectValue,
+  getValue,
+  cleanLabel }
 from '../common/Utils';
 
 export const FormInputDecimal = (props: FormInputProps) => {
@@ -62,7 +63,7 @@ export const FormInputDecimal = (props: FormInputProps) => {
             sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
             required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
             id={data.id}
-            label={data.EA_SA_txtaQuestion}
+            label={cleanLabel(data.EA_SA_txtaQuestion)}
             name={fieldName}
             value={fieldValue}
             type="number"

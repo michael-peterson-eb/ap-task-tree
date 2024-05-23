@@ -10,15 +10,19 @@ import {
   AlertTitle,
   CircularProgress,
 } from '@mui/material';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheckCircle,
   faChevronLeft,
   faChevronRight } from '@fortawesome/free-solid-svg-icons'
+
 import { FormProvider, useForm } from "react-hook-form";
+
 import {
   updateQuestionWithResponse,
-  fetchAssessQuestionsByTemplateId } from './model/Questions';
+  fetchAssessQuestionsByTemplateId,
+  concatObjectIds} from './model/Questions';
 
 import { updateOpSectionStatus } from './model/SectionStatus';
 
@@ -158,7 +162,7 @@ export default function MultiSteps({recordInfo}) {
 
   const handleChange = async (type:any, event:any, scope:any = "EA_OR_NORMAL") => {
     const { id, name, value } = event.target;     // id=typeId name=questionId
-console.log("--handleChange--", id, name, value)
+    console.log("--handleChange--", type, id, name, value)
 
     trackUpdatedQuestions(name, id, type, id, value, scope);
     setSectionQuestionAnswer(name, id, name, value);
@@ -182,12 +186,23 @@ console.log("--handleChange--", id, name, value)
     }
 
     trackUpdatedQuestions(name, id, type, id, value, scope);
-
     setSectionQuestionAnswer(name, id, name, value);
   }
 
   const trackUpdatedQuestions = (fieldName:string, typeId:any, fieldType:any, aqId:any, value:any, scope:any) => {
     const currentUpdatedFields:any = updateFields.current;
+
+    if ( fieldType === "MSP" ) value = concatObjectIds(value);  // multi select field
+
+    let fieldValue:any = {};
+    if ( currentUpdatedFields.hasOwnProperty(aqId) ) {
+      fieldValue = currentUpdatedFields[aqId]["fieldValue"];
+      fieldValue[fieldName] = value;
+
+    } else {
+      fieldValue[fieldName] = value;
+    }
+
     const newUpdatedFields = {
       ...currentUpdatedFields,
       [aqId]: {
@@ -197,10 +212,12 @@ console.log("--handleChange--", id, name, value)
         type: fieldType,
         value: value,
         scope: scope,
-        field: fieldName,
+        fieldValue: fieldValue,
       }
     };
+
     updateFields.current = newUpdatedFields;
+    console.log("--trackUpdatedQuestions--", newUpdatedFields)
   }
 
   // set all section questions ref state

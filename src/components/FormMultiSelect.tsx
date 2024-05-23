@@ -14,7 +14,11 @@ import {
   fetchResponseOptionsByTemplateId
 } from "../model/ResponseOptions";
 
-import { getArrayValue, getNameValue, cleanLabel } from '../common/Utils';
+import {
+  getArrayValue,
+  cleanLabel,
+  getMultiValue } from '../common/Utils';
+
 import { CustomFontTheme } from '../common/CustomTheme';
 
 export const FormMultiSelect = (props: FormInputProps) => {
@@ -26,7 +30,8 @@ export const FormMultiSelect = (props: FormInputProps) => {
     onChange,
     lookup,
     fnSecQA,
-    fnReqField} = props;
+    fnReqField,
+    preloadedAQ} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
@@ -35,17 +40,26 @@ export const FormMultiSelect = (props: FormInputProps) => {
   const templateId = data.id;
 
   const fetchQuestionsAndOptions = async () => {
-    const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+    let assessQuestions = preloadedAQ;
+
+    // check if Assessment Question data is NOT preloaded
+    if ( preloadedAQ == undefined ) {
+      assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+    }
+
+    //const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+
     setAssessQuestion(assessQuestions);
-    //console.log("--fetchQuestionsIntervalsByTemplateId:question--", assessQuestions)
+    //onsole.log("--fetchQuestionsIntervalsByTemplateId:question--", assessQuestions)
 
     const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-    //console.log("--fetchQuestionsIntervalsByTemplateId:options--", responseOptions)
+    //console.log("--fetchQuestionsIntervalsByTemplateId:options--", templateId, responseOptions)
 
     setQuesResponseOptions(responseOptions);
 
     if (assessQuestions && assessQuestions.length > 0) {
-      const stringValues = assessQuestions[0].EA_SA_txtaResponse;
+      const stringValues = fieldName != null ? assessQuestions[0][fieldName] : "";
+      //const stringValues = assessQuestions[0].EA_SA_txtaResponse;
       const defaultValue = getDefaultValue(responseOptions, stringValues);
       //console.log("--fetchQuestionsIntervalsByTemplateId:default--", stringValues, responseOptions, defaultValue)
       setDefaultValues(getArrayValue(lookup, assessQuestions[0].id, defaultValue));
@@ -54,7 +68,7 @@ export const FormMultiSelect = (props: FormInputProps) => {
 
   useEffect(() => {
     fetchQuestionsAndOptions().catch(console.error);
-  }, [])
+  }, [templateId])
 
   const getDefaultValue = (options: any, stored: string) => {
     if (recordInfo.crudAction == 'view' && stored == null) {
@@ -120,7 +134,7 @@ export const FormMultiSelect = (props: FormInputProps) => {
           {recordInfo.crudAction == "view" &&
             <TextField
               label={fieldLabel(data.EA_SA_txtaQuestion)}
-              value={getNameValue(quesResponseOptions, aq.EA_SA_rsAssessmentResponseOptions)}
+              value={getMultiValue(quesResponseOptions, aq.EA_SA_txtaResponse)}
               InputProps={{ readOnly: true }}
             />
           }

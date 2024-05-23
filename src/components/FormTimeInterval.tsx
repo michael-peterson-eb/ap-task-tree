@@ -164,10 +164,10 @@ export const FormTimeInterval = (props: FormInputProps) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {questionsInterval.length > 0 && questionsInterval.map((qa:any) => (
-                <TableRow key={qa.id}>
+              {questionsInterval.length > 0 && questionsInterval.map((asQ:any) => (
+                <TableRow key={asQ.id}>
                   <TableCell>
-                    {qa.EA_SA_rfTimeInterval}
+                    {asQ.EA_SA_rfTimeInterval}
                   </TableCell>
                   <TableCell style={{ padding: '0px' }}>
                     {recordInfo.crudAction === 'edit' &&
@@ -179,12 +179,12 @@ export const FormTimeInterval = (props: FormInputProps) => {
                           }, }}
                         style={{ fontSize: '14px' }}
                         name={fieldName}
-                        id={templateId}
+                        id={asQ.id}
                         native
-                        defaultValue={getValue(lookup, qa.id, qa.EA_SA_rsAssessmentResponseOptions)}
+                        defaultValue={getValue(lookup, asQ.id, asQ.EA_SA_rsAssessmentResponseOptions)}
                         onChange={(event: any) => {
                           onChange('SSP', event);
-                          timeIntervalUpdate(qa.id, event);
+                          timeIntervalUpdate(asQ.id, event);
                           fnReqField();
                         }}
                       >
@@ -195,7 +195,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
                       </Select>
                     }
                     {recordInfo.crudAction === 'view' &&
-                      <div style={{padding: '12px 16px'}}>{getNameValue(quesResponseOptions, qa.EA_SA_rsAssessmentResponseOptions)}</div>
+                      <div style={{padding: '12px 16px'}}>{getNameValue(quesResponseOptions, asQ.EA_SA_rsAssessmentResponseOptions)}</div>
                     }
                   </TableCell>
                 </TableRow>

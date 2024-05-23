@@ -15,4 +15,5 @@ export interface FormInputProps {
   fnDoneWithReqField?: any;
   fnReqField?: any;
   fieldName?: string;
+  preloadedAQ?:any;
 }

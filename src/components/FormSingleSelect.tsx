@@ -17,7 +17,12 @@ import {
 
 import DOMPurify from "dompurify";
 
-import { getValue, getNameValue} from '../common/Utils';
+import {
+  initSelectValue,
+  getValue,
+  appendQuestions,
+  getNameValue,
+  cleanLabel } from '../common/Utils';
 
 export const FormSingleSelect = (props: FormInputProps) => {
   const {
@@ -42,7 +47,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
       // query EA_SA_AssessmentQuestion
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
       setAssessQuestion(assessQuestions);
-
+console.log("--fetchQuestionsAndOptions--", assessQuestions, templateId);
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
 
       const aqFieldValue = assessQuestions[0].EA_SA_rsAssessmentResponseOptions;
@@ -78,7 +83,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
   return (
     <div>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-        <FormControl sx={{  marginTop: 4, width: '100%' }}>
+        <FormControl sx={{ width: '100%' }}>
           {recordInfo.crudAction == "edit" &&
             <Fragment>
               <InputLabel
@@ -90,7 +95,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
               </InputLabel>
               <Select
                 labelId={`single-select-${aq.id}`}
-                id={templateId}
+                id={aq.id}
                 sx={{
                   width: '100%',
                   fontSize: '14px',

@@ -17,9 +17,6 @@ import {
 } from '@mui/material';
 
 import {
-  initSelectValue,
-  getValue,
-  appendQuestions,
   cleanLabel
 } from '../common/Utils';
 

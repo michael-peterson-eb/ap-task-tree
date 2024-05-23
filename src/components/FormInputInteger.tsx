@@ -21,7 +21,8 @@ export const FormInputInteger = (props: FormInputProps) => {
     onChange,
     lookup,
     fnSecQA,
-    fnReqField} = props;
+    fnReqField,
+    preloadedAQ} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
@@ -44,12 +45,17 @@ export const FormInputInteger = (props: FormInputProps) => {
 
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
-      const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+      let assessQuestions = preloadedAQ;
+
+      // check if Assessment Question data is NOT preloaded
+      if ( preloadedAQ == undefined ) {
+        assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+      }
       setAssessQuestion(assessQuestions);
 
       if (assessQuestions && assessQuestions.length > 0) {
         const aqId = assessQuestions[0].id;
-        const aqFieldValue = assessQuestions[0].EA_SA_intResponse;
+        const aqFieldValue = fieldName != null ? assessQuestions[0][fieldName] : "";
         const lookupValue = lookup(aqId);
 
         let responseValue = aqFieldValue ? aqFieldValue : '';
@@ -68,13 +74,13 @@ export const FormInputInteger = (props: FormInputProps) => {
   return (
     <>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-        <FormControl fullWidth sx={{ marginTop: 4 }} variant="standard">
+        <FormControl fullWidth variant="standard">
           {recordInfo.crudAction == "edit" &&
             <TextField
               sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
               required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
               id={data.id}
-              label={data.EA_SA_txtaQuestion}
+              label={fieldLabel(data.EA_SA_txtaQuestion)}
               name={fieldName}
               value={fieldValue}
               type="number"

@@ -6,7 +6,11 @@ import {
   fetchAssessQuestionsByTemplateId
 } from "../model/Questions";
 
-import { initSelectValue, getValue, appendQuestions, cleanLabel } from '../common/Utils';
+import {
+  initSelectValue,
+  getValue,
+  appendQuestions,
+  cleanLabel } from '../common/Utils';
 
 import DOMPurify from "dompurify";
 
@@ -19,7 +23,8 @@ export const FormInputText = (props: FormInputProps) => {
     onChange,
     lookup,
     fnSecQA,
-    fnReqField} = props;
+    fnReqField,
+    preloadedAQ} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
@@ -44,12 +49,18 @@ export const FormInputText = (props: FormInputProps) => {
 
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
-      const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+      let assessQuestions = preloadedAQ;
+
+      // check if Assessment Question data is NOT preloaded
+      if ( preloadedAQ == undefined ) {
+        assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+      }
+
       setAssessQuestion(assessQuestions);
 
       if (assessQuestions && assessQuestions.length > 0) {
         const aqId = assessQuestions[0].id;
-        const aqFieldValue = assessQuestions[0].EA_SA_txtaResponse;
+        const aqFieldValue = fieldName != null ? assessQuestions[0][fieldName] : "";
         const lookupValue = lookup(aqId);
 
         let responseValue = aqFieldValue ? aqFieldValue : '';
@@ -57,6 +68,7 @@ export const FormInputText = (props: FormInputProps) => {
 
         const respValue = getValue(lookup, aqId, aqFieldValue);
         const newValue = initSelectValue(recordInfo, respValue);
+        //console.log("--useEffect--", asQuestion, aqFieldValue, lookupValue, respValue, newValue, aqId)
         setFieldValue(newValue);
 
         fnSecQA(aqFieldValue); // track section question states
@@ -69,7 +81,7 @@ export const FormInputText = (props: FormInputProps) => {
   return (
     <>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-        <FormControl fullWidth sx={{ marginTop: 4 }} variant="standard">
+        <FormControl fullWidth sx={{ marginTop: 1, marginBottom: 1 }} variant="standard">
           {recordInfo.crudAction == "edit" &&
             <Box
               component="form"
@@ -81,7 +93,7 @@ export const FormInputText = (props: FormInputProps) => {
                 <TextField
                   sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
                   required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
-                  id={templateId}
+                  id={aq.id}
                   label={fieldLabel(data.EA_SA_txtaQuestion)}
                   name={fieldName}
                   value={fieldValue}
