@@ -53,9 +53,9 @@ export const FormSeverityLevel = (props: FormInputProps) => {
     fnSecQA,
     fnReqField} = props;
 
-  const severityLabelWidth = "40";
-  const bothInScopeWidth = "30";
-  const oneInScopeWidth = "60";
+  const severityLabelWidth = "20";
+  const bothInScopeWidth = "40";
+  const oneInScopeWidth = "80";
 
   const [questionsSeverity, setQuestionsSeverity] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
@@ -151,10 +151,10 @@ export const FormSeverityLevel = (props: FormInputProps) => {
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
       const severityLevels = await fetchQuestionsSeverityByTemplateId(recordInfo, data.id);
-      console.log("--fetchQuestionsSeverityByTemplateId--", severityLevels)
+      //console.log("--fetchQuestionsSeverityByTemplateId--", severityLevels)
 
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-      console.log("--fetchQuestionsSeverityByTemplateId:options--", responseOptions)
+      //console.log("--fetchQuestionsSeverityByTemplateId:options--", responseOptions)
 
       setQuestionsSeverity(severityLevels);
       setQuesResponseOptions(responseOptions);
@@ -202,12 +202,12 @@ export const FormSeverityLevel = (props: FormInputProps) => {
                     }
                   }}
                 >
-                  <TableCell style={{ width: severityLabelWidth }}>Severity Level</TableCell>
+                  <TableCell style={{ width: '20%' }}>Severity Level</TableCell>
                   {periodInScopeHas(periodInScope, "EA_OR_Normal") &&
-                    <TableCell style={{ width: colWidth.current }}>Impact at Normal Period</TableCell>
+                    <TableCell style={{ width: `${colWidth.current}%` }}>Impact at Normal Period</TableCell>
                   }
                   {periodInScopeHas(periodInScope, "EA_OR_Peak") &&
-                    <TableCell style={{ width: colWidth.current }}>Impact at Peak Period</TableCell>
+                    <TableCell style={{ width: `${colWidth.current}%` }}>Impact at Peak Period</TableCell>
                   }
                 </TableRow>
               </TableHead>
@@ -230,24 +230,85 @@ export const FormSeverityLevel = (props: FormInputProps) => {
                               lookup={lookup}
                               fnSecQA={fnSecQA}
                               fnReqField={fnReqField}
-                              preloadedAQ={[asQ]}/>
+                              preloadedAQ={[asQ]}
+                              withLabel={false}/>
                           </div>
                         }
                         {data.EA_SA_ddlResponseFormat === 'SSP' &&
                           <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
-                              <FormSingleSelect
-                                fieldName={"EA_SA_rsAssessmentResponseOptions"}
-                                recordInfo={recordInfo}
-                                qtype={qtype}
-                                data={data}
-                                onChange={onChange}
-                                lookup={lookup}
-                                fnSecQA={fnSecQA}
-                                fnReqField={fnReqField}
-                                preloadedAQ={[asQ]}/>
+                            <FormSingleSelect
+                              fieldName={"EA_SA_rsAssessmentResponseOptions"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChange}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}
+                              withLabel={false}/>
                           </div>
                         }
-
+                        {data.EA_SA_ddlResponseFormat === 'INT' &&
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
+                            <FormInputInteger
+                              fieldName={"EA_SA_intResponse"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChangeCustom}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}
+                              withLabel={false}/>
+                          </div>
+                        }
+                        {data.EA_SA_ddlResponseFormat === 'DEC' &&
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
+                            <FormInputDecimal
+                              fieldName={"EA_SA_decResponse"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChangeCustom}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}
+                              withLabel={false}/>
+                          </div>
+                        }
+                        {data.EA_SA_ddlResponseFormat === 'CCY' &&
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
+                            <FormInputCurrency
+                              fieldName={"EA_SA_curResponse"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChangeCustom}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}
+                              withLabel={false}/>
+                          </div>
+                        }
+                        {data.EA_SA_ddlResponseFormat === 'DATE' &&
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
+                            <FormInputDate
+                              fieldName={"EA_SA_ddResponse"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChangeCustom}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}
+                              withLabel={false}/>
+                          </div>
+                        }
                       </TableCell>
                     }
                     {periodInScopeHas(periodInScope, "EA_OR_Peak") &&
@@ -263,7 +324,8 @@ export const FormSeverityLevel = (props: FormInputProps) => {
                               lookup={lookup}
                               fnSecQA={fnSecQA}
                               fnReqField={fnReqField}
-                              preloadedAQ={[asQ]}/>
+                              preloadedAQ={[asQ]}
+                              withLabel={false}/>
                           </div>
                         }
                         {data.EA_SA_ddlResponseFormat === 'SSP' &&
@@ -278,6 +340,66 @@ export const FormSeverityLevel = (props: FormInputProps) => {
                               fnSecQA={fnSecQA}
                               fnReqField={fnReqField}
                               preloadedAQ={[asQ]}/>
+                          </div>
+                        }
+                        {data.EA_SA_ddlResponseFormat === 'INT' &&
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
+                            <FormInputInteger
+                              fieldName={"EA_OR_intResponse"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChangeCustom}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}
+                              withLabel={false}/>
+                          </div>
+                        }
+                        {data.EA_SA_ddlResponseFormat === 'DEC' &&
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
+                            <FormInputDecimal
+                              fieldName={"EA_OR_decResponse"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChangeCustom}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}
+                              withLabel={false}/>
+                          </div>
+                        }
+                        {data.EA_SA_ddlResponseFormat === 'CCY' &&
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
+                            <FormInputCurrency
+                              fieldName={"EA_OR_curResponse"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChangeCustom}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}
+                              withLabel={false}/>
+                          </div>
+                        }
+                        {data.EA_SA_ddlResponseFormat === 'DATE' &&
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
+                            <FormInputDate
+                              fieldName={"EA_OR_ddResponse"}
+                              recordInfo={recordInfo}
+                              qtype={qtype}
+                              data={data}
+                              onChange={onChangeCustom}
+                              lookup={lookup}
+                              fnSecQA={fnSecQA}
+                              fnReqField={fnReqField}
+                              preloadedAQ={[asQ]}
+                              withLabel={false}/>
                           </div>
                         }
                       </TableCell>

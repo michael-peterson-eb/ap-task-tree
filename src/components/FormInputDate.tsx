@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, Fragment} from 'react';
 import { FormInputProps } from "./FormInputProps";
 import { FormControl, TextField, ThemeProvider } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -8,10 +8,12 @@ import dayjs, { Dayjs } from 'dayjs';
 import { CustomFontTheme } from '../common/CustomTheme';
 
 import {
-  fetchAssessQuestionsByTemplateId
+  getAssessmentQuestion
 } from "../model/Questions";
 
-import { getValue } from '../common/Utils';
+import { getValue, showLabel } from '../common/Utils';
+import { fieldLabel } from './Helpers';
+
 export const FormInputDate = (props: FormInputProps) => {
 
   const {
@@ -22,7 +24,9 @@ export const FormInputDate = (props: FormInputProps) => {
     onChange,
     lookup,
     fnSecQA,
-    fnReqField} = props;
+    fnReqField,
+    preloadedAQ,
+    withLabel} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [dateValue, setDateValue] = useState<Dayjs | null>(null);
@@ -37,12 +41,20 @@ export const FormInputDate = (props: FormInputProps) => {
     return returnValue;
   }
 
+  const formatDate = (id:number, fieldValue:any) => {
+    const dteValue = getDateValue(id, fieldValue);
+
+    if ( dteValue === null ) return "No Answer";
+    return dayjs(dteValue).format('MM/DD/YYYY')
+  }
+
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
-      const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+
+      const assessQuestions:any = await getAssessmentQuestion(recordInfo, templateId, preloadedAQ);
 
       if (assessQuestions && assessQuestions.length > 0 ) {
-        const respValue = assessQuestions[0].EA_SA_ddResponse;
+        const respValue = fieldName != null ? assessQuestions[0][fieldName] : "";
         setAssessQuestion(assessQuestions);
         setDateValue(dayjs(respValue));
 
@@ -55,14 +67,14 @@ export const FormInputDate = (props: FormInputProps) => {
   }, [templateId])
 
   return (
-    <div>
+    <Fragment>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
         <ThemeProvider theme={CustomFontTheme}>
-          <FormControl fullWidth sx={{ marginTop: 4}} variant="standard">
+          <FormControl fullWidth variant="standard">
              {recordInfo.crudAction == "edit" &&
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
-                  label={aq.name}
+                  label={showLabel(withLabel, fieldLabel(aq.name))}
                   value={getDateValue(aq.id, aq.EA_SA_ddResponse)}
                   disablePast={true}
                   onChange={(newValue: any) => {
@@ -85,14 +97,14 @@ export const FormInputDate = (props: FormInputProps) => {
             }
             {recordInfo.crudAction == "view" &&
               <TextField
-                label={aq.name}
-                value={dayjs(getDateValue(aq.id, aq.EA_SA_ddResponse)).format('MM/DD/YYYY')}
+                label={showLabel(withLabel, fieldLabel(aq.name))}
+                value={fieldName ? formatDate(aq.id, aq[fieldName]) : ""}
                 InputProps={{ readOnly: true }}
               />
             }
           </FormControl>
         </ThemeProvider>
       ))}
-    </div>
+    </Fragment>
   );
 };

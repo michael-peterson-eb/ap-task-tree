@@ -22,8 +22,11 @@ const AssessmentQuestionFields = [
   "EA_OR_rsSeverityLevel",
   "EA_OR_mddlPeriodsInScope#code",
   "EA_OR_txtSeverityLevelName",
+  "EA_OR_curResponse",
+  "EA_OR_decResponse",
+  "EA_OR_intResponse",
+  "EA_OR_ddResponse",
 ];
-
 /**
  * fetch Assessment Questions by record id and question type id
  * @param questionTypeID
@@ -31,7 +34,7 @@ const AssessmentQuestionFields = [
  */
 export const fetchQuestionsByQuestionTypeId = async (questionTypeId: any, recordInfo: any) => {
   try {
-    let queryCondition = '';
+    let queryCondition = "";
 
     queryCondition += `${recordInfo.questionRelName}=${recordInfo.id}`;
     queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
@@ -40,7 +43,6 @@ export const fetchQuestionsByQuestionTypeId = async (questionTypeId: any, record
 
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 10000, true);
     return results;
-
   } catch (error) {
     console.log("Error: fetchQuestions ", error);
   }
@@ -48,7 +50,7 @@ export const fetchQuestionsByQuestionTypeId = async (questionTypeId: any, record
 
 export const fetchAssessQuestionsByTemplateId = async (recordInfo: any, templateID: any) => {
   try {
-    let queryCondition = '';
+    let queryCondition = "";
 
     queryCondition += `${recordInfo.questionRelName}=${recordInfo.id}`;
     queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
@@ -59,7 +61,6 @@ export const fetchAssessQuestionsByTemplateId = async (recordInfo: any, template
     //console.log("fetchAssessQuestionsByTemplateId--", results);
 
     return await results;
-
   } catch (error) {
     console.log("Error: fetchAssessQuestionsByTemplateId ", error);
   }
@@ -73,7 +74,7 @@ export const fetchAssessQuestionsByTemplateId = async (recordInfo: any, template
  */
 export const fetchQuestionsIntervalsByTemplateId = async (recordInfo: any, templateID: any) => {
   try {
-    let queryCondition = '';
+    let queryCondition = "";
 
     queryCondition += `${recordInfo.questionRelName}=${recordInfo.id}`;
     queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
@@ -96,7 +97,7 @@ export const fetchQuestionsIntervalsByTemplateId = async (recordInfo: any, templ
  */
 export const fetchQuestionsSeverityByTemplateId = async (recordInfo: any, templateID: any) => {
   try {
-    let queryCondition = '';
+    let queryCondition = "";
 
     queryCondition += `${recordInfo.questionRelName}=${recordInfo.id}`;
     queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
@@ -136,10 +137,9 @@ export const fetchTypesOfAssessmentQuestion = async (assessmentQuestionCondition
  */
 export const updateQuestion = async (recordId: any, fields: any) => {
   try {
-    console.log("--about to update--", recordId, fields)
+    console.log("--updateQuestion--", recordId, fields);
     const results = await _RB.updateRecord("EA_SA_AssessmentQuestion", recordId, fields);
     return results;
-
   } catch (error) {
     console.log("Error: updateQuestion ", error);
   }
@@ -152,25 +152,13 @@ export const concatObjectIds = (values: any) => {
   return ids.join(",");
 };
 
-export const updateQuestionWithResponse = async (updatedResponses:any, defaultFields:any, peakFields:any) => {
+export const updateQuestionWithResponse = async (updatedResponses: any, defaultFields: any, peakFields: any) => {
   for (let recordId in updatedResponses) {
     const record = updatedResponses[recordId];
-    const fields:any = {};
-    const recordType:any = record.type;
-    console.log("--updateQuestionWithResponse:1--", record)
+    const recordType: any = record.type;
 
     if (defaultFields.hasOwnProperty(recordType)) {
-      let value = record.value;
-      /*
-      if (recordType === "MSP") value = concatObjectIds(value);
-      if ( record.scope == "EA_OR_PEAK") {
-        fields[peakFields[recordType]] = value;
-      } else {
-        fields[defaultFields[recordType]] = value;
-      }
-      */
-
-      console.log("--updateQuestionWithResponse:2--", record.fieldValue);
+      //console.log("--updateQuestionWithResponse:2--", record.fieldValue);
       await updateQuestion(recordId, record.fieldValue);
     }
   }
@@ -181,8 +169,18 @@ export const getRelatedResponseOptions = async (questionId: any) => {
     // R7996162=Assessment Question to Assessment Response Options
     const results = await _RB.getRelatedFields("R7996162", ",EA_SA_AssessmentQuestion", questionId, "id");
     return results;
-
   } catch (error) {
     console.log("Error: getRelatedResponseOptions ", error);
   }
+};
+
+export const getAssessmentQuestion = async (recordInfo: any, templateId: any, preloadedAQ: any) => {
+  let assessQuestions = preloadedAQ;
+
+  // check if Assessment Question data is NOT preloaded
+  if (preloadedAQ == undefined) {
+    assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+  }
+
+  return assessQuestions;
 };

@@ -1,3 +1,4 @@
+import { useEffect, useState, Fragment } from 'react';
 import { FormInputProps } from "./FormInputProps";
 
 import {
@@ -6,20 +7,100 @@ import {
   InputAdornment
 } from '@mui/material';
 
-export const FormInputCurrency = ({ fieldName, recordInfo, qtype, data, onChange}: FormInputProps) => {
-  return(
-    <FormControl fullWidth sx={{ m: 1, fontSize: 18 }} variant="standard">
-      <TextField
-        label={data.EA_SA_txtaQuestion}
-        id={data.id}
-        name={fieldName}
-        sx={{ m: 1 }}
-        InputProps={{
-          startAdornment: <InputAdornment position="start">US$</InputAdornment>,
-          inputMode: 'numeric', pattern: '[0-9]*'
-        }}
-        onChange={onChange}
-      />
-    </FormControl>
-  )
+import {
+  getAssessmentQuestion
+} from "../model/Questions";
+
+import {
+  initSelectValue,
+  getValue,
+  isQuestionRequired,
+  showLabel,
+} from '../common/Utils';
+
+import { fieldLabel } from './Helpers';
+
+export const FormInputCurrency = (props: FormInputProps) => {
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    lookup,
+    fnSecQA,
+    fnReqField,
+    preloadedAQ,
+    withLabel} = props;
+
+  const [assessQuestions, setAssessQuestion] = useState([]);
+  const [fieldValue, setFieldValue] = useState('');
+
+  const templateId = data.id;
+
+  useEffect(() => {
+    const fetchQuestionsAndOptions = async () => {
+
+      const assessQuestions:any = await getAssessmentQuestion(recordInfo, templateId, preloadedAQ);
+      setAssessQuestion(assessQuestions);
+
+      if (assessQuestions && assessQuestions.length > 0) {
+        const aqId = assessQuestions[0].id;
+        const aqFieldValue = fieldName != null ? assessQuestions[0][fieldName] : "";
+        const lookupValue = lookup(aqId);
+
+        let responseValue = aqFieldValue ? aqFieldValue : '';
+        if ( lookupValue || lookupValue == '' ) responseValue = lookupValue;
+
+        const respValue = getValue(lookup, aqId, aqFieldValue);
+        const newValue = initSelectValue(recordInfo, respValue);
+        setFieldValue(newValue);
+
+      }
+    }
+    fetchQuestionsAndOptions().catch(console.error);
+
+  }, [templateId])
+
+  return (
+    <Fragment>
+      {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
+        <FormControl fullWidth variant="standard">
+          {recordInfo.crudAction == "edit" &&
+            <TextField
+              sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
+              required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
+              id={aq.id}
+              label={showLabel(withLabel, fieldLabel(data.EA_SA_txtaQuestion))}
+              name={fieldName}
+              value={fieldValue}
+              type="number"
+              InputProps={{
+                startAdornment: <InputAdornment position="start">US$</InputAdornment>,
+                inputMode: 'numeric',
+                style: { fontSize: '14px' },
+                ...recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }
+              }}
+              InputLabelProps={{ style: { fontSize: '18px', backgroundColor: '#FFF' } }}
+              onChange={(event: any) => {
+                const { id, name, value } = event.target;
+                setFieldValue(value);
+                onChange('DEC', null, event.target);
+                fnReqField();
+              }}
+              error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
+              helperText={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue ? "This question is required!" : ""}
+            />
+          }
+          {recordInfo.crudAction == "view" &&
+            <TextField
+              label={showLabel(withLabel, fieldLabel(data.EA_SA_txtaQuestion))}
+              value={fieldValue}
+              InputProps={{ readOnly: true }}
+            />
+          }
+        </FormControl>
+      ))}
+    </Fragment>
+  );
 };

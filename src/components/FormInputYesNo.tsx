@@ -2,7 +2,7 @@ import {Fragment, useEffect, useState} from 'react';
 import { FormInputProps } from "./FormInputProps";
 
 import {
-  fetchAssessQuestionsByTemplateId
+  getAssessmentQuestion
 } from "../model/Questions";
 
 import {
@@ -15,7 +15,9 @@ import {
     InputLabel,
     TextField,
 } from '@mui/material';
+
 import { getValue, getNameValue } from '../common/Utils';
+import { fieldLabel } from './Helpers';
 
 export const FormYesNo = (props: FormInputProps) => {
   const {
@@ -26,7 +28,8 @@ export const FormYesNo = (props: FormInputProps) => {
     onChange,
     lookup,
     fnSecQA,
-    fnReqField} = props;
+    fnReqField,
+    preloadedAQ} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
@@ -37,11 +40,14 @@ export const FormYesNo = (props: FormInputProps) => {
   useEffect(() => {
     // declare the async data fetching function
     const fetchQuestionsAndOptions = async () => {
-      const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+
+      const assessQuestions:any = await getAssessmentQuestion(recordInfo, templateId, preloadedAQ);
       setAssessQuestion(assessQuestions);
 
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-      const aqFieldValue = assessQuestions[0].EA_SA_rsAssessmentResponseOptions;
+      //const aqFieldValue = assessQuestions[0].EA_SA_rsAssessmentResponseOptions;
+
+      const aqFieldValue = fieldName != null ? assessQuestions[0][fieldName] : "";
       const aqId = assessQuestions[0].id;
       const respValue = getValue(lookup, aqId, aqFieldValue);
 
@@ -58,7 +64,7 @@ export const FormYesNo = (props: FormInputProps) => {
   return (
     <div>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-        <FormControl sx={{  marginTop: 4, width: '100%' }}>
+        <FormControl sx={{ width: '100%' }}>
            {recordInfo.crudAction == "edit" &&
             <Fragment>
               <InputLabel id={`yesno-${aq.id}`} size={'normal'} sx={{ background: '#FFF', paddingRight: '4px', fontSize: '18px'}}>
@@ -91,7 +97,7 @@ export const FormYesNo = (props: FormInputProps) => {
           }
           {recordInfo.crudAction == "view" &&
             <TextField
-              label={data.EA_SA_txtaQuestion}
+              label={fieldLabel(data.EA_SA_txtaQuestion)}
               value={getNameValue(quesResponseOptions, aq.EA_SA_rsAssessmentResponseOptions)}
               InputProps={{ readOnly: true }}
             />

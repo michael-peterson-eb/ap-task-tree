@@ -31,7 +31,7 @@ import { getOperationStatus } from './model/Assessment';
 import { getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
 
 import { NavButtonTheme } from './common/CustomTheme';
-import { RecordInfo } from './common/ObjectTypes';
+import { dateYYYYMMDDFormat } from './common/Utils';
 
 export default function MultiSteps({recordInfo}) {
   const [activeStep, setActiveStep] = useState(0);
@@ -133,7 +133,7 @@ export default function MultiSteps({recordInfo}) {
   const handleClose = () => {
     // no trigger is called for Scenario Test
     if ( !cancelClicked ) {
-      // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals
+      // update should invoke the trigger "[UPDATE] Calculate Assessment Time Intervals"
       rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, recordInfo.triggerId);
     }
 
@@ -162,7 +162,7 @@ export default function MultiSteps({recordInfo}) {
 
   const handleChange = async (type:any, event:any, scope:any = "EA_OR_NORMAL") => {
     const { id, name, value } = event.target;     // id=typeId name=questionId
-    console.log("--handleChange--", type, id, name, value)
+    //console.log("--handleChange--", type, id, name, value)
 
     trackUpdatedQuestions(name, id, type, id, value, scope);
     setSectionQuestionAnswer(name, id, name, value);
@@ -170,7 +170,7 @@ export default function MultiSteps({recordInfo}) {
 
   const customChangedHandler = (type:any, _event:any, fieldValue:any, scope:any = "EA_OR_NORMAL" ) => {
     let { id, name, value } = fieldValue;
-    console.log("--customChangedHandler--", fieldValue)
+    //console.log("--customChangedHandler--", fieldValue)
     switch (type) {
       case 'DATE':
         value = dateYYYYMMDDFormat(value.toString());
@@ -217,7 +217,7 @@ export default function MultiSteps({recordInfo}) {
     };
 
     updateFields.current = newUpdatedFields;
-    console.log("--trackUpdatedQuestions--", newUpdatedFields)
+    //console.log("--trackUpdatedQuestions--", newUpdatedFields)
   }
 
   // set all section questions ref state
@@ -332,7 +332,6 @@ export default function MultiSteps({recordInfo}) {
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit}>
         <Box sx={{ width: '100%'}}>
           {questionTypes.length > 0 && recordInfo.crudAction == "edit" &&
             <Box mb={1} display="flex" justifyContent="space-between" alignItems="right">
@@ -447,7 +446,6 @@ export default function MultiSteps({recordInfo}) {
             </Fragment>
           )}
         </Box>
-      </form>
     </FormProvider>
   );
 }

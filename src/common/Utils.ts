@@ -119,3 +119,13 @@ export const cleanLabel = (htmlLabel:string) => {
     USE_PROFILES: { html: true },
   })
 };
+
+export const isQuestionRequired = (flag:any) => flag == 1;
+
+export const getRequiredColor = (isChecked:any) => {
+  return isQuestionRequired(isChecked) ? "#d32f2f" : "#000";
+}
+
+export const showLabel = (hasLabel:any, label: any) => {
+  return hasLabel == undefined ? label : null;
+};

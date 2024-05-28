@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import {
   TextField,
   Autocomplete,
@@ -6,20 +6,23 @@ import {
   ThemeProvider,
   FormGroup,
 } from "@mui/material";
+
 import { FormInputProps } from "./FormInputProps";
+
 import {
-  fetchAssessQuestionsByTemplateId
+  getAssessmentQuestion
 } from "../model/Questions";
+
 import {
   fetchResponseOptionsByTemplateId
 } from "../model/ResponseOptions";
 
 import {
   getArrayValue,
-  cleanLabel,
   getMultiValue } from '../common/Utils';
 
 import { CustomFontTheme } from '../common/CustomTheme';
+import { fieldLabel } from './Helpers';
 
 export const FormMultiSelect = (props: FormInputProps) => {
   const {
@@ -40,15 +43,8 @@ export const FormMultiSelect = (props: FormInputProps) => {
   const templateId = data.id;
 
   const fetchQuestionsAndOptions = async () => {
-    let assessQuestions = preloadedAQ;
 
-    // check if Assessment Question data is NOT preloaded
-    if ( preloadedAQ == undefined ) {
-      assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
-    }
-
-    //const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
-
+    const assessQuestions:any = await getAssessmentQuestion(recordInfo, templateId, preloadedAQ);
     setAssessQuestion(assessQuestions);
     //onsole.log("--fetchQuestionsIntervalsByTemplateId:question--", assessQuestions)
 
@@ -83,20 +79,10 @@ export const FormMultiSelect = (props: FormInputProps) => {
     return matched;
   };
 
-  const fieldLabel = (text: string) => {
-    return (
-      <div
-        dangerouslySetInnerHTML={{
-          __html: cleanLabel(text),
-        }}
-      />
-    );
-  };
-
   return (
-    <div>
+    <Fragment>
       {assessQuestions.map((aq:any) => (
-        <FormControl sx={{  marginTop: 4, width: '100%' }}>
+        <FormControl sx={{ width: '100%' }}>
           {recordInfo.crudAction == "edit" &&
             <ThemeProvider theme={CustomFontTheme}>
               <FormGroup sx={{ paddingTop: 2 }}>
@@ -140,6 +126,6 @@ export const FormMultiSelect = (props: FormInputProps) => {
           }
         </FormControl>
       ))}
-    </div>
+    </Fragment>
   );
 }

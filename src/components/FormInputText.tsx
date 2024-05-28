@@ -3,16 +3,20 @@ import { FormInputProps } from "./FormInputProps";
 import { TextField, FormControl, Box, InputLabel } from '@mui/material';
 
 import {
-  fetchAssessQuestionsByTemplateId
+  fetchAssessQuestionsByTemplateId,
+  getAssessmentQuestion
 } from "../model/Questions";
 
 import {
   initSelectValue,
   getValue,
   appendQuestions,
-  cleanLabel } from '../common/Utils';
+  cleanLabel,
+  showLabel,
+} from '../common/Utils';
 
 import DOMPurify from "dompurify";
+import { fieldLabel } from './Helpers';
 
 export const FormInputText = (props: FormInputProps) => {
   const {
@@ -24,7 +28,8 @@ export const FormInputText = (props: FormInputProps) => {
     lookup,
     fnSecQA,
     fnReqField,
-    preloadedAQ} = props;
+    preloadedAQ,
+    withLabel} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
@@ -35,27 +40,10 @@ export const FormInputText = (props: FormInputProps) => {
     return flag == 1;
   }
 
-  const fieldLabel = (text:string) => {
-    return(
-      <div dangerouslySetInnerHTML={{
-        __html: cleanLabel(text)
-        }} />
-    )
-  }
-
-  const requiredColor = () => {
-    return isQuestionRequired(data.EA_SA_rfRequiredQuestion) ? "#d32f2f" : "#000"
-  }
-
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
-      let assessQuestions = preloadedAQ;
 
-      // check if Assessment Question data is NOT preloaded
-      if ( preloadedAQ == undefined ) {
-        assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
-      }
-
+      const assessQuestions:any = await getAssessmentQuestion(recordInfo, templateId, preloadedAQ);
       setAssessQuestion(assessQuestions);
 
       if (assessQuestions && assessQuestions.length > 0) {
@@ -68,9 +56,8 @@ export const FormInputText = (props: FormInputProps) => {
 
         const respValue = getValue(lookup, aqId, aqFieldValue);
         const newValue = initSelectValue(recordInfo, respValue);
-        //console.log("--useEffect--", asQuestion, aqFieldValue, lookupValue, respValue, newValue, aqId)
-        setFieldValue(newValue);
 
+        setFieldValue(newValue);
         fnSecQA(aqFieldValue); // track section question states
       }
     }
@@ -94,7 +81,7 @@ export const FormInputText = (props: FormInputProps) => {
                   sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
                   required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
                   id={aq.id}
-                  label={fieldLabel(data.EA_SA_txtaQuestion)}
+                  label={showLabel(withLabel, fieldLabel(data.EA_SA_txtaQuestion))}
                   name={fieldName}
                   value={fieldValue}
                   InputProps={{
@@ -116,7 +103,7 @@ export const FormInputText = (props: FormInputProps) => {
           }
           {recordInfo.crudAction == "view" &&
             <TextField
-              label={fieldLabel(data.EA_SA_txtaQuestion)}
+              label={showLabel(withLabel, fieldLabel(data.EA_SA_txtaQuestion))}
               value={fieldValue}
               InputProps={{ readOnly: true }}
             />

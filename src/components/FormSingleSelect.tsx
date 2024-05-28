@@ -10,7 +10,6 @@ import {
 import {
     FormControl,
     Select,
-    MenuItem,
     InputLabel,
     TextField,
 } from '@mui/material';
@@ -18,11 +17,11 @@ import {
 import DOMPurify from "dompurify";
 
 import {
-  initSelectValue,
   getValue,
-  appendQuestions,
   getNameValue,
-  cleanLabel } from '../common/Utils';
+} from '../common/Utils';
+
+import { fieldLabel } from './Helpers';
 
 export const FormSingleSelect = (props: FormInputProps) => {
   const {
@@ -47,7 +46,8 @@ export const FormSingleSelect = (props: FormInputProps) => {
       // query EA_SA_AssessmentQuestion
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
       setAssessQuestion(assessQuestions);
-console.log("--fetchQuestionsAndOptions--", assessQuestions, templateId);
+
+      //console.log("--fetchQuestionsAndOptions--", assessQuestions, templateId);
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
 
       const aqFieldValue = assessQuestions[0].EA_SA_rsAssessmentResponseOptions;
@@ -70,7 +70,7 @@ console.log("--fetchQuestionsAndOptions--", assessQuestions, templateId);
     });
   };
 
- const fieldLabel = (text: string) => {
+ const xfieldLabel = (text: string) => {
     return (
       <div
         dangerouslySetInnerHTML={{
