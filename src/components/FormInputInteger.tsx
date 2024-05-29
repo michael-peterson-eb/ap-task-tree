@@ -1,6 +1,6 @@
 import { useEffect, useState, Fragment } from 'react';
 import { FormInputProps } from "./FormInputProps";
-import { TextField, FormControl } from '@mui/material';
+import { TextField, FormControl, Typography } from '@mui/material';
 
 import {
   getAssessmentQuestion
@@ -11,9 +11,11 @@ import {
     getValue,
     isQuestionRequired,
     showLabel,
+    fieldWithLabel,
 } from '../common/Utils';
 
 import { fieldLabel } from './Helpers';
+import { FieldValue } from './DisplayFieldValue';
 
 export const FormInputInteger = (props: FormInputProps) => {
   const {
@@ -87,10 +89,10 @@ export const FormInputInteger = (props: FormInputProps) => {
             />
           }
           {recordInfo.crudAction == "view" &&
-            <TextField
-              label={showLabel(withLabel, fieldLabel(data.EA_SA_txtaQuestion))}
-              value={fieldValue}
-              InputProps={{ readOnly: true }}
+            <FieldValue
+              withLabel={withLabel}
+              fieldValue={fieldValue}
+              data={data}
             />
           }
         </FormControl>

@@ -13,6 +13,7 @@ import {
 
 import { getValue, showLabel } from '../common/Utils';
 import { fieldLabel } from './Helpers';
+import { FieldValue } from './DisplayFieldValue';
 
 export const FormInputDate = (props: FormInputProps) => {
 
@@ -96,10 +97,10 @@ export const FormInputDate = (props: FormInputProps) => {
               </LocalizationProvider>
             }
             {recordInfo.crudAction == "view" &&
-              <TextField
-                label={showLabel(withLabel, fieldLabel(aq.name))}
-                value={fieldName ? formatDate(aq.id, aq[fieldName]) : ""}
-                InputProps={{ readOnly: true }}
+              <FieldValue
+                withLabel={withLabel}
+                fieldValue={fieldName ? formatDate(aq.id, aq[fieldName]) : ""}
+                data={data}
               />
             }
           </FormControl>

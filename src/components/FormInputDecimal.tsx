@@ -14,6 +14,7 @@ import {
 } from '../common/Utils';
 
 import { fieldLabel } from './Helpers';
+import { FieldValue } from './DisplayFieldValue';
 
 export const FormInputDecimal = (props: FormInputProps) => {
   const {
@@ -87,10 +88,10 @@ export const FormInputDecimal = (props: FormInputProps) => {
             />
           }
           {recordInfo.crudAction == "view" &&
-            <TextField
-              label={showLabel(withLabel, fieldLabel(data.EA_SA_txtaQuestion))}
-              value={fieldValue}
-              InputProps={{ readOnly: true }}
+            <FieldValue
+              withLabel={withLabel}
+              fieldValue={fieldValue}
+              data={data}
             />
           }
         </FormControl>

@@ -314,7 +314,7 @@ export const FormSeverityLevel = (props: FormInputProps) => {
                     {periodInScopeHas(periodInScope, "EA_OR_Peak") &&
                       <TableCell style={{ padding: '0px' }}>
                         {data.EA_SA_ddlResponseFormat === 'FRES' &&
-                          <div style={{ marginRight: 8 }}>
+                          <div style={{ marginTop: 10, marginBottom: 10, marginRight: 8}}>
                             <FormInputText
                               fieldName={"EA_OR_txtaResponse"}
                               recordInfo={recordInfo}

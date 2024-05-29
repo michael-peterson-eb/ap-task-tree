@@ -85,7 +85,7 @@ export const FormMultiSelect = (props: FormInputProps) => {
         <FormControl sx={{ width: '100%' }}>
           {recordInfo.crudAction == "edit" &&
             <ThemeProvider theme={CustomFontTheme}>
-              <FormGroup sx={{ paddingTop: 2 }}>
+              <FormGroup sx={{ paddingTop: 1 }}>
                 <Autocomplete
                   sx={{ fontSize: '14px' }}
                   multiple

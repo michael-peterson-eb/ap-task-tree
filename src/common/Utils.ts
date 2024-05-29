@@ -129,3 +129,5 @@ export const getRequiredColor = (isChecked:any) => {
 export const showLabel = (hasLabel:any, label: any) => {
   return hasLabel == undefined ? label : null;
 };
+
+export const fieldWithLabel = (withLabel:any) => withLabel == undefined;
