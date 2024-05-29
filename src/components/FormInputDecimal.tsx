@@ -3,34 +3,46 @@ import { FormInputProps } from "./FormInputProps";
 import { TextField, FormControl } from '@mui/material';
 
 import {
-  fetchAssessQuestionsByTemplateId
+  getAssessmentQuestion
 } from "../model/Questions";
 
 import {
-    initSelectValue,
-    getValue }
-from '../common/Utils';
+  initSelectValue,
+  getValue,
+  isQuestionRequired,
+  showLabel,
+} from '../common/Utils';
+
+import { fieldLabel } from './Helpers';
+import { FieldValue } from './DisplayFieldValue';
 
 export const FormInputDecimal = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    lookup,
+    fnSecQA,
+    fnReqField,
+    preloadedAQ,
+    withLabel} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
 
   const templateId = data.id;
 
-  const isQuestionRequired = (flag:any) => flag == 1;
-
-  const requiredColor = () => isQuestionRequired(data.EA_SA_rfRequiredQuestion) ? "#d32f2f" : "#000"
-
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
-      const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
+
+      const assessQuestions:any = await getAssessmentQuestion(recordInfo, templateId, preloadedAQ);
       setAssessQuestion(assessQuestions);
 
       if (assessQuestions && assessQuestions.length > 0) {
         const aqId = assessQuestions[0].id;
-        const aqFieldValue = assessQuestions[0].EA_SA_decResponse;
+        const aqFieldValue = fieldName != null ? assessQuestions[0][fieldName] : "";
         const lookupValue = lookup(aqId);
 
         let responseValue = aqFieldValue ? aqFieldValue : '';
@@ -49,30 +61,39 @@ export const FormInputDecimal = (props: FormInputProps) => {
   return (
     <>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-        <FormControl fullWidth sx={{ marginTop: 4 }} variant="standard">
-          <TextField
-            sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
-            required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
-            id={data.id}
-            label={data.EA_SA_txtaQuestion}
-            name={aq.id}
-            value={fieldValue}
-            type="number"
-            InputProps={{
-              inputMode: 'numeric',
-              style: { fontSize: '14px' },
-              ...recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }
-            }}
-            InputLabelProps={{ style: { fontSize: '18px', backgroundColor: '#FFF' } }}
-            onChange={(event: any) => {
-              const { id, name, value } = event.target;
-              setFieldValue(value);
-              onChange('DEC', null, event.target);
-              fnReqField();
-            }}
-            error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
-            helperText={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue ? "This question is required!" : ""}
-          />
+        <FormControl fullWidth variant="standard">
+          {recordInfo.crudAction == "edit" &&
+            <TextField
+              sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
+              required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
+              id={aq.id}
+              label={showLabel(withLabel, fieldLabel(data.EA_SA_txtaQuestion))}
+              name={fieldName}
+              value={fieldValue}
+              type="number"
+              InputProps={{
+                inputMode: 'numeric',
+                style: { fontSize: '14px' },
+                ...recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }
+              }}
+              InputLabelProps={{ style: { fontSize: '18px', backgroundColor: '#FFF' } }}
+              onChange={(event: any) => {
+                const { id, name, value } = event.target;
+                setFieldValue(value);
+                onChange('DEC', null, event.target);
+                fnReqField();
+              }}
+              error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
+              helperText={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue ? "This question is required!" : ""}
+            />
+          }
+          {recordInfo.crudAction == "view" &&
+            <FieldValue
+              withLabel={withLabel}
+              fieldValue={fieldValue}
+              data={data}
+            />
+          }
         </FormControl>
       ))}
     </>

@@ -10,16 +10,29 @@ import {
 import {
     FormControl,
     Select,
-    MenuItem,
     InputLabel,
     TextField,
 } from '@mui/material';
 
 import DOMPurify from "dompurify";
-import { getValue, getNameValue} from '../common/Utils';
+
+import {
+  getValue,
+  getNameValue,
+} from '../common/Utils';
+
+import { fieldLabel } from './Helpers';
 
 export const FormSingleSelect = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    lookup,
+    fnSecQA,
+    fnReqField} = props;
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
@@ -27,13 +40,14 @@ export const FormSingleSelect = (props: FormInputProps) => {
   const templateId = data.id;
 
   useEffect(() => {
-    // declare the async data fetching function
+
     const fetchQuestionsAndOptions = async () => {
 
       // query EA_SA_AssessmentQuestion
       const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
       setAssessQuestion(assessQuestions);
 
+      //console.log("--fetchQuestionsAndOptions--", assessQuestions, templateId);
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
 
       const aqFieldValue = assessQuestions[0].EA_SA_rsAssessmentResponseOptions;
@@ -56,7 +70,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
     });
   };
 
- const fieldLabel = (text: string) => {
+ const xfieldLabel = (text: string) => {
     return (
       <div
         dangerouslySetInnerHTML={{
@@ -69,7 +83,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
   return (
     <div>
       {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-        <FormControl sx={{  marginTop: 4, width: '100%' }}>
+        <FormControl sx={{ width: '100%' }}>
           {recordInfo.crudAction == "edit" &&
             <Fragment>
               <InputLabel
@@ -81,12 +95,12 @@ export const FormSingleSelect = (props: FormInputProps) => {
               </InputLabel>
               <Select
                 labelId={`single-select-${aq.id}`}
-                id={templateId}
+                id={aq.id}
                 sx={{
                   width: '100%',
                   fontSize: '14px',
                 }}
-                name={aq.id}
+                name={fieldName}
                 onChange={(event: any) => {
                   const { id, name, value } = event.target;
                   setFieldValue(value);

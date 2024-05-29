@@ -18,9 +18,11 @@ import { CustomFontTheme } from './common/CustomTheme';
 import { FormInputInteger } from './components/FormInputInteger';
 import { FormInputDecimal } from './components/FormInputDecimal';
 import { FormYesNo } from './components/FormInputYesNo';
+import { FormSeverityLevel } from './components/FormSeverityLevel';
 
 import {
-  getAssessmentQuestionTemplateByType } from './model/QuestionTemplates'
+  getAssessmentQuestionTemplateByType,
+  getAssessmentQuestionByType } from './model/QuestionTemplates'
 
 import {
   fetchAssessQuestionsByTemplateId,
@@ -96,8 +98,9 @@ const QandAForm = (props:any) => {
   useEffect(() => {
     setTypeCompleted(qtype.status === 'completed' ? true : false);
 
-    // get from EA_SA_AssessmentQuestionTemplate
+    // get from Assessement Question Template (EA_SA_AssessmentQuestionTemplate)
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
+      console.log("--getAssessmentQuestionByType--", data)
       setTableData(data);
       if ( editMode ) {
         fnSecQs(data);  // track section questions state
@@ -128,8 +131,28 @@ const QandAForm = (props:any) => {
         {tableData.length > 0 && tableData.map((data:any) => {
           // Single-Select Picklist
           const askTimeIntval = data.EA_SA_cbAskPerTimeInterval;
-          if (data.EA_SA_ddlResponseFormat === 'SSP' && (askTimeIntval == 0 || askTimeIntval == null)) {
-            return <FormSingleSelect
+          const askPer = data.EA_SA_ddlAskPer;  // values are EA_SA_TimeInterval, EA_SA_SeverityLevel
+
+          if (data.EA_SA_ddlResponseFormat === 'SSP' && (askPer == null)) {
+            return (
+              <div style={{ marginTop: 24 }}>
+                <FormSingleSelect
+                  fieldName={"EA_SA_rsAssessmentResponseOptions"}
+                  recordInfo={recordInfo}
+                  qtype={qtype}
+                  data={data}
+                  onChange={handleOnChange}
+                  lookup={lookupFV}
+                  fnSecQA={fnSecQA}
+                  fnReqField={checkRequiredFields}/>
+              </div>
+            )
+          }
+
+          // askFor Time Interval
+          if (data.EA_SA_ddlResponseFormat === 'SSP' && askPer == "EA_SA_TimeInterval") {
+            return <FormTimeInterval
+              fieldName={"EA_SA_rsAssessmentResponseOptions"}
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
@@ -139,13 +162,15 @@ const QandAForm = (props:any) => {
               fnReqField={checkRequiredFields}/>
           }
 
-          // Time Interval
-          if (data.EA_SA_ddlResponseFormat === 'SSP' && askTimeIntval == 1) {
-            return <FormTimeInterval
+          // askFor Severity Level
+          if ( askPer == "EA_SA_SeverityLevel" ) {
+            return <FormSeverityLevel
+              fieldName={"nothing"}
               recordInfo={recordInfo}
               qtype={qtype}
               data={data}
               onChange={handleOnChange}
+              onChangeCustom={customChangedHandler}
               lookup={lookupFV}
               fnSecQA={fnSecQA}
               fnReqField={checkRequiredFields}/>
@@ -153,79 +178,118 @@ const QandAForm = (props:any) => {
 
           // Text Response
           if (data.EA_SA_ddlResponseFormat === 'FRES') {
-            return <FormInputText
-              recordInfo={recordInfo}
-              qtype={qtype}
-              data={data}
-              onChange={handleOnChange}
-              lookup={lookupFV}
-              fnSecQA={fnSecQA}
-              fnReqField={checkRequiredFields}/>
+            return (
+              <div style={{ marginTop: 24 }}>
+                <FormInputText
+                  fieldName={"EA_SA_txtaResponse"}
+                  recordInfo={recordInfo}
+                  qtype={qtype}
+                  data={data}
+                  onChange={handleOnChange}
+                  lookup={lookupFV}
+                  fnSecQA={fnSecQA}
+                  fnReqField={checkRequiredFields}/>
+              </div>)
           }
 
           // MSP - Multi-Select
           if (data.EA_SA_ddlResponseFormat === 'MSP') {
-            return <FormMultiSelect
-              recordInfo={recordInfo}
-              qtype={qtype}
-              data={data}
-              onChange={customChangedHandler}
-              lookup={lookupFV}
-              fnSecQA={fnSecQA}
-              fnReqField={checkRequiredFields}/>
+            return (
+              <div style={{ marginTop: 24 }}>
+                <FormMultiSelect
+                  fieldName={'EA_SA_txtaResponse'}
+                  recordInfo={recordInfo}
+                  qtype={qtype}
+                  data={data}
+                  onChange={customChangedHandler}
+                  lookup={lookupFV}
+                  fnSecQA={fnSecQA}
+                  fnReqField={checkRequiredFields}/>
+              </div>
+            )
           }
 
           // CCY - Currency
           if (data.EA_SA_ddlResponseFormat === 'CCY') {
-            return <FormInputCurrency recordInfo={recordInfo} qtype={qtype} data={data} onChange={handleOnChange} />
+            return (
+              <div style={{ marginTop: 24 }}>
+                <FormInputCurrency
+                  fieldName={"EA_SA_curResponse"}
+                  recordInfo={recordInfo}
+                  qtype={qtype}
+                  data={data}
+                  onChange={handleOnChange} />
+              </div>
+            )
           }
 
           // DATE - Date
           if (data.EA_SA_ddlResponseFormat === 'DATE') {
-            return <FormInputDate
-              recordInfo={recordInfo}
-              qtype={qtype}
-              data={data}
-              onChange={customChangedHandler}
-              lookup={lookupFV}
-              fnSecQA={fnSecQA}
-              fnReqField={checkRequiredFields}/>
+            return (
+              <div style={{ marginTop: 24 }}>
+                <FormInputDate
+                  fieldName={"EA_SA_ddResponse"}
+                  recordInfo={recordInfo}
+                  qtype={qtype}
+                  data={data}
+                  onChange={customChangedHandler}
+                  lookup={lookupFV}
+                  fnSecQA={fnSecQA}
+                  fnReqField={checkRequiredFields}/>
+              </div>
+            )
           }
 
           // INT - Integer
           if (data.EA_SA_ddlResponseFormat === 'INT') {
-            return <FormInputInteger
-              recordInfo={recordInfo}
-              qtype={qtype}
-              data={data}
-              onChange={customChangedHandler}
-              lookup={lookupFV}
-              fnSecQA={fnSecQA}
-              fnReqField={checkRequiredFields}/>
+            return (
+              <div style={{ marginTop: 24 }}>
+                <FormInputInteger
+                  fieldName={"EA_SA_intResponse"}
+                  recordInfo={recordInfo}
+                  qtype={qtype}
+                  data={data}
+                  onChange={customChangedHandler}
+                  lookup={lookupFV}
+                  fnSecQA={fnSecQA}
+                  fnReqField={checkRequiredFields}/>
+              </div>
+            )
           }
 
           // DEC - Decimal
           if (data.EA_SA_ddlResponseFormat === 'DEC') {
-            return <FormInputDecimal
-              recordInfo={recordInfo}
-              qtype={qtype}
-              data={data}
-              onChange={customChangedHandler}
-              lookup={lookupFV}
-              fnSecQA={fnSecQA}
-              fnReqField={checkRequiredFields}/>
+            return (
+              <div style={{ marginTop: 24 }}>
+                <FormInputDecimal
+                  fieldName={"EA_SA_decResponse"}
+                  recordInfo={recordInfo}
+                  qtype={qtype}
+                  data={data}
+                  onChange={customChangedHandler}
+                  lookup={lookupFV}
+                  fnSecQA={fnSecQA}
+                  fnReqField={checkRequiredFields}/>
+                </div>
+              )
+            return
           }
 
           // YN - Yes/No
           if (data.EA_SA_ddlResponseFormat === 'YN') {
-            return <FormYesNo
-              recordInfo={recordInfo}
-              qtype={qtype}
-              data={data}
-              onChange={handleOnChange}
-              lookup={lookupFV}
-              fnSecQA={fnSecQA}
-              fnReqField={checkRequiredFields}/>
+            return (
+              <div style={{ marginTop: 24 }}>
+                <FormYesNo
+                  fieldName={"EA_SA_rsAssessmentResponseOptions"}
+                  recordInfo={recordInfo}
+                  qtype={qtype}
+                  data={data}
+                  onChange={handleOnChange}
+                  lookup={lookupFV}
+                  fnSecQA={fnSecQA}
+                  fnReqField={checkRequiredFields}/>
+              </div>
+            )
           }
         })}
 

@@ -126,6 +126,6 @@ export const getQuestionTypes = async (recordInfo: any) => {
 
 export const getOperationStatus = async (recordInfo: any) => {
   const opSection = await fetchOpSectionStatus(recordInfo, recordInfo.sectionType);
+  //console.log("--getOperationStatus--", opSection)
   return opSection;
-  //return await fetchOpSectionBySource(recordInfo, "Impact");
 };
