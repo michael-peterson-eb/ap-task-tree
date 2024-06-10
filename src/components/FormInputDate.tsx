@@ -1,4 +1,4 @@
-import {useEffect, useState, Fragment} from 'react';
+import {useEffect, useState, Fragment, useRef} from 'react';
 import { FormInputProps } from "./FormInputProps";
 import { FormControl, TextField, ThemeProvider } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -31,6 +31,7 @@ export const FormInputDate = (props: FormInputProps) => {
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [dateValue, setDateValue] = useState<Dayjs | null>(null);
+  const aqAnswer = useRef(null);
 
   const templateId = data.id;
 
@@ -60,6 +61,7 @@ export const FormInputDate = (props: FormInputProps) => {
         setDateValue(dayjs(respValue));
 
         fnSecQA(templateId, templateId, respValue);
+        aqAnswer.current = assessQuestions[0];
       }
     }
 
@@ -84,7 +86,7 @@ export const FormInputDate = (props: FormInputProps) => {
                       id: aq.id,
                       name: fieldName,
                       value: newValue
-                    });
+                    }, aqAnswer.current);
                     fnReqField();
                   }}
                   readOnly={recordInfo.crudAction === 'view' ? true : false}

@@ -1,4 +1,4 @@
-import {Fragment, useEffect, useState} from 'react';
+import {Fragment, useEffect, useState, useRef} from 'react';
 import { FormInputProps } from "./FormInputProps";
 import {
   fetchAssessQuestionsByTemplateId
@@ -37,6 +37,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
+  const aqAnswer = useRef(null);
   const templateId = data.id;
 
   useEffect(() => {
@@ -57,6 +58,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
       fnSecQA(templateId, templateId, respValue);
       setFieldValue(respValue);
       setQuesResponseOptions(responseOptions);
+      aqAnswer.current = assessQuestions[0];
     }
 
     // call the function and catch any error
@@ -68,16 +70,6 @@ export const FormSingleSelect = (props: FormInputProps) => {
     return DOMPurify.sanitize(htmlLabel, {
       USE_PROFILES: { html: true },
     });
-  };
-
- const xfieldLabel = (text: string) => {
-    return (
-      <div
-        dangerouslySetInnerHTML={{
-          __html: cleanLabel(text),
-        }}
-      />
-    );
   };
 
   return (
@@ -104,7 +96,7 @@ export const FormSingleSelect = (props: FormInputProps) => {
                 onChange={(event: any) => {
                   const { id, name, value } = event.target;
                   setFieldValue(value);
-                  onChange('SSP', event);
+                  onChange('SSP', event, aqAnswer.current);
                   fnReqField();
                 }}
                 native

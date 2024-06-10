@@ -48,3 +48,6 @@ $ yarn build
 ```
 $ yarn build_tol
 ```
+
+### Note:
+Make sure to create build file for both to applied any changes to impact assessment UI and functionality

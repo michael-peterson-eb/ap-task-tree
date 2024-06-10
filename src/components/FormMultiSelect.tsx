@@ -1,4 +1,10 @@
-import { useEffect, useState, Fragment } from 'react';
+import {
+  useEffect,
+  useState,
+  Fragment,
+  useRef
+} from 'react';
+
 import {
   TextField,
   Autocomplete,
@@ -39,6 +45,7 @@ export const FormMultiSelect = (props: FormInputProps) => {
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
   const [defaultValues, setDefaultValues] = useState([]);
+  const aqAnswer = useRef(null);
 
   const templateId = data.id;
 
@@ -59,6 +66,7 @@ export const FormMultiSelect = (props: FormInputProps) => {
       const defaultValue = getDefaultValue(responseOptions, stringValues);
       //console.log("--fetchQuestionsIntervalsByTemplateId:default--", stringValues, responseOptions, defaultValue)
       setDefaultValues(getArrayValue(lookup, assessQuestions[0].id, defaultValue));
+      aqAnswer.current = assessQuestions[0];
     }
   }
 
@@ -103,7 +111,7 @@ export const FormMultiSelect = (props: FormInputProps) => {
                   }}
                   onChange={(event: any, newValue: any | null) => {
                     setDefaultValues([...newValue])
-                    onChange('MSP', event, { id: aq.id, name: fieldName, value: newValue });
+                    onChange('MSP', event, { id: aq.id, name: fieldName, value: newValue }, aqAnswer.current);
                   }}
                   renderInput={(params) => (
                     <TextField

@@ -1,4 +1,4 @@
-import { useEffect, useState, Fragment } from 'react';
+import { useEffect, useState, Fragment, useRef } from 'react';
 import { FormInputProps } from "./FormInputProps";
 import { TextField, FormControl, Typography } from '@mui/material';
 
@@ -32,6 +32,7 @@ export const FormInputInteger = (props: FormInputProps) => {
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
+  const aqAnswer = useRef(null);
 
   const templateId = data.id;
 
@@ -52,7 +53,7 @@ export const FormInputInteger = (props: FormInputProps) => {
         const respValue = getValue(lookup, aqId, aqFieldValue);
         const newValue = initSelectValue(recordInfo, respValue);
         setFieldValue(newValue);
-
+        aqAnswer.current = assessQuestions[0];
       }
     }
     fetchQuestionsAndOptions().catch(console.error);
@@ -81,7 +82,7 @@ export const FormInputInteger = (props: FormInputProps) => {
               onChange={(event: any) => {
                 const { id, name, value } = event.target;
                 setFieldValue(value);
-                onChange('INT', null, {id: id, name: name, value: value});
+                onChange('INT', null, {id: id, name: name, value: value}, aqAnswer.current);
                 fnReqField();
               }}
               error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}

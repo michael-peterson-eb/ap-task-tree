@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   Select,
   InputLabel,
@@ -39,6 +39,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
   const [questionsInterval, setQuestionsInterval] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
   const [timeIntervalUpdated, setTimeIntervalUpdated] = useState(false);
+  const aqAnswer = useRef(null);
 
   const templateId = data.id;
 
@@ -111,7 +112,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
       const intervalQuestions = await fetchQuestionsIntervalsByTemplateId(recordInfo, data.id);
-      //console.log("--fetchQuestionsIntervalsByTemplateId--", intervalQuestions)
+      console.log("--fetchQuestionsIntervalsByTemplateId--", intervalQuestions)
 
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
       //console.log("--fetchQuestionsIntervalsByTemplateId:options--", responseOptions)
@@ -183,7 +184,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
                         native
                         defaultValue={getValue(lookup, asQ.id, asQ.EA_SA_rsAssessmentResponseOptions)}
                         onChange={(event: any) => {
-                          onChange('SSP', event);
+                          onChange('SSP', event, asQ);
                           timeIntervalUpdate(asQ.id, event);
                           fnReqField();
                         }}

@@ -1,4 +1,4 @@
-import {Fragment, useEffect, useState} from 'react';
+import {Fragment, useEffect, useState, useRef} from 'react';
 import { FormInputProps } from "./FormInputProps";
 
 import {
@@ -34,6 +34,7 @@ export const FormYesNo = (props: FormInputProps) => {
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
+  const aqAnswer = useRef(null);
 
   const templateId = data.id;
 
@@ -53,6 +54,7 @@ export const FormYesNo = (props: FormInputProps) => {
 
       setFieldValue(respValue);
       setQuesResponseOptions(responseOptions);
+      aqAnswer.current = assessQuestions[0];
     }
 
     // call the function and catch any error
@@ -81,7 +83,7 @@ export const FormYesNo = (props: FormInputProps) => {
                 onChange={(event: any) => {
                   const { id, name, value } = event.target;
                   setFieldValue(value);
-                  onChange('SSP', event);
+                  onChange('SSP', event, aqAnswer.current);
                   fnReqField();
                 }}
                 native

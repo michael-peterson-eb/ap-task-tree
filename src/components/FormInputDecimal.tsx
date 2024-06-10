@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { FormInputProps } from "./FormInputProps";
 import { TextField, FormControl } from '@mui/material';
 
@@ -31,6 +31,7 @@ export const FormInputDecimal = (props: FormInputProps) => {
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
+  const aqAnswer = useRef(null);
 
   const templateId = data.id;
 
@@ -51,6 +52,7 @@ export const FormInputDecimal = (props: FormInputProps) => {
         const respValue = getValue(lookup, aqId, aqFieldValue);
         const newValue = initSelectValue(recordInfo, respValue);
         setFieldValue(newValue);
+        aqAnswer.current = assessQuestions[0];
 
       }
     }
@@ -80,7 +82,7 @@ export const FormInputDecimal = (props: FormInputProps) => {
               onChange={(event: any) => {
                 const { id, name, value } = event.target;
                 setFieldValue(value);
-                onChange('DEC', null, event.target);
+                onChange('DEC', null, event.target, aqAnswer.current);
                 fnReqField();
               }}
               error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
