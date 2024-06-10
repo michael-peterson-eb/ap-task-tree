@@ -62,7 +62,6 @@ export const FormInputText = (props: FormInputProps) => {
         setFieldValue(newValue);
         fnSecQA(aqFieldValue); // track section question states
         aqAnswer.current = assessQuestions[0];
-        console.log("--useEffect:Text--", aqFieldValue, newValue, assessQuestions)
       }
     }
     fetchQuestionsAndOptions().catch(console.error);

@@ -112,7 +112,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
       const intervalQuestions = await fetchQuestionsIntervalsByTemplateId(recordInfo, data.id);
-      console.log("--fetchQuestionsIntervalsByTemplateId--", intervalQuestions)
+      //console.log("--fetchQuestionsIntervalsByTemplateId--", intervalQuestions)
 
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
       //console.log("--fetchQuestionsIntervalsByTemplateId:options--", responseOptions)
@@ -122,7 +122,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
       checkTimeIntervalHasValue();
 
       const tiSelected = atLeastOneTimeIntervalHasValue(intervalQuestions);
-      fnSecQA(templateId, templateId, tiSelected);
+      fnSecQA(templateId, null, templateId, tiSelected);
     }
 
     fetchQuestionsAndOptions().catch(console.error);

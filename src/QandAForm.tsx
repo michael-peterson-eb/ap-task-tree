@@ -74,7 +74,7 @@ const QandAForm = (props:any) => {
   const checkRequiredFields = () => {
     const validRF = fnDoneWithReqField();
     if (isTypeCompleted && !validRF) {
-      customChangedHandler('STATUS', null, { name: qtype.id, value: false });
+      customChangedHandler('STATUS', null, { name: qtype.id, value: false }, null);
       setTypeCompleted(false);
     }
     setReqFieldValid(validRF);
@@ -109,7 +109,7 @@ const QandAForm = (props:any) => {
 
     // get from Assessement Question Template (EA_SA_AssessmentQuestionTemplate)
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
-      console.log("--getAssessmentQuestionByType--", data)
+      //console.log("--getAssessmentQuestionByType--", data)
       setTableData(data);
       if ( editMode ) {
         //fnSecQs(data);  // track section questions state
@@ -315,7 +315,7 @@ const QandAForm = (props:any) => {
                   qtype.status = checked ? "completed" : "on-going";
                   if (recordInfo.crudAction === 'edit') {
                     setTypeCompleted(checked);
-                    customChangedHandler('STATUS', event, { id: qtype.id, name: qtype.id, value: checked });
+                    customChangedHandler('STATUS', event, { id: qtype.id, name: qtype.id, value: checked }, null);
                   }
                 }}
                 disabled={!isReqFieldValid}

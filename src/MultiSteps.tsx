@@ -172,8 +172,10 @@ export default function MultiSteps({recordInfo}) {
 
   const customChangedHandler = (type:any, _event:any, fieldValue:any, aqAnswer:any, scope:any = "EA_OR_NORMAL" ) => {
     let { id, name, value } = fieldValue;
-    const aqtId = aqAnswer.EA_SA_rsAssessmentQuestionTemplate;
+    let aqtId = id;
     //console.log("--customChangedHandler--", fieldValue)
+    if ( type != "STATUS" ) aqtId = aqAnswer.EA_SA_rsAssessmentQuestionTemplate;
+
     switch (type) {
       case 'DATE':
         value = dateYYYYMMDDFormat(value.toString());
