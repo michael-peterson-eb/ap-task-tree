@@ -74,7 +74,7 @@ const QandAForm = (props:any) => {
   const checkRequiredFields = () => {
     const validRF = fnDoneWithReqField();
     if (isTypeCompleted && !validRF) {
-      customChangedHandler('STATUS', null, { name: qtype.id, value: false });
+      customChangedHandler('STATUS', null, { name: qtype.id, value: false }, null);
       setTypeCompleted(false);
     }
     setReqFieldValid(validRF);
@@ -82,16 +82,25 @@ const QandAForm = (props:any) => {
 
   const getExistingAnswers = (templateData:any) => {
     const asQs:any[] = [];
-    templateData.map(async (data:any) => {
+    const secQs = templateData.map(async (data:any) => {
       const tId = data.id;
+      let qValue = "";
       if (data.EA_SA_ddlResponseFormat === 'SSP' && data.EA_SA_cbAskPerTimeInterval == 1 ) {
         const intervalQuestions = await fetchQuestionsIntervalsByTemplateId(recordInfo, tId);
 
       } else {
         const assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, tId);
         const [found, qaId, newValue] = getQuestionAnswer(recordInfo, lookupFV, assessQuestions, "EA_SA_txtaResponse");
+
         if ( found ) fnSecQA(tId, qaId, newValue);
+        qValue = newValue;
+
       }
+      return {...data, ...{value: qValue}};
+    });
+
+    Promise.all(secQs).then((sQs) => {
+      fnSecQs(sQs);  // track section questions state
     });
   }
 
@@ -100,10 +109,10 @@ const QandAForm = (props:any) => {
 
     // get from Assessement Question Template (EA_SA_AssessmentQuestionTemplate)
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
-      console.log("--getAssessmentQuestionByType--", data)
+      //console.log("--getAssessmentQuestionByType--", data)
       setTableData(data);
       if ( editMode ) {
-        fnSecQs(data);  // track section questions state
+        //fnSecQs(data);  // track section questions state
         getExistingAnswers(data);
 
         setTimeout(() => {
@@ -306,7 +315,7 @@ const QandAForm = (props:any) => {
                   qtype.status = checked ? "completed" : "on-going";
                   if (recordInfo.crudAction === 'edit') {
                     setTypeCompleted(checked);
-                    customChangedHandler('STATUS', event, { id: qtype.id, name: qtype.id, value: checked });
+                    customChangedHandler('STATUS', event, { id: qtype.id, name: qtype.id, value: checked }, null);
                   }
                 }}
                 disabled={!isReqFieldValid}

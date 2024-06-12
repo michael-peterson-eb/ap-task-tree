@@ -20,7 +20,7 @@ export const fetchObjectSectionStatuses = async (recordInfo: any) => {
 export const fetchOpSectionStatus = async (recordInfo: any, sectionType: any) => {
   try {
     const queryCondition = `${recordInfo.questionRelName}=${recordInfo?.id} AND EA_SA_ddlSectionType#code='${sectionType}'`;
-    console.log("--fetchOpSectionStatus--", queryCondition);
+    //console.log("--fetchOpSectionStatus--", queryCondition);
     const results = await _RB.selectQuery(
       ["id", "name", "status#code", "EA_SA_txtCode", "EA_SA_rsAssessmentQuestionType", "EA_SA_rsAssessmentQuestions"],
       "EA_SA_OperationsSection",
@@ -51,7 +51,7 @@ export const fetchOpSectionBySource = async (recordInfo: any) => {
     //if (results.length > 0) status = results[0];
     return results;
   } catch (error) {
-    console.log("Error: fetchOpSectionStatus ", error);
+    console.log("Error: fetchOpSectionBySource ", error);
   }
 };
 /**

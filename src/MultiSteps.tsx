@@ -38,9 +38,9 @@ export default function MultiSteps({recordInfo}) {
   const [skipped, setSkipped] = useState(new Set<number>());
   const [questionTypes, setQuestionTypes] = useState([]);
   const [formValues, setFormValues] = useState({});
-  const updateFields = useRef({});
-  const allQuestions = useRef({});
-  const sectionQuestions = useRef({});
+  const updateFields = useRef({});      // stores tab updated Assessment Questions
+  const allQuestions = useRef({});      // stores all Assessment Question records
+  const sectionQuestions = useRef({});  // stores tab Assessment Question Template records
   const [recordsLoaded, setRecordsLoaded] = useState(false);
   const [saveClicked, setSaveClicked] = useState(false);
   const [cancelClicked, setCancelClicked] = useState(false);
@@ -160,17 +160,22 @@ export default function MultiSteps({recordInfo}) {
     handleClose();
   }
 
-  const handleChange = async (type:any, event:any, scope:any = "EA_OR_NORMAL") => {
+  const handleChange = async (type:any, event:any, aqAnswer:any, scope:any = "EA_OR_NORMAL") => {
     const { id, name, value } = event.target;     // id=typeId name=questionId
-    //console.log("--handleChange--", type, id, name, value)
+    const aqtId = aqAnswer.EA_SA_rsAssessmentQuestionTemplate;
+
+    //console.log("--handleChange--", type, id, name, value, aqAnswer)
 
     trackUpdatedQuestions(name, id, type, id, value, scope);
-    setSectionQuestionAnswer(name, id, name, value);
+    setSectionQuestionAnswer(name, id, aqtId, value);
   }
 
-  const customChangedHandler = (type:any, _event:any, fieldValue:any, scope:any = "EA_OR_NORMAL" ) => {
+  const customChangedHandler = (type:any, _event:any, fieldValue:any, aqAnswer:any, scope:any = "EA_OR_NORMAL" ) => {
     let { id, name, value } = fieldValue;
+    let aqtId = id;
     //console.log("--customChangedHandler--", fieldValue)
+    if ( type != "STATUS" ) aqtId = aqAnswer.EA_SA_rsAssessmentQuestionTemplate;
+
     switch (type) {
       case 'DATE':
         value = dateYYYYMMDDFormat(value.toString());
@@ -186,7 +191,7 @@ export default function MultiSteps({recordInfo}) {
     }
 
     trackUpdatedQuestions(name, id, type, id, value, scope);
-    setSectionQuestionAnswer(name, id, name, value);
+    setSectionQuestionAnswer(name, id, aqtId, value);
   }
 
   const trackUpdatedQuestions = (fieldName:string, typeId:any, fieldType:any, aqId:any, value:any, scope:any) => {
@@ -230,7 +235,7 @@ export default function MultiSteps({recordInfo}) {
           fieldType: sQ.EA_SA_ddlResponseFormat,
           isRequired: sQ.EA_SA_cbRequiredQuestion === 1,
           isTimeInterval: sQ.EA_SA_cbAskPerTimeInterval === 1,
-          value: ""
+          value: sQ.value
         }
       }
     }
@@ -238,17 +243,17 @@ export default function MultiSteps({recordInfo}) {
   }
 
   // update individual section question value
-  const setSectionQuestionAnswer = (fieldName:string, typeId:any, ansId:any, qAns:any) => {
+  const setSectionQuestionAnswer = (fieldName:string, typeId:any, aqtId:any, qAns:any) => {
     let secQAs:any = sectionQuestions.current;
-    if ( secQAs.hasOwnProperty(typeId) ) {
-      const currObj = secQAs[typeId];
-      secQAs = {...secQAs, [typeId]: {
+    if ( secQAs.hasOwnProperty(aqtId) ) {
+      const currObj = secQAs[aqtId];
+      secQAs = {...secQAs, [aqtId]: {
         ...currObj,
         ...{field: fieldName, value: qAns}
       }}
     }
     sectionQuestions.current = secQAs;
-    //console.log("---setSectionQuestionAnswer---", typeId, ansId, qAns, secQAs);
+    //console.log("---setSectionQuestionAnswer---", typeId, aqtId, qAns, secQAs);
   }
 
   const doneReqField = () => {
@@ -256,9 +261,13 @@ export default function MultiSteps({recordInfo}) {
     let nValid:any = 0;
     for (const sQS in secQAs) {
       const sQAV = secQAs[sQS];
+      //console.log("--doneReqField--", sQAV, sQS)
+
+      // increment counter if field is required and value is empty
       if ( sQAV.isRequired && sQAV.value == "") nValid++;
     }
-    return nValid === 0;
+
+    return nValid === 0;  // true is counter is 0, otherwise false
   }
 
   // load all the assessment questions to a ref state
@@ -389,7 +398,10 @@ export default function MultiSteps({recordInfo}) {
                         id={label.id}
                         color={sectionTabColor(index, activeStep, label)}
                         variant="contained"
-                        style={{ textTransform: 'none', color: activeStep == index ? '#FFF' : '#000', minHeight: '60px', lineHeight: '1.2' }}
+                        style={{
+                          textTransform: 'none',
+                          color: activeStep == index ? '#FFF' : '#000',
+                          minHeight: '60px', lineHeight: '1.2' }}
                         fullWidth
                         onClick={() => handleTabClick(index)}
                         endIcon={sectionTabIcon(index, activeStep, label)}

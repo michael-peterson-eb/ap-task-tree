@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { FormInputProps } from "./FormInputProps";
 import { TextField, FormControl, Box, InputLabel } from '@mui/material';
 
@@ -34,6 +34,7 @@ export const FormInputText = (props: FormInputProps) => {
 
   const [assessQuestions, setAssessQuestion] = useState([]);
   const [fieldValue, setFieldValue] = useState('');
+  const aqAnswer = useRef(null);
 
   const templateId = data.id;
 
@@ -60,6 +61,7 @@ export const FormInputText = (props: FormInputProps) => {
 
         setFieldValue(newValue);
         fnSecQA(aqFieldValue); // track section question states
+        aqAnswer.current = assessQuestions[0];
       }
     }
     fetchQuestionsAndOptions().catch(console.error);
@@ -93,7 +95,7 @@ export const FormInputText = (props: FormInputProps) => {
                   onChange={(event: any) => {
                     const { name, value } = event.target;
                     setFieldValue(value);
-                    onChange('FRES', event);
+                    onChange('FRES', event, aqAnswer.current);
                     fnReqField();
                   }}
                   error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
