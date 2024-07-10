@@ -119,9 +119,11 @@ export default function MultiSteps({recordInfo}) {
   const handleClose = () => {
     // no trigger is called for Scenario Test
     if( !cancelClicked ) {
-    //if ( recordInfo.objectIntegrationName !== "EA_OR_ScenarioTest" ) {;
-      // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals
-      rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, recordInfo.triggerId);
+      // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals or an array of triggers
+      const triggers = recordInfo.triggerId.split(",");
+      triggers.forEach( (triggerId:any ) => {
+        rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, triggerId);
+      })
     }
 
     setTimeout(function() {

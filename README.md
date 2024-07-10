@@ -13,7 +13,8 @@
 ```
 
 Data record in-line value
-<recordId>::<ObjectPage (eg View or Edit)>::<CurrentObject>::<AssessmentQuestion - CurrentObject>::<Title>::<Calculate Trigger>::<Section Type>
+Recordinfo parameters below have been updated to include the use of comma separated values for executing more than one trigger
+<recordId>::<ObjectPage (eg View or Edit)>::<CurrentObject>::<AssessmentQuestion - CurrentObject>::<Title>::<Calculate Trigger(s) (i.e. - Trigger1OrigID,Trigger2OrigID)>::<Section Type>
 
 ### To build the Impact Assessment JS bundle
 ```
