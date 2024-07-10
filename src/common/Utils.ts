@@ -33,6 +33,21 @@ export const getArrayValue = (lookup: any, aqId: any, initialValue: any) => {
   return responseValue;
 };
 
+export const getMultiValue = (options: any, stored: string) => {
+  if (stored == null || options.length == 0) return "No Answer";
+
+  const matched = options.filter((opt: any) => {
+    if (stored.indexOf(opt.id) >= 0) return opt.name;
+  });
+
+  const names: string[] = [];
+  matched.forEach((m: any) => {
+    names.push(m.name);
+  });
+
+  return names.join(", ");
+};
+
 export const initSelectValue = (record: any, resp: any) => {
   if (record.crudAction == "view" && (resp == null || resp == "")) {
     return "No Answer";
@@ -104,3 +119,15 @@ export const cleanLabel = (htmlLabel:string) => {
     USE_PROFILES: { html: true },
   })
 };
+
+export const isQuestionRequired = (flag:any) => flag == 1;
+
+export const getRequiredColor = (isChecked:any) => {
+  return isQuestionRequired(isChecked) ? "#d32f2f" : "#000";
+}
+
+export const showLabel = (hasLabel:any, label: any) => {
+  return hasLabel == undefined ? label : null;
+};
+
+export const fieldWithLabel = (withLabel:any) => withLabel == undefined;

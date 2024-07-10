@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   Select,
   InputLabel,
@@ -26,11 +26,20 @@ import DOMPurify from "dompurify";
 import { getNameValue, getValue, stripTextHtmlTags } from '../common/Utils';
 
 export const FormTimeInterval = (props: FormInputProps) => {
-  const {recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField} = props;
+  const {
+    fieldName,
+    recordInfo,
+    qtype,
+    data,
+    onChange,
+    lookup,
+    fnSecQA,
+    fnReqField} = props;
 
   const [questionsInterval, setQuestionsInterval] = useState([]);
   const [quesResponseOptions, setQuesResponseOptions] = useState([]);
   const [timeIntervalUpdated, setTimeIntervalUpdated] = useState(false);
+  const aqAnswer = useRef(null);
 
   const templateId = data.id;
 
@@ -113,7 +122,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
       checkTimeIntervalHasValue();
 
       const tiSelected = atLeastOneTimeIntervalHasValue(intervalQuestions);
-      fnSecQA(templateId, templateId, tiSelected);
+      fnSecQA(templateId, null, templateId, tiSelected);
     }
 
     fetchQuestionsAndOptions().catch(console.error);
@@ -156,10 +165,10 @@ export const FormTimeInterval = (props: FormInputProps) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {questionsInterval.length > 0 && questionsInterval.map((qa:any) => (
-                <TableRow key={qa.id}>
+              {questionsInterval.length > 0 && questionsInterval.map((asQ:any) => (
+                <TableRow key={asQ.id}>
                   <TableCell>
-                    {qa.EA_SA_rfTimeInterval}
+                    {asQ.EA_SA_rfTimeInterval}
                   </TableCell>
                   <TableCell style={{ padding: '0px' }}>
                     {recordInfo.crudAction === 'edit' &&
@@ -170,13 +179,13 @@ export const FormTimeInterval = (props: FormInputProps) => {
                             borderWidth: "0px",
                           }, }}
                         style={{ fontSize: '14px' }}
-                        name={qa.id}
-                        id={templateId}
+                        name={fieldName}
+                        id={asQ.id}
                         native
-                        defaultValue={getValue(lookup, qa.id, qa.EA_SA_rsAssessmentResponseOptions)}
+                        defaultValue={getValue(lookup, asQ.id, asQ.EA_SA_rsAssessmentResponseOptions)}
                         onChange={(event: any) => {
-                          onChange('SSP', event);
-                          timeIntervalUpdate(qa.id, event);
+                          onChange('SSP', event, asQ);
+                          timeIntervalUpdate(asQ.id, event);
                           fnReqField();
                         }}
                       >
@@ -187,7 +196,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
                       </Select>
                     }
                     {recordInfo.crudAction === 'view' &&
-                      <div style={{padding: '12px 16px'}}>{getNameValue(quesResponseOptions, qa.EA_SA_rsAssessmentResponseOptions)}</div>
+                      <div style={{padding: '12px 16px'}}>{getNameValue(quesResponseOptions, asQ.EA_SA_rsAssessmentResponseOptions)}</div>
                     }
                   </TableCell>
                 </TableRow>
