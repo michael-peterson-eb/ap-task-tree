@@ -138,8 +138,9 @@ export const FormTimeInterval = (props: FormInputProps) => {
     <div>
       <FormGroup sx={{ paddingTop: 2 }}>
         <InputLabel
-          sx={{ color:
-            `${requiredColor()}`,
+          sx={{
+            display: "flex", 
+            color:`${requiredColor()}`,
             whiteSpace: 'normal'
           }}
           required={data.EA_SA_cbRequiredQuestion == 1}
