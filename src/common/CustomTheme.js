@@ -9,6 +9,7 @@ export const CustomFontTheme = () => {
       MuiInputLabel: {
         defaultProps: {
           sx: {
+            display: flex,
             fontSize: "18px",
             backgroundColor: "#FFF",
             color: "#000",
