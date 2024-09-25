@@ -14,6 +14,7 @@ const AssessmentQuestionFields = [
   "EA_SA_rsAssessmentResponseOptions",
   "EA_SA_rsAssessmentQuestionTemplate",
   "EA_SA_rfTimeInterval",
+  "EA_SA_txtTimeIntervalName",
   "EA_SA_rfQuestion",
   "EA_SA_rfRequiredQuestion",
   "EA_SA_cbRequiredQuestion",
@@ -58,7 +59,7 @@ export const fetchAssessQuestionsByTemplateId = async (recordInfo: any, template
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate <> 'null'`;
 
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 1, true);
-    //console.log("fetchAssessQuestionsByTemplateId--", results);
+    console.log("fetchAssessQuestionsByTemplateId--", queryCondition);
 
     return await results;
   } catch (error) {
