@@ -93,6 +93,15 @@ export const FormTimeInterval = (props: FormInputProps) => {
     return isQuestionRequired() ? "#d32f2f" : "#000"
   }
 
+  const showTimeInterval = (asQ: any) => {
+    if ( !asQ.EA_SA_txtTimeIntervalName || asQ.EA_SA_txtTimeIntervalName == "") {
+      return asQ.EA_SA_rfTimeInterval;
+
+    } else {
+       asQ.EA_SA_txtTimeIntervalName ;
+    }
+  }
+
   // check if at least one of the Time Interval question has value selected
   const atLeastOneTimeIntervalHasValue = (tiQs:any) => {
     let selected = "";
@@ -139,7 +148,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
       <FormGroup sx={{ paddingTop: 2 }}>
         <InputLabel
           sx={{
-            display: "flex", 
+            display: "flex",
             color:`${requiredColor()}`,
             whiteSpace: 'normal'
           }}
@@ -169,7 +178,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
               {questionsInterval.length > 0 && questionsInterval.map((asQ:any) => (
                 <TableRow key={asQ.id}>
                   <TableCell>
-                    {asQ.EA_SA_rfTimeInterval}
+                    {showTimeInterval(asQ)}
                   </TableCell>
                   <TableCell style={{ padding: '0px' }}>
                     {recordInfo.crudAction === 'edit' &&
