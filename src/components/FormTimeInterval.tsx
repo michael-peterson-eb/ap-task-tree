@@ -94,12 +94,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
   }
 
   const showTimeInterval = (asQ: any) => {
-    if ( !asQ.EA_SA_txtTimeIntervalName || asQ.EA_SA_txtTimeIntervalName == "") {
-      return asQ.EA_SA_rfTimeInterval;
-
-    } else {
-       asQ.EA_SA_txtTimeIntervalName ;
-    }
+    return ( !asQ.EA_SA_txtTimeIntervalName || asQ.EA_SA_txtTimeIntervalName == "") ? asQ.EA_SA_rfTimeInterval : asQ.EA_SA_txtTimeIntervalName;
   }
 
   // check if at least one of the Time Interval question has value selected
