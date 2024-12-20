@@ -17,15 +17,17 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle,
   faChevronLeft,
   faChevronRight,
+  faArrowLeft,
+  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { FormProvider, useForm } from "react-hook-form";
+import Carousel from "./components/Carousel/Carousel";
 
 import {
   updateQuestionWithResponse,
@@ -53,7 +55,7 @@ export default function MultiSteps({ recordInfo }) {
   const [recordsLoaded, setRecordsLoaded] = useState(false);
   const [saveClicked, setSaveClicked] = useState(false);
   const [cancelClicked, setCancelClicked] = useState(false);
-  const largeScreen: boolean = useMediaQuery("(min-width:1740px)");
+  const largeScreen: boolean = useMediaQuery("(min-width:1008px)");
 
   const normalResponseFields = {
     INT: "EA_SA_intResponse",
@@ -438,7 +440,76 @@ export default function MultiSteps({ recordInfo }) {
             </ThemeProvider>
           </Box>
         )}
-        <Stepper activeStep={activeStep}>
+        {largeScreen ? (
+          <Box sx={{ margin: "auto", overflow: "hidden", maxHeight: "60px" }}>
+            <Carousel
+              questionTypes={questionTypes}
+              activeStep={activeStep}
+              handleTabClick={handleTabClick}
+            />
+          </Box>
+        ) : (
+          <Grid item xs={12}>
+            <Select
+              id="select-active-step"
+              value={activeStep}
+              onChange={(e) => {
+                handleTabClick(e.target.value);
+              }}
+              sx={{ width: "100%", maxWidth: "420px" }}
+            >
+              {questionTypes.length > 0 &&
+                questionTypes.map((label: any, index) => {
+                  const stepProps: { completed?: boolean } = {};
+                  const labelProps: {
+                    optional?: ReactNode;
+                  } = {};
+                  if (isStepOptional(index)) {
+                    labelProps.optional = (
+                      <Typography variant="caption">Optional</Typography>
+                    );
+                  }
+                  if (isStepSkipped(index)) {
+                    stepProps.completed = false;
+                  }
+                  return (
+                    <MenuItem
+                      value={index}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          width: "100%",
+                        }}
+                      >
+                        <ListItemText
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          {label.name}
+                        </ListItemText>
+                        <ListItemIcon>
+                          {sectionTabIcon(index, activeStep, label)}
+                        </ListItemIcon>
+                      </Box>
+                    </MenuItem>
+                  );
+                })}
+            </Select>
+          </Grid>
+        )}
+        {/* Previous tabs for reference*/}
+        {/* <Stepper activeStep={activeStep}>
           <Grid container spacing={1}>
             {largeScreen ? (
               questionTypes.length > 0 &&
@@ -539,7 +610,109 @@ export default function MultiSteps({ recordInfo }) {
               </Grid>
             )}
           </Grid>
-        </Stepper>
+        </Stepper> */}
+        {/* <Stepper activeStep={activeStep}>
+          <Grid container spacing={1}>
+            {largeScreen ? (
+              questionTypes.length > 0 &&
+              questionTypes.map((label: any, index) => {
+                const stepProps: { completed?: boolean } = {};
+                const labelProps: {
+                  optional?: ReactNode;
+                } = {};
+                if (isStepOptional(index)) {
+                  labelProps.optional = (
+                    <Typography variant="caption">Optional</Typography>
+                  );
+                }
+                if (isStepSkipped(index)) {
+                  stepProps.completed = false;
+                }
+                return (
+                  <Grid item xs={12 / questionTypes.length}>
+                    <ThemeProvider theme={NavButtonTheme}>
+                      <Button
+                        id={label.id}
+                        color={sectionTabColor(index, activeStep, label)}
+                        variant="contained"
+                        style={{
+                          textTransform: "none",
+                          color: activeStep == index ? "#FFF" : "#000",
+                          minHeight: "60px",
+                          lineHeight: "1.2",
+                        }}
+                        fullWidth
+                        onClick={() => handleTabClick(index)}
+                        endIcon={sectionTabIcon(index, activeStep, label)}
+                      >
+                        {label.name}
+                      </Button>
+                    </ThemeProvider>
+                  </Grid>
+                );
+              })
+            ) : (
+              <Grid item xs={12}>
+                <Select
+                  id="select-active-step"
+                  value={activeStep}
+                  onChange={(e) => {
+                    handleTabClick(e.target.value);
+                  }}
+                  sx={{ width: "100%", maxWidth: "420px" }}
+                >
+                  {questionTypes.length > 0 &&
+                    questionTypes.map((label: any, index) => {
+                      const stepProps: { completed?: boolean } = {};
+                      const labelProps: {
+                        optional?: ReactNode;
+                      } = {};
+                      if (isStepOptional(index)) {
+                        labelProps.optional = (
+                          <Typography variant="caption">Optional</Typography>
+                        );
+                      }
+                      if (isStepSkipped(index)) {
+                        stepProps.completed = false;
+                      }
+                      return (
+                        <MenuItem
+                          value={index}
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            width: "100%",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              width: "100%",
+                            }}
+                          >
+                            <ListItemText
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              {label.name}
+                            </ListItemText>
+                            <ListItemIcon>
+                              {sectionTabIcon(index, activeStep, label)}
+                            </ListItemIcon>
+                          </Box>
+                        </MenuItem>
+                      );
+                    })}
+                </Select>
+              </Grid>
+            )}
+          </Grid>
+        </Stepper> */}
         {questionTypes.length == 0 ? (
           <Fragment>
             <Typography sx={{ mt: 2, mb: 1 }}>
