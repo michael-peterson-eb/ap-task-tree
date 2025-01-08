@@ -94,10 +94,13 @@ export const getQuestionTypes = async (recordInfo: any) => {
   if (assessmentTypes.length > 0) {
     let hasStatusJSON = recordInfo?.sectionStatusesJSON != "";
 
-    let currentSectionStatus = await fetchOpSectionStatus(
-      recordInfo,
-      "EA_SA_Impact"
-    );
+    // let currentSectionStatus = await fetchOpSectionStatus(
+    //   recordInfo,
+    //   "EA_SA_Impact"
+    // );
+
+    let currentSectionStatus = await fetchOpSectionStatus(recordInfo, recordInfo.sectionType);
+
     console.log("--currentSectionStatus--", currentSectionStatus);
     const aTypeIds: any[] = [];
     assessmentTypes.forEach((type: any) => {
