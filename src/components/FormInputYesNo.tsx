@@ -44,7 +44,7 @@ export const FormYesNo = (props: FormInputProps) => {
 
       const assessQuestions:any = await getAssessmentQuestion(recordInfo, templateId, preloadedAQ);
       setAssessQuestion(assessQuestions);
-
+      
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
       //const aqFieldValue = assessQuestions[0].EA_SA_rsAssessmentResponseOptions;
 
@@ -70,7 +70,7 @@ export const FormYesNo = (props: FormInputProps) => {
            {recordInfo.crudAction == "edit" &&
             <Fragment>
               <InputLabel id={`yesno-${aq.id}`} size={'normal'} sx={{ background: '#FFF', paddingRight: '4px', fontSize: '18px'}}>
-                {aq.name.trim()}
+                {fieldLabel(data.EA_SA_txtaQuestion)}
               </InputLabel>
               <Select
                 labelId={`yesno-${aq.id}`}
