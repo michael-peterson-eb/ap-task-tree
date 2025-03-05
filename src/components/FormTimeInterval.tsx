@@ -89,8 +89,8 @@ export const FormTimeInterval = (props: FormInputProps) => {
     return data.EA_SA_cbRequiredQuestion == 1 && !timeIntervalUpdated;
   }
 
-  const requiredColor = () => {
-    return isQuestionRequired() ? "#d32f2f" : "#000"
+  const requiredColor = (action:string) => {
+    return (isQuestionRequired() && action == 'edit') ? "#d32f2f" : "#000"
   }
 
   const showTimeInterval = (asQ: any) => {
@@ -144,17 +144,17 @@ export const FormTimeInterval = (props: FormInputProps) => {
         <InputLabel
           sx={{
             display: "flex",
-            color:`${requiredColor()}`,
+            color:`${requiredColor(recordInfo.crudAction)}`,
             whiteSpace: 'normal'
           }}
-          required={data.EA_SA_cbRequiredQuestion == 1}
+          required={recordInfo.crudAction === 'edit' && data.EA_SA_cbRequiredQuestion == 1}
         >
           {questionsInterval.length > 0 && <div dangerouslySetInnerHTML={{
           __html: cleanLabel(questionsInterval[0].EA_SA_rfQuestion)
           }} />}
         </InputLabel>
 
-        <TableContainer component={Paper} sx={{ border: `1px solid ${requiredColor()}`, width: 'inherit' }}>
+        <TableContainer component={Paper} sx={{ border: `1px solid ${requiredColor(recordInfo.crudAction)}`, width: 'inherit' }}>
           <Table sx={{ width: '100%' }} size="small">
             <TableHead>
               <TableRow
@@ -210,6 +210,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
           </Table>
         </TableContainer>
         {isQuestionRequired() &&
+        recordInfo.crudAction === 'edit' &&
           <InputLabel sx={{ fontSize: '12px' }} error={!timeIntervalUpdated}>
             {"This question is required!"}
           </InputLabel>

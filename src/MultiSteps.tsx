@@ -145,13 +145,25 @@ export default function MultiSteps({ recordInfo }) {
     if (!cancelClicked) {
       // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals or an array of triggers
       const triggers = recordInfo.triggerId.split(",");
-      triggers.forEach((triggerId: any) => {
-        rbf_runTrigger(
-          recordInfo.objectIntegrationName,
-          recordInfo.id,
-          triggerId
-        );
-      });
+
+      if (recordInfo.assessmentType == 'Incident Assessment') {
+          rbf_runTrigger(
+            recordInfo.objectIntegrationName,
+            recordInfo.id,
+            triggers[0]
+          );
+      } else if (recordInfo.assessmentType == 'Scenario Test') {
+        //placeholder for future Scenario Test trigger
+
+      } else if (recordInfo.assessmentType != 'Standalone Assessment') {
+        triggers.forEach((triggerId: any) => {
+          rbf_runTrigger(
+            recordInfo.objectIntegrationName,
+            recordInfo.id,
+            triggerId
+          );
+        });
+      }      
     }
 
     setTimeout(function () {
