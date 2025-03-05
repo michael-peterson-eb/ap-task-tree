@@ -54,38 +54,7 @@ export const fetchOpSectionBySource = async (recordInfo: any) => {
     console.log("Error: fetchOpSectionBySource ", error);
   }
 };
-/**
- * get Process's section status
- * @param recordInfo Process record info
- * @param sectionType e.g. EA_SA_Impact, EA_SA_Dependency, EA_SA_Resource
- * @returns
- */
-export const xfetchProcessOpsSectionStatus = async (recordInfo: any, sectionType: string) => {
-  const queryCondition = `EA_SA_rsProcess=${recordInfo?.id} AND EA_SA_ddlSectionType#code=${sectionType}`;
-  return await fetchOpSectionStatus(queryCondition);
-};
 
-/**
- * get Product and Service's section status
- * @param recordInfo Product and Service record info
- * @param sectionType e.g. EA_SA_Impact, EA_SA_Dependency, EA_SA_Resource
- * @returns
- */
-export const xfetchPSOpsSectStatus = async (recordInfo: any, sectionType: string) => {
-  const queryCondition = `EA_SA_rsProductAndService=${recordInfo?.id} AND EA_SA_ddlSectionType#code=${sectionType}`;
-  return await fetchOpSectionStatus(queryCondition);
-};
-
-/**
- * get Application's section status
- * @param recordInfo Application record info
- * @param sectionType e.g. EA_SA_Impact, EA_SA_Dependency, EA_SA_Resource
- * @returns
- */
-export const xfetchAppOpsSectStatus = async (recordInfo: any, sectionType: string) => {
-  const queryCondition = `EA_SA_rsApplication=${recordInfo?.id} AND EA_SA_ddlSectionType#code=${sectionType}`;
-  return await fetchOpSectionStatus(queryCondition);
-};
 
 /**
  * update Operation Section status
