@@ -21,9 +21,8 @@ const recordInfo = {
   sectionType: recordArr[6] || 'EA_SA_Impact',
 }
 
-//console.log("--recordInfo--", recordInfo)
+const rootId = document.getElementById(`${recordInfo.crudAction}-jsroot`) as HTMLElement;
 
-const rootId = document.getElementById(targetRoot) as HTMLElement;
 const root = ReactDOM.createRoot(rootId);
 
 root.render(<App recordInfo={recordInfo} />);
