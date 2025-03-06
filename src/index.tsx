@@ -19,6 +19,7 @@ const recordInfo = {
   objectTitle: recordArr[4] || 'Impact Assessment',
   triggerId: recordArr[5] || 'null',
   sectionType: recordArr[6] || 'EA_SA_Impact',
+  assessmentType: recordArr[7] || null
 }
 
 const rootId = document.getElementById(`${recordInfo.crudAction}-jsroot`) as HTMLElement;
