@@ -9,6 +9,7 @@ const templateFields = [
   "EA_SA_cbRequiredQuestion",
   "EA_SA_intQuestionWeighting",
   "EA_SA_ddlAskPer#code",
+  "EA_SA_txtFieldIntegrationName",
 ];
 
 export const getAssessmentQuestionTemplateByIds = async (ids: any) => {
@@ -25,7 +26,6 @@ export const getAssessmentQuestionTemplateByIds = async (ids: any) => {
 export const getAssessmentQuestionTemplateByType = async (qtype: any) => {
   try {
     const qryCondition = `EA_SA_rsAssessmentQuestionType = ${qtype.EA_SA_rsAssessmentQuestionType} ORDER BY EA_SA_intDisplayOrder ASC`;
-    //console.log("--getAssessmentQuestionTemplateByType--", qryCondition, qtype);
     return await _RB.selectQuery(templateFields, "EA_SA_AssessmentQuestionTemplate", qryCondition, 10000, true);
 
   } catch (error) {
@@ -50,7 +50,6 @@ export const getAssessmentQuestionByType = async (recordInfo:any, qtype: any) =>
 
     const qryCondition = `${assmtObjRel}=${recordInfo.id} && EA_SA_rsOperationsSections = ${qtype.id} ORDER BY EA_SA_intDisplayOrder ASC`;
 
-    //console.log("--getAssessmentQuestionByType--", qryCondition, qtype);
     return await _RB.selectQuery(templateFields, "EA_SA_AssessmentQuestion", qryCondition, 10000, true);
 
   } catch (error) {

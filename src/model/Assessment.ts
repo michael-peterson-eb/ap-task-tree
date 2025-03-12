@@ -68,7 +68,6 @@ const xgetTypeSectionStatus = (typeId: any, sectionStatus: any) => {
 };
 
 const getOpSectionStatus = (opId: any, secStatuses: any) => {
-  console.log("--getOpSectionStatus--", opId, secStatuses);
   return secStatuses.find(
     (st: any) => st.EA_SA_rsAssessmentQuestionType === opId
   );
@@ -87,10 +86,8 @@ export const getQuestionTypes = async (recordInfo: any) => {
 
   // Get Assessment Type by Related Assessment Question (EA_SA_AssessmentQuestion)
   const qCondition = `${recordInfo.questionRelName} IN (${recordInfo.id})`;
-  console.log("--assessmentTypes:condition--", qCondition);
   const assessmentTypes = await fetchTypesOfAssessmentQuestion(qCondition);
 
-  console.log("--assessmentTypes--", assessmentTypes);
   if (assessmentTypes.length > 0) {
     let hasStatusJSON = recordInfo?.sectionStatusesJSON != "";
 
@@ -101,7 +98,6 @@ export const getQuestionTypes = async (recordInfo: any) => {
 
     let currentSectionStatus = await fetchOpSectionStatus(recordInfo, recordInfo.sectionType);
 
-    console.log("--currentSectionStatus--", currentSectionStatus);
     const aTypeIds: any[] = [];
     assessmentTypes.forEach((type: any) => {
       aTypeIds.push(type.EA_SA_rfQuestionType);
@@ -109,7 +105,6 @@ export const getQuestionTypes = async (recordInfo: any) => {
 
     // get Assessment Question Type (EA_SA_AssessmentQuestionType)
     const assessQTypes = await fetchAssessmentQuestionTypeByIds(aTypeIds);
-    console.log("--getAssessQTypes--", assessQTypes, aTypeIds);
     aqTypes = assessQTypes.map((type: any) => {
       return {
         ...type,
@@ -117,7 +112,6 @@ export const getQuestionTypes = async (recordInfo: any) => {
         opsSection: getOpSectionStatus(type.id, currentSectionStatus),
       };
     });
-    console.log("--getgetQuestionTypes--", aqTypes);
     // Validate Section statuses and updates when empty
     if (!hasStatusJSON) {
       await updateStatusJSON(recordInfo, currentSectionStatus);
@@ -129,6 +123,5 @@ export const getQuestionTypes = async (recordInfo: any) => {
 
 export const getOperationStatus = async (recordInfo: any) => {
   const opSection = await fetchOpSectionStatus(recordInfo, recordInfo.sectionType);
-  //console.log("--getOperationStatus--", opSection)
   return opSection;
 };

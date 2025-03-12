@@ -14,7 +14,6 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const queryTemplateQuestion = async (type) => {
-  console.log('--query--', type)
   const condition = `EA_SA_rsAssessmentQuestionType = ${type.id} ORDER BY EA_SA_intDisplayOrder ASC`
   const fields = [
       'id',
@@ -33,9 +32,7 @@ const queryTemplateQuestion = async (type) => {
 
 export default async function QandA(props) {
   if ( props == undefined ) return "";
-  console.log('--qanda:props--', props.qtype)
   const asQuestions = await queryTemplateQuestion(props.qtype);
-  console.log('--qanda--', asQuestions)
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Typography sx={{ mt: 2, mb: 1 }}>Question and Answer for </Typography>

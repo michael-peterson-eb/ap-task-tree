@@ -59,7 +59,6 @@ export const fetchAssessQuestionsByTemplateId = async (recordInfo: any, template
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate <> 'null'`;
 
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 1, true);
-    console.log("fetchAssessQuestionsByTemplateId--", queryCondition);
 
     return await results;
   } catch (error) {
@@ -105,7 +104,6 @@ export const fetchQuestionsSeverityByTemplateId = async (recordInfo: any, templa
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
     queryCondition += ` AND EA_OR_rsSeverityLevel <> 'null'`;
 
-    //console.log("--fetchQuestionsSeverityByTemplateId--", queryCondition);
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 10000, true);
 
     return await results;
@@ -138,7 +136,6 @@ export const fetchTypesOfAssessmentQuestion = async (assessmentQuestionCondition
  */
 export const updateQuestion = async (recordId: any, fields: any) => {
   try {
-    //console.log("--updateQuestion--", recordId, fields);
     const results = await _RB.updateRecord("EA_SA_AssessmentQuestion", recordId, fields);
     return results;
   } catch (error) {
@@ -159,7 +156,6 @@ export const updateQuestionWithResponse = async (updatedResponses: any, defaultF
     const recordType: any = record.type;
 
     if (defaultFields.hasOwnProperty(recordType)) {
-      //console.log("--updateQuestionWithResponse:2--", record.fieldValue);
       await updateQuestion(recordId, record.fieldValue);
     }
   }

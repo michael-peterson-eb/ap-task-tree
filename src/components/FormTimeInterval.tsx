@@ -116,10 +116,8 @@ export const FormTimeInterval = (props: FormInputProps) => {
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
       const intervalQuestions = await fetchQuestionsIntervalsByTemplateId(recordInfo, data.id);
-      //console.log("--fetchQuestionsIntervalsByTemplateId--", intervalQuestions)
 
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-      //console.log("--fetchQuestionsIntervalsByTemplateId:options--", responseOptions)
 
       setQuestionsInterval(intervalQuestions);
       setQuesResponseOptions(responseOptions);

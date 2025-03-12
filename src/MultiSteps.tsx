@@ -18,22 +18,12 @@ import {
   MenuItem,
 } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheckCircle,
-  faChevronLeft,
-  faChevronRight,
-  faArrowLeft,
-  faArrowRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faChevronLeft, faChevronRight, faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 import { FormProvider, useForm } from "react-hook-form";
 import Carousel from "./components/Carousel/Carousel";
 
-import {
-  updateQuestionWithResponse,
-  fetchAssessQuestionsByTemplateId,
-  concatObjectIds,
-} from "./model/Questions";
+import { updateQuestionWithResponse, fetchAssessQuestionsByTemplateId, concatObjectIds } from "./model/Questions";
 
 import { updateOpSectionStatus } from "./model/SectionStatus";
 
@@ -56,6 +46,7 @@ export default function MultiSteps({ recordInfo }) {
   const [saveClicked, setSaveClicked] = useState(false);
   const [cancelClicked, setCancelClicked] = useState(false);
   const largeScreen: boolean = useMediaQuery("(min-width:1008px)");
+  const riskUpdates = useRef({});
 
   const normalResponseFields = {
     INT: "EA_SA_intResponse",
@@ -76,6 +67,8 @@ export default function MultiSteps({ recordInfo }) {
     DATE: "EA_OR_ddResponse",
     FRES: "EA_OR_txtaResponse",
   };
+
+  const riskFields = ["EA_RM_ddlImpact", "EA_RM_ddlLikelihood", "EA_RM_curFinancialImpact", "EA_RM_ddlTreatment"];
 
   const isStepOptional = (step: number) => step === 1;
 
@@ -142,28 +135,21 @@ export default function MultiSteps({ recordInfo }) {
 
   const handleClose = () => {
     // no trigger is called for Scenario Test
+    if (recordInfo.triggerId === "" || recordInfo.triggerId == "null") return window.history.go(-1);
+
     if (!cancelClicked) {
       // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals or an array of triggers
       const triggers = recordInfo.triggerId.split(",");
 
-      if (recordInfo.assessmentType == 'Incident Assessment') {
-          rbf_runTrigger(
-            recordInfo.objectIntegrationName,
-            recordInfo.id,
-            triggers[0]
-          );
-      } else if (recordInfo.assessmentType == 'Scenario Test') {
+      if (recordInfo.assessmentType == "Incident Assessment") {
+        rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, triggers[0]);
+      } else if (recordInfo.assessmentType == "Scenario Test") {
         //placeholder for future Scenario Test trigger
-
-      } else if (recordInfo.assessmentType != 'Standalone Assessment') {
+      } else if (recordInfo.assessmentType != "Standalone Assessment") {
         triggers.forEach((triggerId: any) => {
-          rbf_runTrigger(
-            recordInfo.objectIntegrationName,
-            recordInfo.id,
-            triggerId
-          );
+          rbf_runTrigger(recordInfo.objectIntegrationName, recordInfo.id, triggerId);
         });
-      }      
+      }
     }
 
     setTimeout(function () {
@@ -174,11 +160,22 @@ export default function MultiSteps({ recordInfo }) {
   const handleSubmit = async (thenClose = false) => {
     const updatedRecs = updateFields.current;
 
-    await updateQuestionWithResponse(
-      updatedRecs,
-      normalResponseFields,
-      peakResponseFields
-    );
+    if (recordInfo.objectIntegrationName === "EA_RM_Risk") {
+      let threatType = rbf_getFieldValue("EA_RM_rsThreatType");
+      let threat = rbf_getFieldValue("EA_RM_rsThreat");
+      let vulnerabilities = rbf_getFieldValue("EA_RM_rsVulnerability");
+
+      let riskUpdateObj = { EA_RM_rsThreatType: threatType[0], EA_RM_rsThreat: threat[0], EA_RM_rsVulnerability: vulnerabilities.join(",") };
+
+      for (let key in riskUpdates.current) {
+        let curRiskObj = riskUpdates.current[key];
+        riskUpdateObj = { ...riskUpdateObj, [curRiskObj.EA_SA_txtFieldIntegrationName]: curRiskObj.EA_SA_txtAssmtRespOptCode };
+      }
+
+      rbf_updateRecord("EA_RM_Risk", recordInfo.id, riskUpdateObj);
+    }
+
+    await updateQuestionWithResponse(updatedRecs, normalResponseFields, peakResponseFields);
     await updateStatusObject();
     if (thenClose) handleClose();
   };
@@ -193,31 +190,21 @@ export default function MultiSteps({ recordInfo }) {
     handleClose();
   };
 
-  const handleChange = async (
-    type: any,
-    event: any,
-    aqAnswer: any,
-    scope: any = "EA_OR_NORMAL"
-  ) => {
+  const handleChange = async (type: any, event: any, aqAnswer: any, scope: any = "EA_OR_NORMAL", riskObj: any = null) => {
     const { id, name, value } = event.target; // id=typeId name=questionId
     const aqtId = aqAnswer.EA_SA_rsAssessmentQuestionTemplate;
 
-    //console.log("--handleChange--", type, id, name, value, aqAnswer)
+    if (riskObj && riskFields.includes(riskObj.EA_SA_txtFieldIntegrationName)) {
+      riskUpdates.current = { ...riskUpdates.current, [id]: riskObj };
+    }
 
     trackUpdatedQuestions(name, id, type, id, value, scope);
     setSectionQuestionAnswer(name, id, aqtId, value);
   };
 
-  const customChangedHandler = (
-    type: any,
-    _event: any,
-    fieldValue: any,
-    aqAnswer: any,
-    scope: any = "EA_OR_NORMAL"
-  ) => {
+  const customChangedHandler = (type: any, _event: any, fieldValue: any, aqAnswer: any, scope: any = "EA_OR_NORMAL") => {
     let { id, name, value } = fieldValue;
     let aqtId = id;
-    //console.log("--customChangedHandler--", fieldValue)
     if (type != "STATUS") aqtId = aqAnswer.EA_SA_rsAssessmentQuestionTemplate;
 
     switch (type) {
@@ -238,14 +225,7 @@ export default function MultiSteps({ recordInfo }) {
     setSectionQuestionAnswer(name, id, aqtId, value);
   };
 
-  const trackUpdatedQuestions = (
-    fieldName: string,
-    typeId: any,
-    fieldType: any,
-    aqId: any,
-    value: any,
-    scope: any
-  ) => {
+  const trackUpdatedQuestions = (fieldName: string, typeId: any, fieldType: any, aqId: any, value: any, scope: any) => {
     const currentUpdatedFields: any = updateFields.current;
 
     if (fieldType === "MSP") value = concatObjectIds(value); // multi select field
@@ -272,7 +252,6 @@ export default function MultiSteps({ recordInfo }) {
     };
 
     updateFields.current = newUpdatedFields;
-    //console.log("--trackUpdatedQuestions--", newUpdatedFields)
   };
 
   // set all section questions ref state
@@ -286,6 +265,7 @@ export default function MultiSteps({ recordInfo }) {
           isRequired: sQ.EA_SA_cbRequiredQuestion === 1,
           isTimeInterval: sQ.EA_SA_cbAskPerTimeInterval === 1,
           value: sQ.value,
+          EA_SA_txtFieldIntegrationName: sQ.EA_SA_txtFieldIntegrationName,
         },
       };
     }
@@ -293,12 +273,7 @@ export default function MultiSteps({ recordInfo }) {
   };
 
   // update individual section question value
-  const setSectionQuestionAnswer = (
-    fieldName: string,
-    typeId: any,
-    aqtId: any,
-    qAns: any
-  ) => {
+  const setSectionQuestionAnswer = (fieldName: string, typeId: any, aqtId: any, qAns: any) => {
     let secQAs: any = sectionQuestions.current;
     if (secQAs.hasOwnProperty(aqtId)) {
       const currObj = secQAs[aqtId];
@@ -311,7 +286,6 @@ export default function MultiSteps({ recordInfo }) {
       };
     }
     sectionQuestions.current = secQAs;
-    //console.log("---setSectionQuestionAnswer---", typeId, aqtId, qAns, secQAs);
   };
 
   const doneReqField = () => {
@@ -319,7 +293,6 @@ export default function MultiSteps({ recordInfo }) {
     let nValid: any = 0;
     for (const sQS in secQAs) {
       const sQAV = secQAs[sQS];
-      //console.log("--doneReqField--", sQAV, sQS)
 
       // increment counter if field is required and value is empty
       if (sQAV.isRequired && sQAV.value == "") nValid++;
@@ -333,28 +306,27 @@ export default function MultiSteps({ recordInfo }) {
     for (let opSec of opSections) {
       getAssessmentQuestionTemplateByType(opSec).then((typeQs) => {
         for (let typeQ of typeQs) {
-          fetchAssessQuestionsByTemplateId(recordInfo, typeQ.id).then(
-            (assesQs) => {
-              for (let aQ of assesQs) {
-                const currentQuestions: any = allQuestions.current;
-                const newQuestions = {
-                  ...currentQuestions,
-                  [aQ.id]: {
-                    ...currentQuestions[aQ.id],
-                    isRequired: typeQ.EA_SA_cbRequiredQuestion,
-                    type: typeQ.EA_SA_ddlResponseFormat,
-                  },
-                };
-                allQuestions.current = newQuestions;
-              }
+          fetchAssessQuestionsByTemplateId(recordInfo, typeQ.id).then((assesQs) => {
+            for (let aQ of assesQs) {
+              const currentQuestions: any = allQuestions.current;
+              const newQuestions = {
+                ...currentQuestions,
+                [aQ.id]: {
+                  ...aQ,
+                  isRequired: typeQ.EA_SA_cbRequiredQuestion,
+                  type: typeQ.EA_SA_ddlResponseFormat,
+                },
+              };
+              allQuestions.current = newQuestions;
             }
-          );
+          });
         }
       });
     }
   };
 
   const lookupFieldValue = (aqId: any) => {
+    if (aqId === null) return null;
     const touchedFields: any = updateFields.current;
     if (touchedFields.hasOwnProperty(aqId)) {
       return touchedFields[aqId].value;
@@ -372,9 +344,7 @@ export default function MultiSteps({ recordInfo }) {
       // check if section status has been updated
       for (const objName in updatedTrack) {
         const updated: any = updatedTrack[objName];
-        const activeType: any = questionTypes.find(
-          (qtype: any) => qtype.id == objName
-        );
+        const activeType: any = questionTypes.find((qtype: any) => qtype.id == objName);
 
         if (activeType != undefined && updated.type == "STATUS") {
           const newStatus = updated.value ? "completed" : "not-started";
@@ -404,45 +374,22 @@ export default function MultiSteps({ recordInfo }) {
     <FormProvider {...formMethods}>
       <Box sx={{ width: "100%" }}>
         {questionTypes.length > 0 && recordInfo.crudAction == "edit" && (
-          <Box
-            mb={1}
-            display="flex"
-            justifyContent="space-between"
-            alignItems="right"
-          >
+          <Box mb={1} display="flex" justifyContent="space-between" alignItems="right">
             <ThemeProvider theme={NavButtonTheme}>
-              <Button
-                color="primary"
-                onClick={cancelButtonClicked}
-                variant="contained"
-                size="small"
-                sx={{ borderRadius: "0px" }}
-              >
+              <Button color="primary" onClick={cancelButtonClicked} variant="contained" size="small" sx={{ borderRadius: "0px" }}>
                 {cancelClicked ? (
                   <span>
-                    <CircularProgress
-                      size="1em"
-                      style={{ paddingRight: "4px", color: "#000" }}
-                    />
+                    <CircularProgress size="1em" style={{ paddingRight: "4px", color: "#000" }} />
                     <span>Closing...</span>
                   </span>
                 ) : (
                   <span>Cancel</span>
                 )}
               </Button>
-              <Button
-                color="warning"
-                onClick={saveButtonClicked}
-                variant="contained"
-                size="small"
-                sx={{ borderRadius: "0px" }}
-              >
+              <Button color="warning" onClick={saveButtonClicked} variant="contained" size="small" sx={{ borderRadius: "0px" }}>
                 {saveClicked ? (
                   <span>
-                    <CircularProgress
-                      size="1em"
-                      style={{ paddingRight: "4px", color: "#000" }}
-                    />
+                    <CircularProgress size="1em" style={{ paddingRight: "4px", color: "#000" }} />
                     <span>Saving...</span>
                   </span>
                 ) : (
@@ -454,11 +401,7 @@ export default function MultiSteps({ recordInfo }) {
         )}
         {largeScreen ? (
           <Box sx={{ margin: "auto", overflow: "hidden", maxHeight: "60px" }}>
-            <Carousel
-              questionTypes={questionTypes}
-              activeStep={activeStep}
-              handleTabClick={handleTabClick}
-            />
+            <Carousel questionTypes={questionTypes} activeStep={activeStep} handleTabClick={handleTabClick} />
           </Box>
         ) : (
           <Grid item xs={12}>
@@ -477,9 +420,7 @@ export default function MultiSteps({ recordInfo }) {
                     optional?: ReactNode;
                   } = {};
                   if (isStepOptional(index)) {
-                    labelProps.optional = (
-                      <Typography variant="caption">Optional</Typography>
-                    );
+                    labelProps.optional = <Typography variant="caption">Optional</Typography>;
                   }
                   if (isStepSkipped(index)) {
                     stepProps.completed = false;
@@ -510,9 +451,7 @@ export default function MultiSteps({ recordInfo }) {
                         >
                           {label.name}
                         </ListItemText>
-                        <ListItemIcon>
-                          {sectionTabIcon(index, activeStep, label)}
-                        </ListItemIcon>
+                        <ListItemIcon>{sectionTabIcon(index, activeStep, label)}</ListItemIcon>
                       </Box>
                     </MenuItem>
                   );
@@ -520,211 +459,6 @@ export default function MultiSteps({ recordInfo }) {
             </Select>
           </Grid>
         )}
-        {/* Previous tabs for reference*/}
-        {/* <Stepper activeStep={activeStep}>
-          <Grid container spacing={1}>
-            {largeScreen ? (
-              questionTypes.length > 0 &&
-              questionTypes.map((label: any, index) => {
-                const stepProps: { completed?: boolean } = {};
-                const labelProps: {
-                  optional?: ReactNode;
-                } = {};
-                if (isStepOptional(index)) {
-                  labelProps.optional = (
-                    <Typography variant="caption">Optional</Typography>
-                  );
-                }
-                if (isStepSkipped(index)) {
-                  stepProps.completed = false;
-                }
-                return (
-                  <Grid item xs={12 / questionTypes.length}>
-                    <ThemeProvider theme={NavButtonTheme}>
-                      <Button
-                        id={label.id}
-                        color={sectionTabColor(index, activeStep, label)}
-                        variant="contained"
-                        style={{
-                          textTransform: "none",
-                          color: activeStep == index ? "#FFF" : "#000",
-                          minHeight: "60px",
-                          lineHeight: "1.2",
-                        }}
-                        fullWidth
-                        onClick={() => handleTabClick(index)}
-                        endIcon={sectionTabIcon(index, activeStep, label)}
-                      >
-                        {label.name}
-                      </Button>
-                    </ThemeProvider>
-                  </Grid>
-                );
-              })
-            ) : (
-              <Grid item xs={12}>
-                <Select
-                  id="select-active-step"
-                  value={activeStep}
-                  onChange={(e) => {
-                    handleTabClick(e.target.value);
-                  }}
-                  sx={{ width: "100%", maxWidth: "420px" }}
-                >
-                  {questionTypes.length > 0 &&
-                    questionTypes.map((label: any, index) => {
-                      const stepProps: { completed?: boolean } = {};
-                      const labelProps: {
-                        optional?: ReactNode;
-                      } = {};
-                      if (isStepOptional(index)) {
-                        labelProps.optional = (
-                          <Typography variant="caption">Optional</Typography>
-                        );
-                      }
-                      if (isStepSkipped(index)) {
-                        stepProps.completed = false;
-                      }
-                      return (
-                        <MenuItem
-                          value={index}
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            width: "100%",
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              width: "100%",
-                            }}
-                          >
-                            <ListItemText
-                              sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              {label.name}
-                            </ListItemText>
-                            <ListItemIcon>
-                              {sectionTabIcon(index, activeStep, label)}
-                            </ListItemIcon>
-                          </Box>
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
-              </Grid>
-            )}
-          </Grid>
-        </Stepper> */}
-        {/* <Stepper activeStep={activeStep}>
-          <Grid container spacing={1}>
-            {largeScreen ? (
-              questionTypes.length > 0 &&
-              questionTypes.map((label: any, index) => {
-                const stepProps: { completed?: boolean } = {};
-                const labelProps: {
-                  optional?: ReactNode;
-                } = {};
-                if (isStepOptional(index)) {
-                  labelProps.optional = (
-                    <Typography variant="caption">Optional</Typography>
-                  );
-                }
-                if (isStepSkipped(index)) {
-                  stepProps.completed = false;
-                }
-                return (
-                  <Grid item xs={12 / questionTypes.length}>
-                    <ThemeProvider theme={NavButtonTheme}>
-                      <Button
-                        id={label.id}
-                        color={sectionTabColor(index, activeStep, label)}
-                        variant="contained"
-                        style={{
-                          textTransform: "none",
-                          color: activeStep == index ? "#FFF" : "#000",
-                          minHeight: "60px",
-                          lineHeight: "1.2",
-                        }}
-                        fullWidth
-                        onClick={() => handleTabClick(index)}
-                        endIcon={sectionTabIcon(index, activeStep, label)}
-                      >
-                        {label.name}
-                      </Button>
-                    </ThemeProvider>
-                  </Grid>
-                );
-              })
-            ) : (
-              <Grid item xs={12}>
-                <Select
-                  id="select-active-step"
-                  value={activeStep}
-                  onChange={(e) => {
-                    handleTabClick(e.target.value);
-                  }}
-                  sx={{ width: "100%", maxWidth: "420px" }}
-                >
-                  {questionTypes.length > 0 &&
-                    questionTypes.map((label: any, index) => {
-                      const stepProps: { completed?: boolean } = {};
-                      const labelProps: {
-                        optional?: ReactNode;
-                      } = {};
-                      if (isStepOptional(index)) {
-                        labelProps.optional = (
-                          <Typography variant="caption">Optional</Typography>
-                        );
-                      }
-                      if (isStepSkipped(index)) {
-                        stepProps.completed = false;
-                      }
-                      return (
-                        <MenuItem
-                          value={index}
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            width: "100%",
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              width: "100%",
-                            }}
-                          >
-                            <ListItemText
-                              sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              {label.name}
-                            </ListItemText>
-                            <ListItemIcon>
-                              {sectionTabIcon(index, activeStep, label)}
-                            </ListItemIcon>
-                          </Box>
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
-              </Grid>
-            )}
-          </Grid>
-        </Stepper> */}
         {questionTypes.length == 0 ? (
           <Fragment>
             <Typography sx={{ mt: 2, mb: 1 }}>
