@@ -151,10 +151,8 @@ export const FormSeverityLevel = (props: FormInputProps) => {
   useEffect(() => {
     const fetchQuestionsAndOptions = async () => {
       const severityLevels = await fetchQuestionsSeverityByTemplateId(recordInfo, data.id);
-      //console.log("--fetchQuestionsSeverityByTemplateId--", severityLevels)
 
       const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-      //console.log("--fetchQuestionsSeverityByTemplateId:options--", responseOptions)
 
       setQuestionsSeverity(severityLevels);
       setQuesResponseOptions(responseOptions);

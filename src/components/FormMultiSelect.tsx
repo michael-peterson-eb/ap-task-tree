@@ -53,10 +53,8 @@ export const FormMultiSelect = (props: FormInputProps) => {
 
     const assessQuestions:any = await getAssessmentQuestion(recordInfo, templateId, preloadedAQ);
     setAssessQuestion(assessQuestions);
-    //onsole.log("--fetchQuestionsIntervalsByTemplateId:question--", assessQuestions)
 
     const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-    //console.log("--fetchQuestionsIntervalsByTemplateId:options--", templateId, responseOptions)
 
     setQuesResponseOptions(responseOptions);
 
@@ -64,7 +62,6 @@ export const FormMultiSelect = (props: FormInputProps) => {
       const stringValues = fieldName != null ? assessQuestions[0][fieldName] : "";
       //const stringValues = assessQuestions[0].EA_SA_txtaResponse;
       const defaultValue = getDefaultValue(responseOptions, stringValues);
-      //console.log("--fetchQuestionsIntervalsByTemplateId:default--", stringValues, responseOptions, defaultValue)
       setDefaultValues(getArrayValue(lookup, assessQuestions[0].id, defaultValue));
       aqAnswer.current = assessQuestions[0];
     }

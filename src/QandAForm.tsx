@@ -109,7 +109,6 @@ const QandAForm = (props:any) => {
 
     // get from Assessement Question Template (EA_SA_AssessmentQuestionTemplate)
     getAssessmentQuestionTemplateByType(qtype).then((data) => {
-      //console.log("--getAssessmentQuestionByType--", data)
       setTableData(data);
       if ( editMode ) {
         //fnSecQs(data);  // track section questions state
@@ -227,6 +226,7 @@ const QandAForm = (props:any) => {
                   recordInfo={recordInfo}
                   qtype={qtype}
                   data={data}
+                  lookup={lookupFV}
                   onChange={handleOnChange} />
               </div>
             )

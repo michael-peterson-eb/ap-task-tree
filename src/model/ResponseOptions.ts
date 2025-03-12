@@ -3,12 +3,13 @@ export const fetchResponseOptionsByTemplateId = async (templateID: any) => {
     const condition = `EA_SA_rsAssessmentQuestionTemplate=${templateID} ORDER BY EA_SA_intDisplayOrder ASC`;
 
     const results = await _RB.selectQuery(
-      ["id", "name"],
+      ["id", "name", "EA_SA_txtAssmtRespOptCode"],
       "EA_SA_AssessmentResponseOption",
       condition,
       10000,
       true
     );
+
     return results;
   } catch (error) {
     console.log("Error: fetchAssessmentResponseOptions ", error);
