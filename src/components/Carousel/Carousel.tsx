@@ -72,7 +72,7 @@ export default function Home({ questionTypes, activeStep, handleTabClick }) {
       if (farthestLeft === -1) {
         return;
       } else {
-        children[farthestLeft].scrollIntoView({ behavior: "smooth" });
+        children[farthestLeft].scrollIntoView({ behavior: "smooth", block: "nearest" });
         setScrollingArrows(rootRef.current);
       }
     }
@@ -97,7 +97,7 @@ export default function Home({ questionTypes, activeStep, handleTabClick }) {
       if (farthestRight > children.length - 1 || farthestRight === 0) {
         return;
       } else {
-        children[farthestRight].scrollIntoView({ behavior: "smooth" });
+        children[farthestRight].scrollIntoView({ behavior: "smooth", block: "nearest" });
         setScrollingArrows(rootRef.current);
       }
     }
@@ -129,23 +129,15 @@ export default function Home({ questionTypes, activeStep, handleTabClick }) {
           overflow: "hidden",
           gap: "8px !important",
           maskImage: setEdgeMask(),
-          animation: "clip-fade 3s infinite alternate"
+          animation: "clip-fade 3s infinite alternate",
         }}
       >
         {questionTypes.map((type, index) => (
-          <Card
-            type={type}
-            activeStep={activeStep}
-            index={index}
-            handleTabClick={handleTabClick}
-          />
+          <Card type={type} activeStep={activeStep} index={index} handleTabClick={handleTabClick} />
         ))}
       </ImageList>
       <PrevButton handleClickPrev={scrollLeft} canScrollLeft={canScrollLeft} />
-      <NextButton
-        handleClickNext={scrollRight}
-        canScrollRight={canScrollRight}
-      />
+      <NextButton handleClickNext={scrollRight} canScrollRight={canScrollRight} />
     </>
   );
 }
