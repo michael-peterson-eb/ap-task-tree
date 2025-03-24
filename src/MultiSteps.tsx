@@ -400,7 +400,7 @@ export default function MultiSteps({ recordInfo }) {
           </Box>
         )}
         {largeScreen ? (
-          <Box sx={{ margin: "auto", overflow: "hidden", maxHeight: "60px" }}>
+          <Box sx={{ margin: "auto", overflow: "hidden", maxHeight: "46px" }}>
             <Carousel questionTypes={questionTypes} activeStep={activeStep} handleTabClick={handleTabClick} />
           </Box>
         ) : (
