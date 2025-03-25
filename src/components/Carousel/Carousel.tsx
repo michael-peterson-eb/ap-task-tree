@@ -124,7 +124,8 @@ export default function Home({ questionTypes, activeStep, handleTabClick }) {
         }}
         sx={{
           gridAutoFlow: "column",
-          gridAutoColumns: "205px !important",
+          gridTemplateColumns: "205px !important",
+          gridAutoColumns: "205px",
           overflow: "hidden",
           gap: "8px !important",
           maskImage: setEdgeMask(),
