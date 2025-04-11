@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 const AssessmentQuestionFields = [
   "id",
   "name",

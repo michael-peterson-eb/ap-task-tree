@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 export const fetchResponseOptionsByTemplateId = async (templateID: any) => {
   try {
     const condition = `EA_SA_rsAssessmentQuestionTemplate=${templateID} ORDER BY EA_SA_intDisplayOrder ASC`;

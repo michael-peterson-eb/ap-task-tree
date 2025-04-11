@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 export const fetchObjectSectionStatuses = async (recordInfo: any) => {
   try {
     let status = "{}";

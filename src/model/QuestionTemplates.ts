@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 const templateFields = [
   "id",
   "EA_SA_ddlResponseFormat#code",

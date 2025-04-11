@@ -1,17 +1,17 @@
-import { useState, useRef, useEffect } from "react";
-import { ImageList } from "@mui/material";
+import { useState, useRef } from "react";
+import { ImageList, Box } from "@mui/material";
 import { Card } from "./Card";
 import NextButton from "./NextButton";
 import PrevButton from "./PrevButton";
 
-export default function Home({ questionTypes, activeStep, handleTabClick }) {
+export default function Carousel({ operationSections, selectedOpsSec, handleTabClick }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
   const setScrollingArrows = (elem) => {
     if (elem && elem.children.length > 0) {
-      const bounds = elem.getBoundingClientRect();
+      // const bounds = elem.getBoundingClientRect();
       const children = elem.children;
       const startChild = children[0];
       const endChild = children[children.length - 1];
@@ -115,7 +115,7 @@ export default function Home({ questionTypes, activeStep, handleTabClick }) {
   };
 
   return (
-    <>
+    <Box sx={{ maxHeight: "46px" }}>
       <ImageList
         ref={(element) => {
           //@ts-expect-error
@@ -132,12 +132,12 @@ export default function Home({ questionTypes, activeStep, handleTabClick }) {
           animation: "clip-fade 3s infinite alternate",
         }}
       >
-        {questionTypes.map((type, index) => (
-          <Card type={type} activeStep={activeStep} index={index} handleTabClick={handleTabClick} />
+        {operationSections.map((type, index) => (
+          <Card key={type.id} type={type} selectedOpsSec={selectedOpsSec} index={index} handleTabClick={handleTabClick} />
         ))}
       </ImageList>
       <PrevButton handleClickPrev={scrollLeft} canScrollLeft={canScrollLeft} />
       <NextButton handleClickNext={scrollRight} canScrollRight={canScrollRight} />
-    </>
+    </Box>
   );
 }

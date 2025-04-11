@@ -3,9 +3,9 @@ import Check from "./Check";
 import Circle from "./Circle";
 import Dotdotdot from "react-dotdotdot";
 
-export const Card = ({ type, activeStep, index, handleTabClick }) => {
+export const Card = ({ type, selectedOpsSec, index, handleTabClick }) => {
   const cardColor = type.status === "completed" ? "#36A902" : "#DEE9FF";
-  const isSelected = activeStep === index;
+  const isSelected = selectedOpsSec === index;
 
   const icon = type.status === "completed" ? <Check /> : <Circle color={type.status === "completed" || isSelected ? "white" : "#1B2327"} />;
 
