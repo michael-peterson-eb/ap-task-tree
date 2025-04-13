@@ -1,5 +1,3 @@
-//@ts-nocheck
-
 const AssessmentQuestionFields = [
   "id",
   "name",
@@ -44,6 +42,7 @@ export const fetchQuestionsByQuestionTypeId = async (questionTypeId: any, record
     queryCondition += ` AND EA_SA_rfQuestionType=${questionTypeId}`;
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate <> 'null'`;
 
+    //@ts-ignore
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 10000, true);
     return results;
   } catch (error) {
@@ -60,6 +59,7 @@ export const fetchAssessQuestionsByTemplateId = async (recordInfo: any, template
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate <> 'null'`;
 
+    //@ts-ignore
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 1, true);
 
     return await results;
@@ -83,6 +83,7 @@ export const fetchQuestionsIntervalsByTemplateId = async (recordInfo: any, templ
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
     queryCondition += ` AND EA_SA_rsTimeInterval <> 'null' ORDER BY EA_SA_rfTimeInSeconds ASC`;
 
+    //@ts-ignore
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 10000, true);
 
     return await results;
@@ -106,6 +107,7 @@ export const fetchQuestionsSeverityByTemplateId = async (recordInfo: any, templa
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
     queryCondition += ` AND EA_OR_rsSeverityLevel <> 'null'`;
 
+    //@ts-ignore
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 10000, true);
 
     return await results;
@@ -123,6 +125,7 @@ export const fetchTypesOfAssessmentQuestion = async (assessmentQuestionCondition
   try {
     const condition = `${assessmentQuestionCondition} AND EA_SA_rfQuestionType <> 'null' GROUP BY EA_SA_rfQuestionType ORDER BY EA_SA_rfQuestionType`;
 
+    //@ts-ignore
     const results = await _RB.selectQuery(["EA_SA_rfQuestionType"], "EA_SA_AssessmentQuestion", condition, 10000, true);
     return results;
   } catch (error) {
@@ -138,6 +141,7 @@ export const fetchTypesOfAssessmentQuestion = async (assessmentQuestionCondition
  */
 export const updateQuestion = async (recordId: any, fields: any) => {
   try {
+    //@ts-ignore
     const results = await _RB.updateRecord("EA_SA_AssessmentQuestion", recordId, fields);
     return results;
   } catch (error) {
@@ -157,7 +161,7 @@ export const updateQuestionWithResponse = async (updatedResponses: any, defaultF
     const record = updatedResponses[recordId];
     const recordType: any = record.type;
 
-    if (defaultFields.hasOwnProperty(recordType)) {
+    if (defaultFields[recordType]) {
       await updateQuestion(recordId, record.fieldValue);
     }
   }
@@ -166,6 +170,7 @@ export const updateQuestionWithResponse = async (updatedResponses: any, defaultF
 export const getRelatedResponseOptions = async (questionId: any) => {
   try {
     // R7996162=Assessment Question to Assessment Response Options
+    //@ts-ignore
     const results = await _RB.getRelatedFields("R7996162", ",EA_SA_AssessmentQuestion", questionId, "id");
     return results;
   } catch (error) {

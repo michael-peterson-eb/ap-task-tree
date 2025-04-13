@@ -1,5 +1,3 @@
-//@ts-nocheck
-
 import { useEffect, useState, useRef } from 'react';
 import {
   Select,
@@ -15,14 +13,14 @@ import {
   FormGroup
 } from '@mui/material';
 
-import { FormInputProps } from "./Form/FormInputProps";
+import { FormInputProps } from "../../types/FormInputProps";
 import {
   fetchQuestionsIntervalsByTemplateId
 } from "../../model/Questions";
 import {
   fetchResponseOptionsByTemplateId
 } from "../../model/ResponseOptions";
-
+import { lookupFV } from "../../utils/common";
 import DOMPurify from "dompurify";
 
 import { getNameValue, getValue, stripTextHtmlTags } from '../../utils/common';
@@ -34,7 +32,6 @@ export const FormTimeInterval = (props: FormInputProps) => {
     qtype,
     data,
     onChange,
-    lookup,
     fnSecQA,
     fnReqField} = props;
 
@@ -51,7 +48,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
     });
 
     const cached = questionsInterval.filter( (qi:any) => {
-      const val = getValue(lookup, qi.id, qi.EA_SA_rsAssessmentResponseOptions);
+      const val = getValue(lookupFV, qi.id, qi.EA_SA_rsAssessmentResponseOptions);
       return parseInt(val) > 0;
     });
 
@@ -76,6 +73,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
     };
 
     const newQuesInterval:any = questionsInterval.map((qin) => {
+      // @ts-ignore
       return qin.id == id ? updatedMap : qin;
     });
 
@@ -84,7 +82,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
 
   const doLookup = (id:any, optSelected:any) => {
     if (optSelected != null || optSelected != "") setTimeIntervalUpdated(true);
-    return getValue(lookup, id, optSelected);
+    return getValue(lookupFV, id, optSelected);
   }
 
   const isQuestionRequired = () => {
@@ -103,7 +101,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
   const atLeastOneTimeIntervalHasValue = (tiQs:any) => {
     let selected = "";
     tiQs.forEach((tQ:any) => {
-     if ( getValue(lookup, tQ.id, tQ.EA_SA_rsAssessmentResponseOptions) != "" ) selected = "Yes";
+     if ( getValue(lookupFV, tQ.id, tQ.EA_SA_rsAssessmentResponseOptions) != "" ) selected = "Yes";
     });
 
     return selected;
@@ -150,6 +148,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
           required={recordInfo.crudAction === 'edit' && data.EA_SA_cbRequiredQuestion == 1}
         >
           {questionsInterval.length > 0 && <div dangerouslySetInnerHTML={{
+            // @ts-ignore
           __html: cleanLabel(questionsInterval[0].EA_SA_rfQuestion)
           }} />}
         </InputLabel>
@@ -187,7 +186,7 @@ export const FormTimeInterval = (props: FormInputProps) => {
                         name={fieldName}
                         id={asQ.id}
                         native
-                        defaultValue={getValue(lookup, asQ.id, asQ.EA_SA_rsAssessmentResponseOptions)}
+                        defaultValue={getValue(lookupFV, asQ.id, asQ.EA_SA_rsAssessmentResponseOptions)}
                         onChange={(event: any) => {
                           onChange('SSP', event, asQ);
                           timeIntervalUpdate(asQ.id, event);

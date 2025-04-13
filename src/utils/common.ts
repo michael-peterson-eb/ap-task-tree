@@ -1,4 +1,5 @@
 import DOMPurify from "dompurify";
+
 export const parseStatus = (strStatus: any) => {
   if (typeof strStatus !== "string") return {};
 
@@ -13,7 +14,7 @@ export const parseStatus = (strStatus: any) => {
 };
 
 export const getNameValue = (options: any, id: any) => {
-  if ( !id || options.length == 0 ) return "No Answer";
+  if (!id || options.length == 0) return "No Answer";
 
   const found = options.find((opt: any) => opt.id == id);
   return found == undefined ? "**" : found.name;
@@ -98,12 +99,12 @@ export const appendQuestions = (addQs: any, aQuestions: any, fieldName: string) 
   });
 };
 
-export const getQuestionAnswer = (recordInfo: any, lookup: any, qAnswer: any, valueField: any) => {
+export const getQuestionAnswer = (recordInfo: any, lookup: any, qAnswer: any, valueField: any, objectToSearch) => {
   if (qAnswer && qAnswer.length > 0) {
     const aqId = qAnswer[0].id;
     const aqFieldValue = qAnswer[0][valueField];
 
-    const lookupValue = lookup(aqId);
+    const lookupValue = lookup(aqId, objectToSearch);
 
     let responseValue = aqFieldValue ? aqFieldValue : "";
     if (lookupValue || lookupValue == "") responseValue = lookupValue;
@@ -115,20 +116,43 @@ export const getQuestionAnswer = (recordInfo: any, lookup: any, qAnswer: any, va
   return [false, null, null];
 };
 
-export const cleanLabel = (htmlLabel:string) => {
+export const cleanLabel = (htmlLabel: string) => {
   return DOMPurify.sanitize(htmlLabel, {
     USE_PROFILES: { html: true },
-  })
+  });
 };
 
-export const isQuestionRequired = (flag:any) => flag == 1;
+export const isQuestionRequired = (flag: any) => flag == 1;
 
-export const getRequiredColor = (isChecked:any) => {
+export const getRequiredColor = (isChecked: any) => {
   return isQuestionRequired(isChecked) ? "#d32f2f" : "#000";
-}
+};
 
-export const showLabel = (hasLabel:any, label: any) => {
+export const showLabel = (hasLabel: any, label: any) => {
   return hasLabel == undefined ? label : null;
 };
 
-export const fieldWithLabel = (withLabel:any) => withLabel == undefined;
+export const fieldWithLabel = (withLabel: any) => withLabel == undefined;
+
+export const lookupFV = (aqId: any, objectToSearch: any) => {
+  if (aqId === null) return null;
+  const touchedFields: any = objectToSearch;
+  if (touchedFields[aqId]) {
+    return touchedFields[aqId].value;
+  } else {
+    return null;
+  }
+};
+
+export const getDefaultValue = ({ objToCheck, idToMatch, backendValue, fallbackValue = "" }) => {
+  if (objToCheck[idToMatch]) {
+    const defaultValue = objToCheck[idToMatch].value;
+    return defaultValue;
+  }
+
+  if (backendValue) {
+    return backendValue;
+  }
+
+  return fallbackValue;
+};

@@ -6,7 +6,9 @@ const QuestionTypeSectionHeader = ({ mode = "view", status, objectTitle, questio
   return (
     <>
       <Box sx={{ marginTop: "32px" }}>
-        <span style={{ fontSize: "18px", fontWeight: "bold", fontStyle: "normal" }}>{questionName}</span>
+        <span style={{ fontSize: "18px", fontWeight: "bold", fontStyle: "normal" }}>
+          {process.env.NODE_ENV === "development" ? `Mocked section: ${questionName}` : questionName}
+        </span>
       </Box>
       <Box sx={{ margin: "auto", overflow: "auto" }}>
         {mode === "view" && !isTypeCompleted && (

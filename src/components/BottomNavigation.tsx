@@ -3,7 +3,19 @@ import { Box, Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
-const BottomNavigation = ({ activeStep, handleBack, handleNext, questionTypes }) => {
+const BottomNavigation = ({ operationSections, selectedOpsSection, setSelectedOpsSection }) => {
+  const handleBack = () => {
+    setSelectedOpsSection((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleNext = () => {
+    if (selectedOpsSection === operationSections.length - 1) {
+      setSelectedOpsSection(0);
+    } else {
+      setSelectedOpsSection((prevActiveStep) => prevActiveStep + 1);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -15,7 +27,7 @@ const BottomNavigation = ({ activeStep, handleBack, handleNext, questionTypes })
     >
       <Button
         color="inherit"
-        disabled={activeStep === 0}
+        disabled={selectedOpsSection === 0}
         onClick={handleBack}
         sx={{
           mr: 1,
@@ -28,7 +40,7 @@ const BottomNavigation = ({ activeStep, handleBack, handleNext, questionTypes })
         <FontAwesomeIcon icon={faChevronLeft} />
       </Button>
       <Button
-        disabled={activeStep === questionTypes.length - 1}
+        disabled={selectedOpsSection === operationSections.length - 1}
         onClick={handleNext}
         sx={{
           backgroundColor: "#DDD",

@@ -9,6 +9,7 @@ import { FormInputDate } from "./FormInputDate";
 import { FormInputInteger } from "./FormInputInteger";
 import { FormInputDecimal } from "./FormInputDecimal";
 import { FormYesNo } from "./FormInputYesNo";
+import { FormSeverityLevel } from "./FormSeverityLevel";
 
 export {
   FieldValue,
@@ -22,4 +23,5 @@ export {
   FormInputInteger,
   FormInputDecimal,
   FormYesNo,
+  FormSeverityLevel
 };

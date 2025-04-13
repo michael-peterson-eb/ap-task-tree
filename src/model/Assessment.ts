@@ -2,75 +2,12 @@
  * This module contains all the business logic related to Assessment
  */
 
-import {
-  fetchAssessmentQuestionTypeByIds,
-  fetchAssessmentQuestionTypes,
-} from "./QuestionType";
+import { fetchAssessmentQuestionTypeByIds, fetchAssessmentQuestionTypes } from "./QuestionType";
 import { fetchTypesOfAssessmentQuestion } from "./Questions";
-import {
-  fetchObjectSectionStatuses,
-  fetchOpSectionBySource,
-  fetchOpSectionStatus,
-  updateStatusJSON,
-} from "./SectionStatus";
-
-/**
- *
- * @param questionTypeID
- * @param sectionStatusesJSON
- * @param hasStatusJSON
- */
-
-const xgetAssessmentQuestionType = async (
-  questionTypeID: any,
-  sectionStatusesJSON: any,
-  hasStatusJSON: any,
-  questionTypes: any
-) => {
-  const sectionStatus = sectionStatusesJSON;
-
-  // Get Assessment Question Type Name By ID
-  const fetchResults = await fetchTypesOfAssessmentQuestion(questionTypeID);
-
-  const assessmentTypeName = fetchResults[0]["name"];
-
-  // Set default status
-  if (!hasStatusJSON) {
-    sectionStatus[`type-${questionTypeID}`] = "not-started";
-  }
-
-  // Store Question Type with Question Templates
-  const status = hasStatusJSON
-    ? JSON.parse(sectionStatusesJSON[0]["EA_SA_txtaSectionStatuses"])[
-        `type-${questionTypeID}`
-      ]
-    : "not-started";
-
-  questionTypes.set(questionTypeID, {
-    id: questionTypeID,
-    status: hasStatusJSON ? status : "not-started",
-    name: assessmentTypeName,
-    items: [],
-  });
-};
-
-const xgetTypeSectionStatus = (typeId: any, sectionStatus: any) => {
-  const objKey = `type-${typeId}`;
-  if (
-    sectionStatus != undefined &&
-    Object.keys(sectionStatus).length > 0 &&
-    sectionStatus.hasOwnProperty(objKey)
-  ) {
-    return sectionStatus[objKey];
-  } else {
-    return "not-started";
-  }
-};
+import { fetchObjectSectionStatuses, fetchOpSectionBySource, fetchOpSectionStatus, updateStatusJSON } from "./SectionStatus";
 
 const getOpSectionStatus = (opId: any, secStatuses: any) => {
-  return secStatuses.find(
-    (st: any) => st.EA_SA_rsAssessmentQuestionType === opId
-  );
+  return secStatuses.find((st: any) => st.EA_SA_rsAssessmentQuestionType === opId);
 };
 
 /**

@@ -1,5 +1,5 @@
-import { mockOperationSections } from "../data/mockOperationSection";
-import { formatOperationSections } from "../utils/format";
+import { mockOperationSections } from "../../data/mockOperationSection";
+import { formatOperationSections } from "../../utils/format";
 
 export const getOperationSections = async ({ id, sectionType, questionRelName }) => {
   try {

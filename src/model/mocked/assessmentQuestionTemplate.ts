@@ -1,5 +1,5 @@
-import { mockAssessmentQuestionTemplate } from "../data/mockAssessmentQuestionTemplate";
-import { formatAssessmentQuestionTemplate } from "../utils/format";
+import { mockAssessmentQuestionTemplate } from "../../data/mockAssessmentQuestionTemplate";
+import { formatAssessmentQuestionTemplate } from "../../utils/format";
 
 const templateFields = [
   "id",

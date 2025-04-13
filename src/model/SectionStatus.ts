@@ -1,10 +1,9 @@
-//@ts-nocheck
-
 export const fetchObjectSectionStatuses = async (recordInfo: any) => {
   try {
     let status = "{}";
     const queryCondition = `id=${recordInfo?.id}`;
 
+    //@ts-ignore
     const results = await _RB.selectQuery(["EA_SA_txtaSectionStatuses"], recordInfo?.objectIntegrationName, queryCondition, 1, true);
 
     if (results.length > 0) status = results[0];
@@ -23,9 +22,9 @@ export const fetchOpSectionStatus = async (recordInfo: any, sectionType: any) =>
   try {
     let queryCondition = `${recordInfo.questionRelName}=${recordInfo?.id}`;
     queryCondition = queryCondition + ` AND EA_SA_ddlSectionType#code='${sectionType}'`;
-    queryCondition = queryCondition + ` AND EA_SA_cbDisplaySection=1`; 
+    queryCondition = queryCondition + ` AND EA_SA_cbDisplaySection=1`;
 
-    //console.log("fetchOpSectionStatus:condition", queryCondition)
+    //@ts-ignore
     const results = await _RB.selectQuery(
       ["id", "name", "status#code", "EA_SA_txtCode", "EA_SA_rsAssessmentQuestionType", "EA_SA_rsAssessmentQuestions"],
       "EA_SA_OperationsSection",
@@ -34,7 +33,6 @@ export const fetchOpSectionStatus = async (recordInfo: any, sectionType: any) =>
       true
     );
     return results;
-
   } catch (error) {
     console.log("Error: fetchOpSectionStatus ", error);
   }
@@ -43,6 +41,8 @@ export const fetchOpSectionStatus = async (recordInfo: any, sectionType: any) =>
 export const fetchOpSectionBySource = async (recordInfo: any) => {
   try {
     const queryCondition = `${recordInfo.questionRelName}=${recordInfo?.id}`;
+
+    //@ts-ignore
     const results = await _RB.selectQuery(
       ["id", "name", "status#code", "EA_SA_txtCode", "EA_SA_rsAssessmentQuestionType", "EA_SA_rsAssessmentQuestions"],
       "EA_SA_OperationsSection",
@@ -58,18 +58,19 @@ export const fetchOpSectionBySource = async (recordInfo: any) => {
   }
 };
 
-
 /**
  * update Operation Section status
  * @param opSecId
  * @param value
  * @returns
  */
-export const updateOpSectionStatus = async (opSec: any, value: string) => {
+export const updateOpSectionStatus = async (opSecId: any, value: string) => {
   try {
-    const results = await _RB.updateRecord("EA_SA_OperationsSection", opSec.id, {
+    //@ts-ignore
+    const results = await _RB.updateRecord("EA_SA_OperationsSection", opSecId, {
       status: value,
     });
+
     return results;
   } catch (error) {
     console.log("Error: updateOpSectionStatus ", error);
@@ -82,6 +83,7 @@ export const updateStatusJSON = async (recordInfo: any, value: any) => {
       EA_SA_txtaSectionStatuses: JSON.stringify(value),
     };
 
+    //@ts-ignore
     const results = await _RB.updateRecord(recordInfo.objectIntegrationName, recordInfo.id, fields);
 
     return results;

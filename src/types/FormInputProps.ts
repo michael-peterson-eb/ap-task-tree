@@ -8,7 +8,7 @@ export interface FormInputProps {
   onChangeCustom?: any;
   qtype?: any;
   templateId?: any;
-  recordInfo?: any;
+  appParams?: any;
   lookup?: any;
   fnSecQs?: any;
   fnSecQA?: any;
@@ -17,4 +17,5 @@ export interface FormInputProps {
   fieldName?: string;
   preloadedAQ?:any;
   withLabel?:boolean;
+  recordInfp?: any;
 }
