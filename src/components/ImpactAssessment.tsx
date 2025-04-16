@@ -16,7 +16,7 @@ export const ImpactAssessment = (): ReactElement | null => {
 
   if (operationSectionsPending) return <Loading boxStyles={{ marginY: 4 }} />;
 
-  if (operationSections && operationSections.length == 0) return <NoQuestionTypes />;
+  if (operationSections && operationSections.length === 0) return <NoQuestionTypes />;
 
   if (operationSections && operationSections.length > 0) {
     return (
@@ -28,6 +28,7 @@ export const ImpactAssessment = (): ReactElement | null => {
           const {
             control,
             formState: { isValid },
+            //eslint-disable-next-line react-hooks/rules-of-hooks -- Need separate hook for each form
           } = useForm({ mode: "onChange", reValidateMode: "onChange", resetOptions: { keepDirtyValues: true } });
 
           if (selectedOpsSection !== index) return null;

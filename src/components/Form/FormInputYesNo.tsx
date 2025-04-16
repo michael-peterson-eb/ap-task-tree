@@ -39,11 +39,11 @@ export const FormYesNo = ({
           defaultValue={backendValue}
           name={`${assessmentQuestion.id}.${fieldName}`}
           rules={{ required: true }}
-          render={({ field: { onChange, value }, fieldState: { invalid } }) => {
+          render={({ field: { onChange, value }, fieldState: { error } }) => {
             return (
               <Select
                 displayEmpty
-                error={!!invalid}
+                error={!!error}
                 id={assessmentQuestion.id}
                 labelId={`yesno-${assessmentQuestion.id}`}
                 onChange={(event: any) => {

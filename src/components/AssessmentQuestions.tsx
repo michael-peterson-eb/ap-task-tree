@@ -20,7 +20,7 @@ import { fetchAssessQuestionsByTemplateId } from "../model/Questions";
 import { fetchResponseOptionsByTemplateId } from "../model/ResponseOptions";
 import { Loading } from "./Loading";
 
-const AssessmentQuestions = ({ appParams, questionTemplateData, control, isValid }): ReactElement | null => {
+const AssessmentQuestions = ({ appParams, questionTemplateData, control }): ReactElement | null => {
   const { EA_SA_ddlAskPer: askPer, EA_SA_ddlResponseFormat: responseFormat } = questionTemplateData;
   const { questionUpdates, riskUpdates } = useData();
 
@@ -87,7 +87,6 @@ const AssessmentQuestions = ({ appParams, questionTemplateData, control, isValid
         assessmentQuestion,
         control,
         handleChange,
-        isValid,
         questionTemplateData,
         questionUpdates,
         responseOptions,
@@ -99,8 +98,8 @@ const AssessmentQuestions = ({ appParams, questionTemplateData, control, isValid
               <FormSingleSelect fieldName={"EA_SA_rsAssessmentResponseOptions"} {...formProps} />
             </div>
           ) : null}
-          {responseFormat === "SSP" && askPer == "EA_SA_TimeInterval" ? <FormTimeInterval fieldName={"EA_SA_rsAssessmentResponseOptions"} {...formProps} /> : null}
-          {askPer == "EA_SA_SeverityLevel" ? <FormSeverityLevel {...formProps} /> : null}
+          {responseFormat === "SSP" && askPer === "EA_SA_TimeInterval" ? <FormTimeInterval fieldName={"EA_SA_rsAssessmentResponseOptions"} {...formProps} /> : null}
+          {askPer === "EA_SA_SeverityLevel" ? <FormSeverityLevel {...formProps} /> : null}
           {responseFormat === "FRES" ? (
             <div style={{ marginTop: 24 }}>
               <FormInputText fieldName={"EA_SA_txtaResponse"} {...formProps} />

@@ -24,7 +24,7 @@ export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, cont
             defaultValue={getDefaultMultiValue(backendValue, responseOptions)}
             name={`${assessmentQuestion.id}.${fieldName}`}
             rules={{ required: true, minLength: 1 }}
-            render={({ field: { onChange, value }, fieldState: { invalid, error } }) => {
+            render={({ field: { onChange, value }, fieldState: { error } }) => {
               return (
                 <Autocomplete
                   disableCloseOnSelect
@@ -46,8 +46,8 @@ export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, cont
                       name={fieldName}
                       id={assessmentQuestion.id}
                       label={assessmentQuestion.name}
-                      error={!!invalid}
-                      helperText={!!invalid ? (error && error.message ? error.message : "This field is required") : null}
+                      error={!!error}
+                      helperText={!!error ? (error && error.message ? error.message : "This field is required") : null}
                     />
                   )}
                   renderOption={(props, option: any) => {

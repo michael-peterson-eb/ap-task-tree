@@ -10,7 +10,7 @@ import { ViewOnlyText } from "./";
 
 import { FormInputCurrency, FormInputText, FormSingleSelect, FormInputDate, FormInputInteger, FormInputDecimal } from "./";
 
-export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, handleChange, isValid, questionTemplateData, questionUpdates, responseOptions }: FormInputProps) => {
+export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, handleChange, questionTemplateData, questionUpdates, responseOptions }: FormInputProps) => {
   const { EA_SA_ddlResponseFormat: responseFormat } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
@@ -246,11 +246,6 @@ export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, hand
             </Table>
           </TableContainer>
         </FormGroup>
-        {!isValid && (
-          <InputLabel sx={{ fontSize: "12px", marginTop: "12px" }} error={!isValid}>
-            All questions must be answered
-          </InputLabel>
-        )}
       </>
     );
   }

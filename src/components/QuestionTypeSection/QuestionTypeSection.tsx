@@ -29,7 +29,6 @@ const QuestionTypeSection = ({ appParams, control, isValid, currentOpsSectionInf
                 appParams={appParams}
                 control={control}
                 questionTemplateData={questionTemplateData}
-                isValid={isValid}
               />
             );
           })}

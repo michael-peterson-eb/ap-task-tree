@@ -142,11 +142,6 @@ export const FormTimeInterval = ({
               </TableBody>
             </Table>
           </TableContainer>
-          {!isValid && (
-            <InputLabel sx={{ fontSize: "12px", marginTop: "12px" }} color="error" error>
-              All questions must be answered
-            </InputLabel>
-          )}
         </FormGroup>
       </>
     );

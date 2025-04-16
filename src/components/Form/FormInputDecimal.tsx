@@ -39,11 +39,11 @@ export const FormInputDecimal = ({
               message: "Please enter a decimal value",
             },
           }}
-          render={({ field: { onChange, value }, fieldState: { invalid, error } }) => (
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
             <TextField
-              error={!!invalid}
+              error={!!error}
               fullWidth
-              helperText={!!invalid ? (error && error.message ? error.message : "This field is required") : null}
+              helperText={!!error ? (error && error.message ? error.message : "This field is required") : null}
               inputProps={{ step: "0.1" }}
               InputProps={{ inputMode: "numeric" }}
               label={hasLabel ? setInnerHTML(EA_SA_txtaQuestion) : null}

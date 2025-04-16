@@ -39,11 +39,11 @@ export const FormInputInteger = ({
               message: "Please enter an integer",
             },
           }}
-          render={({ field: { onChange, value }, fieldState: { invalid, error } }) => (
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
             <TextField
-              error={!!invalid}
+              error={!!error}
               fullWidth
-              helperText={!!invalid ? (error && error.message ? error.message : "This field is required") : null}
+              helperText={!!error ? (error && error.message ? error.message : "This field is required") : null}
               InputProps={{ inputMode: "numeric" }}
               label={hasLabel ? setInnerHTML(EA_SA_txtaQuestion) : null}
               onChange={(event) => {

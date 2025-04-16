@@ -34,11 +34,11 @@ export const FormInputCurrency = ({
           defaultValue={backendValue}
           name={`${assessmentQuestion.id}.${fieldName}`}
           rules={{ required, minLength: 1 }}
-          render={({ field: { onChange, value }, fieldState: { invalid, error } }) => (
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
             <TextField
-              error={!!invalid}
+              error={!!error}
               fullWidth
-              helperText={!!invalid ? (error && error.message ? error.message : "This field is required") : null}
+              helperText={!!error ? (error && error.message ? error.message : "This field is required") : null}
               InputProps={{
                 startAdornment: <InputAdornment position="start">US$</InputAdornment>,
                 inputMode: "numeric",
@@ -56,6 +56,7 @@ export const FormInputCurrency = ({
 
                 handleChange(eventObj, changeObj);
               }}
+              required={required}
               type="number"
               variant="outlined"
               value={value}

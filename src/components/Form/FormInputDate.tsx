@@ -44,7 +44,7 @@ export const FormInputDate = ({
                 required,
                 validate: { isDateInFuture },
               }}
-              render={({ field: { onChange, value, ref }, fieldState: { invalid, error } }) => (
+              render={({ field: { onChange, value, ref }, fieldState: { error } }) => (
                 <DatePicker
                   disablePast={true}
                   inputRef={ref}
@@ -67,8 +67,8 @@ export const FormInputDate = ({
                     },
                     textField: {
                       required,
-                      helperText: !!invalid ? (error && error.message ? error.message : "Please enter a valid date") : null,
-                      error: !!invalid,
+                      helperText: !!error ? (error && error.message ? error.message : "Please enter a valid date") : null,
+                      error: !!error,
                     },
                   }}
                   value={value}
