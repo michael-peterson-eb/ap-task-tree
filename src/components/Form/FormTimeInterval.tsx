@@ -1,220 +1,156 @@
-import { useEffect, useState, useRef } from 'react';
-import {
-  Select,
-  InputLabel,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  FormControl,
-  FormGroup
-} from '@mui/material';
-
+import { Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormGroup, MenuItem, Typography, Box } from "@mui/material";
 import { FormInputProps } from "../../types/FormInputProps";
-import {
-  fetchQuestionsIntervalsByTemplateId
-} from "../../model/Questions";
-import {
-  fetchResponseOptionsByTemplateId
-} from "../../model/ResponseOptions";
-import { lookupFV } from "../../utils/common";
-import DOMPurify from "dompurify";
+import { fetchQuestionsIntervalsByTemplateId } from "../../model/Questions";
+import { useQuery } from "@tanstack/react-query";
+import { Loading } from "../Loading";
+import { ViewOnlyText } from "./ViewOnlyText";
+import { showTimeInterval } from "../../utils/format";
+import { getNameValue, isQuestionRequired } from "../../utils/common";
+import { setInnerHTML } from "../../utils/cleanup";
+import { Controller } from "react-hook-form";
+import { ChangeObj } from "../../types/ObjectTypes";
 
-import { getNameValue, getValue, stripTextHtmlTags } from '../../utils/common';
+export const FormTimeInterval = ({
+  fieldName,
+  appParams,
+  assessmentQuestion,
+  control,
+  handleChange,
+  isValid,
+  questionTemplateData,
+  responseOptions,
+  scope = "EA_OR_NORMAL",
+}: FormInputProps) => {
+  const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
+  const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
+  const { crudAction: mode } = appParams;
 
-export const FormTimeInterval = (props: FormInputProps) => {
-  const {
-    fieldName,
-    recordInfo,
-    qtype,
-    data,
-    onChange,
-    fnSecQA,
-    fnReqField} = props;
+  // Get Time Intervals
+  const { isPending: timeIntervalsPending, data: timeIntervals } = useQuery({
+    queryKey: [`fetchQuestionsIntervalsByTemplateId-${questionTemplateData.id}`],
+    queryFn: () => fetchQuestionsIntervalsByTemplateId(appParams, questionTemplateData.id),
+  });
 
-  const [questionsInterval, setQuestionsInterval] = useState([]);
-  const [quesResponseOptions, setQuesResponseOptions] = useState([]);
-  const [timeIntervalUpdated, setTimeIntervalUpdated] = useState(false);
-  const aqAnswer = useRef(null);
+  if (timeIntervalsPending) return <Loading type="none" />;
 
-  const templateId = data.id;
-
-  const checkTimeIntervalHasValue = ()=> {
-    const found = questionsInterval.filter( (qi:any) => {
-      return qi.EA_SA_rsAssessmentResponseOptions && parseInt(qi.EA_SA_rsAssessmentResponseOptions) > 0
-    });
-
-    const cached = questionsInterval.filter( (qi:any) => {
-      const val = getValue(lookupFV, qi.id, qi.EA_SA_rsAssessmentResponseOptions);
-      return parseInt(val) > 0;
-    });
-
-    if ( found.length > 0 || cached.length > 0 ) {
-      setTimeIntervalUpdated(true);
-
-    } else {
-      setTimeIntervalUpdated(false);
-    }
-  }
-
-  const timeIntervalUpdate = (id: any, event: any) => {
-    const { name, value } = event.target;
-
-    let found:any = questionsInterval.find((quesInt:any) => {
-      return quesInt.id == id;
-    });
-
-    const updatedMap = {
-      ...found,
-      ...{EA_SA_rsAssessmentResponseOptions: value == "" ? null : value}
-    };
-
-    const newQuesInterval:any = questionsInterval.map((qin) => {
-      // @ts-ignore
-      return qin.id == id ? updatedMap : qin;
-    });
-
-    setQuestionsInterval(newQuesInterval);
-  }
-
-  const doLookup = (id:any, optSelected:any) => {
-    if (optSelected != null || optSelected != "") setTimeIntervalUpdated(true);
-    return getValue(lookupFV, id, optSelected);
-  }
-
-  const isQuestionRequired = () => {
-    return data.EA_SA_cbRequiredQuestion == 1 && !timeIntervalUpdated;
-  }
-
-  const requiredColor = (action:string) => {
-    return (isQuestionRequired() && action == 'edit') ? "#d32f2f" : "#000"
-  }
-
-  const showTimeInterval = (asQ: any) => {
-    return ( !asQ.EA_SA_txtTimeIntervalName || asQ.EA_SA_txtTimeIntervalName == "") ? asQ.EA_SA_rfTimeInterval : asQ.EA_SA_txtTimeIntervalName;
-  }
-
-  // check if at least one of the Time Interval question has value selected
-  const atLeastOneTimeIntervalHasValue = (tiQs:any) => {
-    let selected = "";
-    tiQs.forEach((tQ:any) => {
-     if ( getValue(lookupFV, tQ.id, tQ.EA_SA_rsAssessmentResponseOptions) != "" ) selected = "Yes";
-    });
-
-    return selected;
-  }
-
-  const cleanLabel = (htmlLabel:string) => {
-    return DOMPurify.sanitize(htmlLabel, {
-      USE_PROFILES: { html: true },
-    })
-  };
-
-  useEffect(() => {
-    const fetchQuestionsAndOptions = async () => {
-      const intervalQuestions = await fetchQuestionsIntervalsByTemplateId(recordInfo, data.id);
-
-      const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-
-      setQuestionsInterval(intervalQuestions);
-      setQuesResponseOptions(responseOptions);
-      checkTimeIntervalHasValue();
-
-      const tiSelected = atLeastOneTimeIntervalHasValue(intervalQuestions);
-      fnSecQA(templateId, null, templateId, tiSelected);
-    }
-
-    fetchQuestionsAndOptions().catch(console.error);
-  }, [templateId]);
-
-  useEffect(() => {
-    checkTimeIntervalHasValue();
-  }, [timeIntervalUpdated, questionsInterval])
-
-  if ( questionsInterval.length == 0 ) return "";
-
-  return (
-    <div>
-      <FormGroup sx={{ paddingTop: 2 }}>
-        <InputLabel
-          sx={{
-            display: "flex",
-            color:`${requiredColor(recordInfo.crudAction)}`,
-            whiteSpace: 'normal'
-          }}
-          required={recordInfo.crudAction === 'edit' && data.EA_SA_cbRequiredQuestion == 1}
-        >
-          {questionsInterval.length > 0 && <div dangerouslySetInnerHTML={{
-            // @ts-ignore
-          __html: cleanLabel(questionsInterval[0].EA_SA_rfQuestion)
-          }} />}
-        </InputLabel>
-
-        <TableContainer component={Paper} sx={{ border: `1px solid ${requiredColor(recordInfo.crudAction)}`, width: 'inherit' }}>
-          <Table sx={{ width: '100%' }} size="small">
-            <TableHead>
-              <TableRow
-                sx={{
-                  backgroundColor: "#9cc1ff33",
-                  "& th": {
-                    fontSize: "1.25rem"
-                  }
-                }}
-              >
-                <TableCell style={{ width: '20%' }}>Time Interval</TableCell>
-                <TableCell style={{ width: '80%' }}>Impact</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {questionsInterval.length > 0 && questionsInterval.map((asQ:any) => (
-                <TableRow key={asQ.id}>
-                  <TableCell>
-                    {showTimeInterval(asQ)}
-                  </TableCell>
-                  <TableCell style={{ padding: '0px' }}>
-                    {recordInfo.crudAction === 'edit' &&
-                      <Select
-                        sx={{
-                          width: '100%',
-                          "& fieldset": {
-                            borderWidth: "0px",
-                          }, }}
-                        style={{ fontSize: '14px' }}
-                        name={fieldName}
-                        id={asQ.id}
-                        native
-                        defaultValue={getValue(lookupFV, asQ.id, asQ.EA_SA_rsAssessmentResponseOptions)}
-                        onChange={(event: any) => {
-                          onChange('SSP', event, asQ);
-                          timeIntervalUpdate(asQ.id, event);
-                          fnReqField();
-                        }}
-                      >
-                        <option aria-label="None" value="">Select Impact</option>
-                        {quesResponseOptions.length > 0 && quesResponseOptions.map((item: any) => {
-                          return <option value={item.id}>{item.name}</option>
-                        })}
-                      </Select>
-                    }
-                    {recordInfo.crudAction === 'view' &&
-                      <div style={{padding: '12px 16px'}}>{getNameValue(quesResponseOptions, asQ.EA_SA_rsAssessmentResponseOptions)}</div>
-                    }
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        {isQuestionRequired() &&
-        recordInfo.crudAction === 'edit' &&
-          <InputLabel sx={{ fontSize: '12px' }} error={!timeIntervalUpdated}>
-            {"This question is required!"}
+  if (mode === "view") {
+    return (
+      <>
+        <Box sx={{ marginTop: 2, display: "block" }}>
+          <InputLabel sx={{ display: "flex", whiteSpace: "normal" }} required={required}>
+            {timeIntervals.length > 0 && setInnerHTML(timeIntervals[0].EA_SA_rfQuestion)}
           </InputLabel>
-        }
-      </FormGroup>
-    </div>
-  );
+
+          <TableContainer component={Paper} sx={{ border: "1px solid rgba(0, 0, 0, 0.65)", width: "inherit" }}>
+            <Table sx={{ width: "100%" }} size="small">
+              <TableHead>
+                <TableRow sx={{ backgroundColor: "#9cc1ff33", "& th": { fontSize: "1.25rem" } }}>
+                  <TableCell style={{ width: "25%" }}>Time Interval</TableCell>
+                  <TableCell style={{ width: "75%" }}>Impact</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {timeIntervals.length > 0 &&
+                  timeIntervals.map((timeInterval: any) => {
+                    const backendValue = timeInterval[fieldName!];
+                    return (
+                      <TableRow key={timeInterval.id}>
+                        <TableCell>{showTimeInterval(timeInterval)}</TableCell>
+                        <TableCell>
+                          <ViewOnlyText label={null} value={getNameValue(responseOptions, backendValue)} size="small" />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </>
+    );
+  }
+
+  if (mode === "edit") {
+    return (
+      <>
+        <FormGroup sx={{ paddingTop: 2, display: "block" }}>
+          <InputLabel sx={{ display: "flex", whiteSpace: "normal" }} required={required}>
+            {timeIntervals.length > 0 && setInnerHTML(timeIntervals[0].EA_SA_rfQuestion)}
+          </InputLabel>
+
+          <TableContainer component={Paper} sx={{ border: "1px solid rgba(0, 0, 0, 0.75)", width: "inherit" }}>
+            <Table sx={{ width: "100%" }} size="small">
+              <TableHead>
+                <TableRow sx={{ backgroundColor: "#9cc1ff33", "& th": { fontSize: "1.25rem" } }}>
+                  <TableCell style={{ width: "20%" }}>Time Interval</TableCell>
+                  <TableCell style={{ width: "80%" }}>Impact</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {timeIntervals.length > 0 &&
+                  timeIntervals.map((timeInterval: any) => {
+                    const timeIntervalRequired = isQuestionRequired(timeInterval.EA_SA_rfRequiredQuestion);
+                    const backendValue = timeInterval[fieldName!];
+
+                    return (
+                      <TableRow key={timeInterval.id}>
+                        <TableCell>{showTimeInterval(timeInterval)}</TableCell>
+                        <TableCell>
+                          <Controller
+                            control={control}
+                            defaultValue={backendValue}
+                            name={`${timeInterval.id}.${fieldName}`}
+                            rules={{ required: timeIntervalRequired }}
+                            render={({ field: { onChange, value }, fieldState: { error } }) => {
+                              return (
+                                <Select
+                                  displayEmpty
+                                  error={!!error}
+                                  id={timeInterval.id}
+                                  labelId={`time-interval-${timeInterval.id}`}
+                                  onChange={(event) => {
+                                    onChange(event);
+
+                                    const eventObj = { target: { id: timeInterval.id, name: fieldName, value: event.target.value } };
+                                    const changeObj: ChangeObj = { responseFormat: "SSP", scope };
+
+                                    handleChange(eventObj, changeObj);
+                                  }}
+                                  required={timeIntervalRequired}
+                                  sx={{ width: "100%", "& fieldset": { borderWidth: "0px" } }}
+                                  value={value}
+                                >
+                                  <MenuItem aria-label="" value="">
+                                    <em>Select impact</em>
+                                  </MenuItem>
+                                  {responseOptions.length > 0 &&
+                                    responseOptions.map((responseOption: any) => {
+                                      return (
+                                        <MenuItem value={responseOption.id}>
+                                          <Typography>{responseOption.name}</Typography>
+                                        </MenuItem>
+                                      );
+                                    })}
+                                </Select>
+                              );
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          {!isValid && (
+            <InputLabel sx={{ fontSize: "12px", marginTop: "12px" }} color="error" error>
+              All questions must be answered
+            </InputLabel>
+          )}
+        </FormGroup>
+      </>
+    );
+  }
+
+  return null;
 };

@@ -1,138 +1,71 @@
-//@ts-nocheck
+import { TextField, Autocomplete, FormControl, FormGroup } from "@mui/material";
+import { FormInputProps } from "../../types/FormInputProps";
+import { getMultiValue, isQuestionRequired, getDefaultMultiValue } from "../../utils/common";
+import { ViewOnlyText } from "./ViewOnlyText";
+import { Controller } from "react-hook-form";
 
-import {
-  useEffect,
-  useState,
-  Fragment,
-  useRef
-} from 'react';
+export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData, responseOptions }: FormInputProps) => {
+  const { EA_SA_txtaQuestion } = questionTemplateData;
+  const { EA_SA_rfRequiredQuestion, EA_SA_txtaResponse } = assessmentQuestion;
+  const backendValue = assessmentQuestion[fieldName!];
+  const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
+  const { crudAction: mode } = appParams;
 
-import {
-  TextField,
-  Autocomplete,
-  FormControl,
-  ThemeProvider,
-  FormGroup,
-} from "@mui/material";
-
-import { FormInputProps } from "./Form/FormInputProps";
-
-import {
-  getAssessmentQuestion
-} from "../../model/Questions";
-
-import {
-  fetchResponseOptionsByTemplateId
-} from "../../model/ResponseOptions";
-
-import {
-  getArrayValue,
-  getMultiValue } from '../../utils/common';
-
-import { CustomFontTheme } from '../../style/CustomTheme';
-import { setInnerHTML } from '../../utils/cleanup';
-
-export const FormMultiSelect = (props: FormInputProps) => {
-  const {
-    fieldName,
-    recordInfo,
-    qtype,
-    data,
-    onChange,
-    lookup,
-    fnSecQA,
-    fnReqField,
-    preloadedAQ} = props;
-
-  const [assessQuestions, setAssessQuestion] = useState([]);
-  const [quesResponseOptions, setQuesResponseOptions] = useState([]);
-  const [defaultValues, setDefaultValues] = useState([]);
-  const aqAnswer = useRef(null);
-
-  const templateId = data.id;
-
-  const fetchQuestionsAndOptions = async () => {
-
-    const assessQuestions:any = await getAssessmentQuestion(recordInfo, templateId, preloadedAQ);
-    setAssessQuestion(assessQuestions);
-
-    const responseOptions = await fetchResponseOptionsByTemplateId(templateId);
-
-    setQuesResponseOptions(responseOptions);
-
-    if (assessQuestions && assessQuestions.length > 0) {
-      const stringValues = fieldName != null ? assessQuestions[0][fieldName] : "";
-      //const stringValues = assessQuestions[0].EA_SA_txtaResponse;
-      const defaultValue = getDefaultValue(responseOptions, stringValues);
-      setDefaultValues(getArrayValue(lookup, assessQuestions[0].id, defaultValue));
-      aqAnswer.current = assessQuestions[0];
-    }
+  if (mode === "view") {
+    return <ViewOnlyText label={EA_SA_txtaQuestion} value={getMultiValue(responseOptions, EA_SA_txtaResponse)} />;
   }
 
-  useEffect(() => {
-    fetchQuestionsAndOptions().catch(console.error);
-  }, [templateId])
-
-  const getDefaultValue = (options: any, stored: string) => {
-    if (recordInfo.crudAction == 'view' && stored == null) {
-      return [{ id: '0', name: 'No Answer' }];
-    }
-
-    if (stored == null) return [];
-    const matched = options.filter((opt: any) => {
-      if (stored.indexOf(opt.id) >= 0) return opt;
-    });
-
-    return matched;
-  };
-
-  return (
-    <Fragment>
-      {assessQuestions.map((aq:any) => (
-        <FormControl sx={{ width: '100%' }}>
-          {recordInfo.crudAction == "edit" &&
-            <ThemeProvider theme={CustomFontTheme}>
-              <FormGroup sx={{ paddingTop: 1 }}>
+  if (mode === "edit") {
+    return (
+      <FormControl sx={{ width: "100%" }} required={required}>
+        <FormGroup sx={{ paddingTop: 1 }}>
+          <Controller
+            control={control}
+            defaultValue={getDefaultMultiValue(backendValue, responseOptions)}
+            name={`${assessmentQuestion.id}.${fieldName}`}
+            rules={{ required: true, minLength: 1 }}
+            render={({ field: { onChange, value }, fieldState: { invalid, error } }) => {
+              return (
                 <Autocomplete
-                  sx={{ fontSize: '14px' }}
-                  multiple
-                  id={aq.id}
-                  options={quesResponseOptions}
-                  value={defaultValues}
-                  getOptionLabel={(option: any) => option.name}
                   disableCloseOnSelect
-                  renderOption={(props, option:any) => {
+                  getOptionLabel={(option: any) => option.name}
+                  multiple
+                  onChange={(event, newValue) => {
+                    onChange(newValue);
+
+                    const idsOnly = newValue.map((item) => item.id).join(",");
+                    const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: idsOnly } };
+                    const changeObj = { assessmentQuestionId: assessmentQuestion.id, responseFormat: "MSP" };
+
+                    handleChange(eventObj, changeObj);
+                  }}
+                  options={responseOptions}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      name={fieldName}
+                      id={assessmentQuestion.id}
+                      label={assessmentQuestion.name}
+                      error={!!invalid}
+                      helperText={!!invalid ? (error && error.message ? error.message : "This field is required") : null}
+                    />
+                  )}
+                  renderOption={(props, option: any) => {
                     return (
                       <li {...props} key={option.id}>
                         {option.name}
                       </li>
                     );
                   }}
-                  onChange={(event: any, newValue: any | null) => {
-                    setDefaultValues([...newValue])
-                    onChange('MSP', event, { id: aq.id, name: fieldName, value: newValue }, aqAnswer.current);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      name={fieldName}
-                      id={aq.id}
-                      label={aq.name}
-                    />
-                  )}
+                  value={value}
                 />
-              </FormGroup>
-            </ThemeProvider>
-          }
-          {recordInfo.crudAction == "view" &&
-            <TextField
-              label={setInnerHTML(data.EA_SA_txtaQuestion)}
-              value={getMultiValue(quesResponseOptions, aq.EA_SA_txtaResponse)}
-              InputProps={{ readOnly: true }}
-            />
-          }
-        </FormControl>
-      ))}
-    </Fragment>
-  );
-}
+              );
+            }}
+          />
+        </FormGroup>
+      </FormControl>
+    );
+  }
+
+  return null;
+};

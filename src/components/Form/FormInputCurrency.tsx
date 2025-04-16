@@ -1,88 +1,70 @@
-import { useEffect, useState, Fragment, useRef } from "react";
 import { FormInputProps } from "../../types/FormInputProps";
-
 import { FormControl, TextField, InputAdornment } from "@mui/material";
-
-import { getAssessmentQuestion } from "../../model/Questions";
-
-import { initSelectValue, getValue, isQuestionRequired, showLabel } from "../../utils/common";
-
+import { ViewOnlyText } from "./ViewOnlyText";
+import { isQuestionRequired } from "../../utils/common";
 import { setInnerHTML } from "../../utils/cleanup";
-import { FieldValue } from "./DisplayFieldValue";
+import { Controller } from "react-hook-form";
+import { ChangeObj } from "../../types/ObjectTypes";
 
-export const FormInputCurrency = (props: FormInputProps) => {
-  const { fieldName, recordInfo, qtype, data, onChange, lookup, fnSecQA, fnReqField, preloadedAQ, withLabel } = props;
+export const FormInputCurrency = ({
+  fieldName,
+  appParams,
+  assessmentQuestion,
+  control,
+  handleChange,
+  hasLabel = true,
+  questionTemplateData,
+  scope = "EA_OR_NORMAL",
+}: FormInputProps) => {
+  const { EA_SA_txtFieldIntegrationName, EA_SA_txtaQuestion } = questionTemplateData;
+  const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
+  const backendValue = assessmentQuestion[fieldName!];
+  const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
+  const { crudAction: mode } = appParams;
 
-  const [assessQuestions, setAssessQuestion] = useState([]);
-  const [fieldValue, setFieldValue] = useState("");
-  const aqAnswer = useRef(null);
+  if (mode === "view") {
+    return <ViewOnlyText label={hasLabel ? EA_SA_txtaQuestion : null} value={backendValue} responseFormat="CCY" />;
+  }
 
-  const templateId = data.id;
+  if (mode === "edit") {
+    return (
+      <FormControl fullWidth variant="standard">
+        <Controller
+          control={control}
+          defaultValue={backendValue}
+          name={`${assessmentQuestion.id}.${fieldName}`}
+          rules={{ required, minLength: 1 }}
+          render={({ field: { onChange, value }, fieldState: { invalid, error } }) => (
+            <TextField
+              error={!!invalid}
+              fullWidth
+              helperText={!!invalid ? (error && error.message ? error.message : "This field is required") : null}
+              InputProps={{
+                startAdornment: <InputAdornment position="start">US$</InputAdornment>,
+                inputMode: "numeric",
+              }}
+              label={hasLabel ? setInnerHTML(EA_SA_txtaQuestion) : null}
+              onChange={(event) => {
+                onChange(event);
 
-  useEffect(() => {
-    const fetchQuestionsAndOptions = async () => {
-      const assessQuestionsResp: any = await getAssessmentQuestion(recordInfo, templateId, preloadedAQ);
-      setAssessQuestion(assessQuestionsResp);
+                const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: event.target.value } };
+                const changeObj: ChangeObj = { responseFormat: "CCY", scope };
 
+                if (appParams.objectIntegrationName === "EA_RM_Risk") {
+                  changeObj.riskObj = { EA_SA_txtAssmtRespOptCode: event.target.value, EA_SA_txtFieldIntegrationName };
+                }
 
-      if (assessQuestionsResp && assessQuestionsResp.length > 0) {
-        const aqId = assessQuestionsResp[0].id;
-        const aqFieldValue = fieldName != null ? assessQuestionsResp[0][fieldName] : "";
-        const lookupValue = lookup(aqId);
+                handleChange(eventObj, changeObj);
+              }}
+              type="number"
+              variant="outlined"
+              value={value}
+            />
+          )}
+        />
+      </FormControl>
+    );
+  }
 
-        let responseValue = aqFieldValue ? aqFieldValue : "";
-        if (lookupValue || lookupValue == "") responseValue = lookupValue;
-
-        const respValue = getValue(lookup, aqId, aqFieldValue);
-        const newValue = initSelectValue(recordInfo, respValue);
-        
-        setFieldValue(newValue);
-        aqAnswer.current = assessQuestionsResp[0];
-      }
-    };
-    fetchQuestionsAndOptions().catch(console.error);
-  }, [templateId]);
-
-  return (
-    <Fragment>
-      {assessQuestions.length > 0 &&
-        assessQuestions.map((aq: any) => (
-          <FormControl fullWidth variant="standard">
-            {recordInfo.crudAction == "edit" && (
-              <TextField
-                sx={{ m: 0, "&:hover": { backgroundColor: "transparent" } }}
-                required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
-                id={aq.id}
-                label={showLabel(withLabel, setInnerHTML(data.EA_SA_txtaQuestion))}
-                name={fieldName}
-                value={fieldValue}
-                type="number"
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">US$</InputAdornment>,
-                  inputMode: "numeric",
-                  style: { fontSize: "14px" },
-                  ...(recordInfo.crudAction == "view" ? { readOnly: true } : { readOnly: false }),
-                }}
-                InputLabelProps={{ style: { fontSize: "18px", backgroundColor: "#FFF" } }}
-                onChange={(event: any) => {
-                  const { id, name, value } = event.target;
-
-                  let riskObj: any = null;
-                  if (recordInfo.objectIntegrationName === "EA_RM_Risk") {
-                    riskObj = { EA_SA_txtAssmtRespOptCode: value, EA_SA_txtFieldIntegrationName: data.EA_SA_txtFieldIntegrationName };
-                  }
-
-                  setFieldValue(value);
-                  onChange("DEC", event, aqAnswer.current, null, riskObj);
-                  fnReqField();
-                }}
-                error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
-                helperText={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue ? "This question is required!" : ""}
-              />
-            )}
-            {recordInfo.crudAction == "view" && <FieldValue withLabel={withLabel} fieldValue={fieldValue} data={data} />}
-          </FormControl>
-        ))}
-    </Fragment>
-  );
+  return null;
 };

@@ -1,21 +1,15 @@
+import { RecordInfo } from "./ObjectTypes";
+
 export interface FormInputProps {
-  name?: string;
-  control?: any;
-  label?: string;
-  setValue?: any;
-  data?: any;
-  onChange?: any;
-  onChangeCustom?: any;
-  qtype?: any;
-  templateId?: any;
-  appParams?: any;
-  lookup?: any;
-  fnSecQs?: any;
-  fnSecQA?: any;
-  fnDoneWithReqField?: any;
-  fnReqField?: any;
   fieldName?: string;
-  preloadedAQ?:any;
-  withLabel?:boolean;
-  recordInfp?: any;
+  appParams: RecordInfo;
+  assessmentQuestion: any;
+  control?: any;
+  hasLabel?: boolean;
+  handleChange: (event, dataObj) => void;
+  isValid?: any;
+  questionTemplateData?: any;
+  questionUpdates?: any;
+  responseOptions?: any;
+  scope?: string;
 }

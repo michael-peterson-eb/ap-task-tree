@@ -3,7 +3,7 @@ import { Alert, AlertTitle, FormControlLabel, Checkbox } from "@mui/material";
 import { useData } from "../contexts/DataContext";
 import { useGlobal } from "../contexts/GlobalContext";
 
-export const EditAlert = () => {
+export const EditAlert = ({isValid}) => {
   const { opSecUpdates, operationSections, refetchOpSecs } = useData();
   const { appParams, selectedOpsSection } = useGlobal();
 
@@ -29,8 +29,15 @@ export const EditAlert = () => {
     refetchOpSecs();
 
     const defaultValue = getDefaultCheckValue({ id });
-    setIsCompleted(defaultValue);
-  }, [id]);
+
+    if (isValid && defaultValue) {
+      opSecUpdates.current = { ...opSecUpdates.current, [id]: { status: defaultValue ? "completed" : "in-progress" } };
+      setIsCompleted(defaultValue);
+    } else {
+      opSecUpdates.current = { ...opSecUpdates.current, [id]: { status: "in-progress" } };
+      setIsCompleted(false);
+    }
+  }, [id, isValid]);
 
   if (mode !== "edit") return null;
 
@@ -38,12 +45,11 @@ export const EditAlert = () => {
     <Alert key={`edit-alert-${id}`} sx={{ marginTop: "12px", marginBottom: "6px" }} severity="info">
       <AlertTitle>{objectTitle}</AlertTitle>
       <FormControlLabel
-        key={`edit-alert-checkbox-${id}`}
+        label={`Checked if ${questionName} ${objectTitle} is complete!`}
         control={
           <Checkbox
-            id={`currentOpsSecCheckbox-${id}`}
-            name={`currentOpsSecCheckboxName-${id}`}
             checked={isCompleted}
+            disabled={isValid ? false : true}
             onChange={(event: any) => {
               const isChecked = event.target.checked;
 
@@ -52,12 +58,8 @@ export const EditAlert = () => {
 
               opSecUpdates.current = { ...opSecUpdates.current, [id]: { status: newStatus } };
             }}
-            //TODO: check if all required fields are complete
-            disabled={false}
-            inputProps={{ "aria-label": "controlled" }}
           />
         }
-        label={`Checked if ${questionName} ${objectTitle} is complete!`}
       />
     </Alert>
   );

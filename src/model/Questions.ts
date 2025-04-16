@@ -27,6 +27,7 @@ const AssessmentQuestionFields = [
   "EA_OR_decResponse",
   "EA_OR_intResponse",
   "EA_OR_ddResponse",
+  "EA_SA_rsPeakAssessmentResponseOptions"
 ];
 /**
  * fetch Assessment Questions by record id and question type id
@@ -147,13 +148,6 @@ export const updateQuestion = async (recordId: any, fields: any) => {
   } catch (error) {
     console.log("Error: updateQuestion ", error);
   }
-};
-
-export const concatObjectIds = (values: any) => {
-  const ids = values.map((opt: any) => {
-    return opt.id;
-  });
-  return ids.join(",");
 };
 
 export const updateQuestionWithResponse = async (updatedResponses: any, defaultFields: any, peakFields: any) => {

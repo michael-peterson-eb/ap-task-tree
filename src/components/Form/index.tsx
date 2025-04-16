@@ -1,5 +1,3 @@
-import { FieldValue } from "./DisplayFieldValue";
-import { TextAreaField } from "./FieldSeverityLevel";
 import { FormInputCurrency } from "./FormInputCurrency";
 import { FormInputText } from "./FormInputText";
 import { FormMultiSelect } from "./FormMultiSelect";
@@ -10,10 +8,9 @@ import { FormInputInteger } from "./FormInputInteger";
 import { FormInputDecimal } from "./FormInputDecimal";
 import { FormYesNo } from "./FormInputYesNo";
 import { FormSeverityLevel } from "./FormSeverityLevel";
+import { ViewOnlyText } from "./ViewOnlyText";
 
 export {
-  FieldValue,
-  TextAreaField,
   FormInputCurrency,
   FormInputText,
   FormMultiSelect,
@@ -23,5 +20,6 @@ export {
   FormInputInteger,
   FormInputDecimal,
   FormYesNo,
-  FormSeverityLevel
+  FormSeverityLevel,
+  ViewOnlyText,
 };

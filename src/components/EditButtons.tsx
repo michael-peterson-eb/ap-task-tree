@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Box, Button, CircularProgress, ThemeProvider } from "@mui/material";
 import { NavButtonTheme } from "../style/CustomTheme";
 import { useData } from "../contexts/DataContext";
-import { normalResponseFields, peakResponseFields } from "../data/constants/fields";
 import { updateQuestion } from "../model/Questions";
 import { updateOpSectionStatus } from "../model/SectionStatus";
 
@@ -32,11 +31,9 @@ export const EditButtons = ({ appParams }) => {
      * Apply QUESTION response updates
      */
     for (let questionId in questionUpdates.current) {
-      const { type, fieldValue } = questionUpdates.current[questionId];
+      const { fieldValue } = questionUpdates.current[questionId];
 
-      if (normalResponseFields[type]) {
-        await updateQuestion(questionId, fieldValue);
-      }
+      await updateQuestion(questionId, fieldValue);
     }
 
     /**

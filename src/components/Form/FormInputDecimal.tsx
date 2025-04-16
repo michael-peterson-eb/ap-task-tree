@@ -1,103 +1,69 @@
-import { useEffect, useState, useRef } from 'react';
 import { FormInputProps } from "../../types/FormInputProps";
-import { TextField, FormControl } from '@mui/material';
+import { TextField, FormControl } from "@mui/material";
+import { isQuestionRequired } from "../../utils/common";
+import { setInnerHTML } from "../../utils/cleanup";
+import { ViewOnlyText } from "./ViewOnlyText";
+import { Controller } from "react-hook-form";
 
-import {
-  getAssessmentQuestion
-} from "../../model/Questions";
+export const FormInputDecimal = ({
+  fieldName,
+  appParams,
+  assessmentQuestion,
+  control,
+  handleChange,
+  hasLabel = true,
+  questionTemplateData,
+  scope = "EA_OR_NORMAL",
+}: FormInputProps) => {
+  const { EA_SA_txtaQuestion } = questionTemplateData;
+  const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
+  const backendValue = assessmentQuestion[fieldName!];
+  const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
+  const { crudAction: mode } = appParams;
 
-import {
-  initSelectValue,
-  getValue,
-  isQuestionRequired,
-  showLabel,
-} from '../../utils/common';
+  if (mode === "view") {
+    return <ViewOnlyText label={hasLabel ? EA_SA_txtaQuestion : null} value={backendValue} />;
+  }
 
-import { setInnerHTML } from '../../utils/cleanup';
-import { FieldValue } from './DisplayFieldValue';
-
-export const FormInputDecimal = (props: FormInputProps) => {
-  const {
-    fieldName,
-    recordInfo,
-    qtype,
-    data,
-    onChange,
-    lookup,
-    fnSecQA,
-    fnReqField,
-    preloadedAQ,
-    withLabel} = props;
-
-  const [assessQuestions, setAssessQuestion] = useState([]);
-  const [fieldValue, setFieldValue] = useState('');
-  const aqAnswer = useRef(null);
-
-  const templateId = data.id;
-
-  useEffect(() => {
-    const fetchQuestionsAndOptions = async () => {
-
-      const assessQuestions:any = await getAssessmentQuestion(recordInfo, templateId, preloadedAQ);
-      setAssessQuestion(assessQuestions);
-
-      if (assessQuestions && assessQuestions.length > 0) {
-        const aqId = assessQuestions[0].id;
-        const aqFieldValue = fieldName != null ? assessQuestions[0][fieldName] : "";
-        const lookupValue = lookup(aqId);
-
-        let responseValue = aqFieldValue ? aqFieldValue : '';
-        if ( lookupValue || lookupValue == '' ) responseValue = lookupValue;
-
-        const respValue = getValue(lookup, aqId, aqFieldValue);
-        const newValue = initSelectValue(recordInfo, respValue);
-        setFieldValue(newValue);
-        aqAnswer.current = assessQuestions[0];
-
-      }
-    }
-    fetchQuestionsAndOptions().catch(console.error);
-
-  }, [templateId])
-
-  return (
-    <>
-      {assessQuestions.length > 0 && assessQuestions.map((aq: any) => (
-        <FormControl fullWidth variant="standard">
-          {recordInfo.crudAction == "edit" &&
+  if (mode === "edit") {
+    return (
+      <FormControl fullWidth>
+        <Controller
+          control={control}
+          defaultValue={backendValue}
+          name={`${assessmentQuestion.id}.${fieldName}`}
+          rules={{
+            required,
+            pattern: {
+              value: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/,
+              message: "Please enter a decimal value",
+            },
+          }}
+          render={({ field: { onChange, value }, fieldState: { invalid, error } }) => (
             <TextField
-              sx={{ m:0, "&:hover": { backgroundColor: "transparent" } }}
-              required={isQuestionRequired(aq.EA_SA_rfRequiredQuestion)}
-              id={aq.id}
-              label={showLabel(withLabel, setInnerHTML(data.EA_SA_txtaQuestion))}
-              name={fieldName}
-              value={fieldValue}
+              error={!!invalid}
+              fullWidth
+              helperText={!!invalid ? (error && error.message ? error.message : "This field is required") : null}
+              inputProps={{ step: "0.1" }}
+              InputProps={{ inputMode: "numeric" }}
+              label={hasLabel ? setInnerHTML(EA_SA_txtaQuestion) : null}
+              onChange={(event) => {
+                onChange(event);
+
+                const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: event.target.value } };
+                const changeObj = { responseFormat: "DEC", scope };
+
+                handleChange(eventObj, changeObj);
+              }}
               type="number"
-              InputProps={{
-                inputMode: 'numeric',
-                style: { fontSize: '14px' },
-                ...recordInfo.crudAction == 'view' ? { readOnly: true } : { readOnly: false }
-              }}
-              InputLabelProps={{ style: { fontSize: '18px', backgroundColor: '#FFF' } }}
-              onChange={(event: any) => {
-                const { id, name, value } = event.target;
-                setFieldValue(value);
-                onChange('DEC', null, event.target, aqAnswer.current);
-                fnReqField();
-              }}
-              error={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue}
-              helperText={isQuestionRequired(aq.EA_SA_rfRequiredQuestion) && !fieldValue ? "This question is required!" : ""}
+              variant="outlined"
+              value={value}
             />
-          }
-          {recordInfo.crudAction == "view" &&
-            <FieldValue
-              withLabel={withLabel}
-              fieldValue={fieldValue}
-              data={data}
-            />
-          }
-        </FormControl>
-      ))}
-    </>
-  );
+          )}
+        />
+      </FormControl>
+    );
+  }
+
+  return null;
 };

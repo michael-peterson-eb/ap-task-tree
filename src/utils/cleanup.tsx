@@ -8,10 +8,15 @@ export const cleanLabel = (htmlLabel) => {
 
 export const setInnerHTML = (text) => {
   return (
-    <div
+    <span
       dangerouslySetInnerHTML={{
         __html: cleanLabel(text),
       }}
     />
   );
+};
+
+export const stripTextHtmlTags = (text: string) => {
+  const noTags = text.replace(/(<([^>]+)>)/gi, "");
+  return noTags.replace(/\&nbsp;/g, "");
 };
