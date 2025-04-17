@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Box, Button, CircularProgress, ThemeProvider } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { useData } from "../contexts/DataContext";
 import { updateQuestion } from "../model/Questions";
 import { updateOpSectionStatus } from "../model/SectionStatus";
+import { executeTriggers } from "../utils/common";
 
 export const EditButtons = ({ appParams }) => {
   const [cancelClicked, setCancelClicked] = useState(false);
@@ -57,55 +58,35 @@ export const EditButtons = ({ appParams }) => {
       await rbf_updateRecord("EA_RM_Risk", appParams.id, riskUpdateObj);
     }
 
-    await executeTriggers();
+    await executeTriggers(appParams);
 
     window.history.go(-1);
-  };
-
-  const executeTriggers = async () => {
-    // no trigger is called for Scenario Test
-    if (appParams.triggerId === "" || appParams.triggerId == "null") return;
-
-    // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals or an array of triggers
-    const triggers = appParams.triggerId.split(",");
-
-    if (appParams.assessmentType == "Incident Assessment") {
-      //@ts-ignore
-      await rbf_runTrigger(appParams.objectIntegrationName, appParams.id, triggers[0]);
-    } else if (appParams.assessmentType == "Scenario Test") {
-      //placeholder for future Scenario Test trigger
-    } else if (appParams.assessmentType != "Standalone Assessment") {
-      triggers.forEach(async (triggerId: any) => {
-        //@ts-ignore
-        await rbf_runTrigger(appParams.objectIntegrationName, appParams.id, triggerId);
-      });
-    }
   };
 
   if (appParams.crudAction != "edit") return null;
 
   return (
     <Box mb={1} display="flex" justifyContent="space-between" alignItems="right">
-        <Button color="primary" onClick={handleCancel} variant="contained" size="small" sx={{ borderRadius: "0px" }}>
-          {cancelClicked ? (
-            <span>
-              <CircularProgress size="1em" style={{ paddingRight: "4px", color: "#000" }} />
-              <span>Closing...</span>
-            </span>
-          ) : (
-            <span>Cancel</span>
-          )}
-        </Button>
-        <Button color="warning" onClick={handleSubmit} variant="contained" size="small" sx={{ borderRadius: "0px" }}>
-          {saveClicked ? (
-            <span>
-              <CircularProgress size="1em" style={{ paddingRight: "4px", color: "#000" }} />
-              <span>Saving...</span>
-            </span>
-          ) : (
-            <span>Save</span>
-          )}
-        </Button>
+      <Button color="primary" onClick={handleCancel} variant="contained" size="small" sx={{ borderRadius: "0px" }}>
+        {cancelClicked ? (
+          <span>
+            <CircularProgress size="1em" style={{ paddingRight: "4px", color: "#000" }} />
+            <span>Closing...</span>
+          </span>
+        ) : (
+          <span>Cancel</span>
+        )}
+      </Button>
+      <Button color="warning" onClick={handleSubmit} variant="contained" size="small" sx={{ borderRadius: "0px" }}>
+        {saveClicked ? (
+          <span>
+            <CircularProgress size="1em" style={{ paddingRight: "4px", color: "#000" }} />
+            <span>Saving...</span>
+          </span>
+        ) : (
+          <span>Save</span>
+        )}
+      </Button>
     </Box>
   );
 };

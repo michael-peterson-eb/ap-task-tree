@@ -115,7 +115,7 @@ export default function Carousel({ operationSections, selectedOpsSec, handleTabC
   };
 
   return (
-    <Box sx={{ maxHeight: "46px" }}>
+    <Box sx={{ maxHeight: "46px", marginBottom: "36px" }}>
       <ImageList
         ref={(element) => {
           //@ts-expect-error
