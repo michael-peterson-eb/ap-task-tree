@@ -1,32 +1,28 @@
-import { useEffect, useState } from 'react';
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
+import { Container, Box, ThemeProvider } from "@mui/material";
+import { ImpactAssessment } from "./components/ImpactAssessment";
 
-import MultiStep from './MultiSteps';
+import { customTheme } from "./style/theme";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { DataProvider } from "./contexts/DataContext";
+import { GlobalProvider } from "./contexts/GlobalContext";
 
-export default function App({ recordInfo }) {
-  const [playAnimation, setPlayAnimation] = useState(false);
+export const queryClient = new QueryClient();
 
-  // This will run one time after the component mounts
-  useEffect(() => {
-    const onPageLoad = () => {
-      setPlayAnimation(true);
-    };
-
-    // Check if the page has already loaded
-    if (document.readyState === 'complete') {
-      onPageLoad();
-    } else {
-      window.addEventListener('load', onPageLoad);
-      // Remove the event listener when component unmounts
-      return () => window.removeEventListener('load', onPageLoad);
-    }
-  }, []);
+export default function App({ recordInfo: appParams }) {
+  if (!appParams) return <div>Please provide params in BCIC Design Page to render the component</div>;
 
   return (
     <Container maxWidth={false} disableGutters>
-      <Box sx={{ my: 1 }}>
-        <MultiStep recordInfo={recordInfo} />
+      <Box sx={{ m: 1 }}>
+        <ThemeProvider theme={customTheme}>
+          <QueryClientProvider client={queryClient}>
+            <DataProvider appParams={appParams}>
+              <GlobalProvider appParams={appParams}>
+                <ImpactAssessment />
+              </GlobalProvider>
+            </DataProvider>
+          </QueryClientProvider>
+        </ThemeProvider>
       </Box>
     </Container>
   );

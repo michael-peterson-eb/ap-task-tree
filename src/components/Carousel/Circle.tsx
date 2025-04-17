@@ -7,7 +7,7 @@ const Circle = ({ fill = "none", color = "white" }) => {
       viewBox="0 0 12 12"
       fill={fill}
     >
-      <circle cx="6" cy="6" r="5" stroke={color} stroke-width="2" />
+      <circle cx="6" cy="6" r="5" stroke={color} strokeWidth="2" />
     </svg>
   );
 };

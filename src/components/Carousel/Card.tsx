@@ -2,12 +2,16 @@ import { ImageListItem, Typography, Box } from "@mui/material";
 import Check from "./Check";
 import Circle from "./Circle";
 import Dotdotdot from "react-dotdotdot";
+import { useData } from "../../contexts/DataContext";
 
-export const Card = ({ type, activeStep, index, handleTabClick }) => {
-  const cardColor = type.status === "completed" ? "#36A902" : "#DEE9FF";
-  const isSelected = activeStep === index;
+export const Card = ({ type, selectedOpsSec, index, handleTabClick }) => {
+  const { opSecStatuses } = useData();
+  const currentStatus = opSecStatuses[index];
 
-  const icon = type.status === "completed" ? <Check /> : <Circle color={type.status === "completed" || isSelected ? "white" : "#1B2327"} />;
+  const cardColor = currentStatus ? "#36A902" : "#DEE9FF";
+  const isSelected = selectedOpsSec === index;
+
+  const icon = currentStatus ? <Check /> : <Circle color={currentStatus || isSelected ? "white" : "#1B2327"} />;
 
   return (
     <ImageListItem key={type.id} sx={{ cursor: "pointer" }} onClick={() => handleTabClick(index)}>
@@ -34,7 +38,7 @@ export const Card = ({ type, activeStep, index, handleTabClick }) => {
             fontWeight={600}
             fontStyle="normal"
             lineHeight="normal"
-            color={isSelected || type.status === "completed" ? "white" : "#1B2327"}
+            color={isSelected || currentStatus ? "white" : "#1B2327"}
           >
             {type.name}
           </Typography>
