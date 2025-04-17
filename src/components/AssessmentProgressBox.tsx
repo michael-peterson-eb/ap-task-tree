@@ -62,8 +62,6 @@ const AssessmentProgressBox = ({ isValid, trigger, smallScreen }) => {
     refetchOpSecs();
   }, [id]);
 
-  if (mode !== "edit") return null;
-
   return (
     <Box sx={{ width: smallScreen ? "100%" : 350, borderRadius: "4px 4px 0px 0px", border: "1px solid #CFD8DC", height: "min-content" }}>
       <Box sx={{ width: "100%", padding: 2, boxSizing: "border-box" }}>
