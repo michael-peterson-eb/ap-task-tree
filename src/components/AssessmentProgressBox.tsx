@@ -116,18 +116,25 @@ const AssessmentProgressBox = ({ isValid, trigger, smallScreen }) => {
         </Box>
       </Box>
       {mode === "edit" ? (
-        <Box sx={{ display: "flex", justifyContent: "center", padding: "16px", borderRadius: "0px 0px 4px 4px", borderTop: "1px solid #CFD8DC" }}>
-          <FormControlLabel
-            label={
-              <Typography fontSize={14} fontStyle="normal" fontWeight={500} lineHeight="22px" color="#1B2327">
-                Complete Section
+        <>
+          <Box sx={{ display: "flex", justifyContent: "center", padding: "16px", borderRadius: "0px 0px 4px 4px", borderTop: "1px solid #CFD8DC" }}>
+            <FormControlLabel
+              label={
+                <Typography fontSize={14} fontStyle="normal" fontWeight={500} lineHeight="22px" color="#1B2327">
+                  Complete Section
+                </Typography>
+              }
+              control={<Checkbox checked={currentStatus} onChange={handleCheckboxChange} sx={{ margin: 0, padding: 0 }} />}
+            />
+          </Box>
+          {!isValid && attemptedCheck && (
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Typography fontSize={14} fontStyle="normal" fontWeight={500} lineHeight="22px" color="#e53e3e">
+                Please complete all required fields
               </Typography>
-            }
-            control={<Checkbox checked={currentStatus} onChange={handleCheckboxChange} sx={{ margin: 0, padding: 0 }} />}
-          />
-
-          {!isValid && attemptedCheck && <Typography sx={{ color: "#e53e3e" }}>Please complete all required fields</Typography>}
-        </Box>
+            </Box>
+          )}
+        </>
       ) : null}
     </Box>
   );
