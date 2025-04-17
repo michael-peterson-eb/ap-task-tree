@@ -29,6 +29,7 @@ const AssessmentQuestions = ({ appParams, questionTemplateData, control }): Reac
   const { isPending: assessmentQuestionsPending, data: assessmentQuestions } = useQuery({
     queryKey: [`fetchAssessQuestionByTemplateId-${questionTemplateData.id}`],
     queryFn: () => fetchAssessQuestionsByTemplateId(appParams, questionTemplateData.id),
+    enabled: process.env.NODE_ENV !== "development",
   });
 
   // Get Response Options
