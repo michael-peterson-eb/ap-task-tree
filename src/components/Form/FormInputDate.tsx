@@ -2,7 +2,6 @@ import { FormInputProps } from "../../types/FormInputProps";
 import { FormControl, ThemeProvider } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { CustomFontTheme } from "../../style/CustomTheme";
 import { isQuestionRequired, isValidDate } from "../../utils/common";
 import { dateYYYYMMDDFormat } from "../../utils/format";
 import { isDateInFuture } from "../../utils/common";
@@ -11,16 +10,7 @@ import { ViewOnlyText } from "./ViewOnlyText";
 import { setInnerHTML } from "../../utils/cleanup";
 import { Controller } from "react-hook-form";
 
-export const FormInputDate = ({
-  fieldName,
-  appParams,
-  assessmentQuestion,
-  control,
-  handleChange,
-  hasLabel = true,
-  questionTemplateData,
-  scope = "EA_OR_NORMAL",
-}: FormInputProps) => {
+export const FormInputDate = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData }: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
@@ -33,7 +23,6 @@ export const FormInputDate = ({
 
   if (mode === "edit") {
     return (
-      <ThemeProvider theme={CustomFontTheme}>
         <FormControl fullWidth variant="standard">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Controller
@@ -56,9 +45,8 @@ export const FormInputDate = ({
 
                     if (isValidDate(formattedDate) && isDateInFuture(newValue)) {
                       const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: formattedDate } };
-                      const changeObj = { responseFormat: "DATE", scope };
 
-                      handleChange(eventObj, changeObj);
+                      handleChange(eventObj, null);
                     }
                   }}
                   slotProps={{
@@ -77,7 +65,6 @@ export const FormInputDate = ({
             />
           </LocalizationProvider>
         </FormControl>
-      </ThemeProvider>
     );
   }
 

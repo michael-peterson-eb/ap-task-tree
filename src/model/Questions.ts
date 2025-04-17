@@ -27,29 +27,8 @@ const AssessmentQuestionFields = [
   "EA_OR_decResponse",
   "EA_OR_intResponse",
   "EA_OR_ddResponse",
-  "EA_SA_rsPeakAssessmentResponseOptions"
+  "EA_SA_rsPeakAssessmentResponseOptions",
 ];
-/**
- * fetch Assessment Questions by record id and question type id
- * @param questionTypeID
- * @returns
- */
-export const fetchQuestionsByQuestionTypeId = async (questionTypeId: any, recordInfo: any) => {
-  try {
-    let queryCondition = "";
-
-    queryCondition += `${recordInfo.questionRelName}=${recordInfo.id}`;
-    queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
-    queryCondition += ` AND EA_SA_rfQuestionType=${questionTypeId}`;
-    queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate <> 'null'`;
-
-    //@ts-ignore
-    const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 10000, true);
-    return results;
-  } catch (error) {
-    console.log("Error: fetchQuestions ", error);
-  }
-};
 
 export const fetchAssessQuestionsByTemplateId = async (recordInfo: any, templateID: any) => {
   try {
@@ -118,23 +97,6 @@ export const fetchQuestionsSeverityByTemplateId = async (recordInfo: any, templa
 };
 
 /**
- * fetchAssessmentQuestionTypes
- * @param assessmentQuestionCondition
- * @returns
- */
-export const fetchTypesOfAssessmentQuestion = async (assessmentQuestionCondition: any) => {
-  try {
-    const condition = `${assessmentQuestionCondition} AND EA_SA_rfQuestionType <> 'null' GROUP BY EA_SA_rfQuestionType ORDER BY EA_SA_rfQuestionType`;
-
-    //@ts-ignore
-    const results = await _RB.selectQuery(["EA_SA_rfQuestionType"], "EA_SA_AssessmentQuestion", condition, 10000, true);
-    return results;
-  } catch (error) {
-    console.log("Error: fetchTypesOfAssessmentQuestion ", error);
-  }
-};
-
-/**
  * update individual Assessment Question record
  * @param recordID
  * @param fields
@@ -148,37 +110,4 @@ export const updateQuestion = async (recordId: any, fields: any) => {
   } catch (error) {
     console.log("Error: updateQuestion ", error);
   }
-};
-
-export const updateQuestionWithResponse = async (updatedResponses: any, defaultFields: any, peakFields: any) => {
-  for (let recordId in updatedResponses) {
-    const record = updatedResponses[recordId];
-    const recordType: any = record.type;
-
-    if (defaultFields[recordType]) {
-      await updateQuestion(recordId, record.fieldValue);
-    }
-  }
-};
-
-export const getRelatedResponseOptions = async (questionId: any) => {
-  try {
-    // R7996162=Assessment Question to Assessment Response Options
-    //@ts-ignore
-    const results = await _RB.getRelatedFields("R7996162", ",EA_SA_AssessmentQuestion", questionId, "id");
-    return results;
-  } catch (error) {
-    console.log("Error: getRelatedResponseOptions ", error);
-  }
-};
-
-export const getAssessmentQuestion = async (recordInfo: any, templateId: any, preloadedAQ: any) => {
-  let assessQuestions = preloadedAQ;
-
-  // check if Assessment Question data is NOT preloaded
-  if (preloadedAQ == undefined) {
-    assessQuestions = await fetchAssessQuestionsByTemplateId(recordInfo, templateId);
-  }
-
-  return assessQuestions;
 };

@@ -12,49 +12,12 @@ const templateFields = [
   "EA_SA_txtFieldIntegrationName",
 ];
 
-export const getAssessmentQuestionTemplateByIds = async (ids: any) => {
-  try {
-    const qryCondition = `id IN (${ids}) ORDER BY EA_SA_intDisplayOrder ASC`;
-
-    //@ts-ignore
-    const results = await _RB.selectQuery(templateFields, "EA_SA_AssessmentQuestionTemplate", qryCondition, 10000, true);
-    return results;
-  } catch (error) {
-    console.log("Error: fetchAssessmentQuestionTemplate ", error);
-  }
-};
-
 export const getAssessmentQuestionTemplateByType = async (qtype: any) => {
   try {
     const qryCondition = `EA_SA_rsAssessmentQuestionType = ${qtype.EA_SA_rsAssessmentQuestionType} ORDER BY EA_SA_intDisplayOrder ASC`;
 
     //@ts-ignore
     return await _RB.selectQuery(templateFields, "EA_SA_AssessmentQuestionTemplate", qryCondition, 10000, true);
-  } catch (error) {
-    console.log("Error: getAssessmentQuestionTemplateByType ", error);
-  }
-};
-
-export const getAssessmentQuestionByIds = async (ids: any) => {
-  try {
-    const qryCondition = `id IN (${ids}) ORDER BY EA_SA_intDisplayOrder ASC`;
-
-    //@ts-ignore
-    const results = await _RB.selectQuery(templateFields, "EA_SA_AssessmentQuestionTemplate", qryCondition, 10000, true);
-    return results;
-  } catch (error) {
-    console.log("Error: fetchAssessmentQuestionTemplate ", error);
-  }
-};
-
-export const getAssessmentQuestionByType = async (recordInfo: any, qtype: any) => {
-  try {
-    const assmtObjRel = recordInfo.questionRelName;
-
-    const qryCondition = `${assmtObjRel}=${recordInfo.id} && EA_SA_rsOperationsSections = ${qtype.id} ORDER BY EA_SA_intDisplayOrder ASC`;
-
-    //@ts-ignore
-    return await _RB.selectQuery(templateFields, "EA_SA_AssessmentQuestion", qryCondition, 10000, true);
   } catch (error) {
     console.log("Error: getAssessmentQuestionTemplateByType ", error);
   }

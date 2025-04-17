@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Box, Button, CircularProgress, ThemeProvider } from "@mui/material";
-import { NavButtonTheme } from "../style/CustomTheme";
 import { useData } from "../contexts/DataContext";
 import { updateQuestion } from "../model/Questions";
 import { updateOpSectionStatus } from "../model/SectionStatus";
@@ -87,7 +86,6 @@ export const EditButtons = ({ appParams }) => {
 
   return (
     <Box mb={1} display="flex" justifyContent="space-between" alignItems="right">
-      <ThemeProvider theme={NavButtonTheme}>
         <Button color="primary" onClick={handleCancel} variant="contained" size="small" sx={{ borderRadius: "0px" }}>
           {cancelClicked ? (
             <span>
@@ -108,7 +106,6 @@ export const EditButtons = ({ appParams }) => {
             <span>Save</span>
           )}
         </Button>
-      </ThemeProvider>
     </Box>
   );
 };

@@ -8,19 +8,8 @@ import { showTimeInterval } from "../../utils/format";
 import { getNameValue, isQuestionRequired } from "../../utils/common";
 import { setInnerHTML } from "../../utils/cleanup";
 import { Controller } from "react-hook-form";
-import { ChangeObj } from "../../types/ObjectTypes";
 
-export const FormTimeInterval = ({
-  fieldName,
-  appParams,
-  assessmentQuestion,
-  control,
-  handleChange,
-  isValid,
-  questionTemplateData,
-  responseOptions,
-  scope = "EA_OR_NORMAL",
-}: FormInputProps) => {
+export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, control, handleChange, questionTemplateData, responseOptions }: FormInputProps) => {
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
   const { crudAction: mode } = appParams;
@@ -112,9 +101,8 @@ export const FormTimeInterval = ({
                                     onChange(event);
 
                                     const eventObj = { target: { id: timeInterval.id, name: fieldName, value: event.target.value } };
-                                    const changeObj: ChangeObj = { responseFormat: "SSP", scope };
 
-                                    handleChange(eventObj, changeObj);
+                                    handleChange(eventObj, null);
                                   }}
                                   required={timeIntervalRequired}
                                   sx={{ width: "100%", "& fieldset": { borderWidth: "0px" } }}

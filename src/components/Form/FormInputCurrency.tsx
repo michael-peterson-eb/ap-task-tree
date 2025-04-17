@@ -4,18 +4,9 @@ import { ViewOnlyText } from "./ViewOnlyText";
 import { isQuestionRequired } from "../../utils/common";
 import { setInnerHTML } from "../../utils/cleanup";
 import { Controller } from "react-hook-form";
-import { ChangeObj } from "../../types/ObjectTypes";
+import { RiskObj } from "../../types/ObjectTypes";
 
-export const FormInputCurrency = ({
-  fieldName,
-  appParams,
-  assessmentQuestion,
-  control,
-  handleChange,
-  hasLabel = true,
-  questionTemplateData,
-  scope = "EA_OR_NORMAL",
-}: FormInputProps) => {
+export const FormInputCurrency = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData }: FormInputProps) => {
   const { EA_SA_txtFieldIntegrationName, EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
@@ -44,17 +35,18 @@ export const FormInputCurrency = ({
                 inputMode: "numeric",
               }}
               label={hasLabel ? setInnerHTML(EA_SA_txtaQuestion) : null}
+              name="Currency"
               onChange={(event) => {
                 onChange(event);
 
                 const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: event.target.value } };
-                const changeObj: ChangeObj = { responseFormat: "CCY", scope };
 
                 if (appParams.objectIntegrationName === "EA_RM_Risk") {
-                  changeObj.riskObj = { EA_SA_txtAssmtRespOptCode: event.target.value, EA_SA_txtFieldIntegrationName };
+                  const riskObj: RiskObj = { EA_SA_txtAssmtRespOptCode: event.target.value, EA_SA_txtFieldIntegrationName };
+                  handleChange(eventObj, riskObj);
+                } else {
+                  handleChange(eventObj, null);
                 }
-
-                handleChange(eventObj, changeObj);
               }}
               required={required}
               type="number"

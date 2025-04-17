@@ -5,7 +5,8 @@ import { FormInputProps } from "../../types/FormInputProps";
 import { setInnerHTML } from "../../utils/cleanup";
 import { fetchQuestionsSeverityByTemplateId } from "../../model/Questions";
 import { useQuery } from "@tanstack/react-query";
-import { periodInScopeHas, oneInScopeWidth, bothInScopeWidth, isQuestionRequired, getNameValue } from "../../utils/common";
+import { periodInScopeHas, isQuestionRequired, getNameValue } from "../../utils/common";
+import { oneInScopeWidth, bothInScopeWidth } from "../../data/constants/fields";
 import { ViewOnlyText } from "./";
 
 import { FormInputCurrency, FormInputText, FormSingleSelect, FormInputDate, FormInputInteger, FormInputDecimal } from "./";

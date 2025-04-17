@@ -4,19 +4,9 @@ import { setInnerHTML } from "../../utils/cleanup";
 import { FormInputProps } from "../../types/FormInputProps";
 import { ViewOnlyText } from "./ViewOnlyText";
 import { Controller } from "react-hook-form";
-import { ChangeObj } from "../../types/ObjectTypes";
+import { RiskObj } from "../../types/ObjectTypes";
 
-export const FormSingleSelect = ({
-  fieldName,
-  appParams,
-  assessmentQuestion,
-  control,
-  handleChange,
-  hasLabel = true,
-  questionTemplateData,
-  responseOptions,
-  scope = "EA_OR_NORMAL",
-}: FormInputProps) => {
+export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData, responseOptions }: FormInputProps) => {
   const { EA_SA_txtFieldIntegrationName, EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
@@ -51,17 +41,17 @@ export const FormSingleSelect = ({
                   onChange(event);
 
                   const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: event.target.value } };
-                  const changeObj: ChangeObj = { responseFormat: "SSP", scope };
 
                   if (appParams.objectIntegrationName === "EA_RM_Risk") {
                     const foundResponseOption = responseOptions.find((item) => item.id == event.target.value);
 
                     if (foundResponseOption) {
-                      changeObj.riskObj = { ...foundResponseOption, EA_SA_txtFieldIntegrationName };
+                      const riskObj: RiskObj = { ...foundResponseOption, EA_SA_txtFieldIntegrationName };
+                      handleChange(eventObj, riskObj);
                     }
+                  } else {
+                    handleChange(eventObj, null);
                   }
-
-                  handleChange(eventObj, changeObj);
                 }}
                 required={required}
                 sx={{ width: "100%", fontSize: "14px" }}

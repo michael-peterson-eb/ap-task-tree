@@ -8,7 +8,6 @@ import NoQuestionTypes from "./NoQuestionTypes";
 import { useData } from "../contexts/DataContext";
 import { EditButtons } from "./EditButtons";
 import BottomNavigation from "./BottomNavigation";
-import { useForm } from "react-hook-form";
 
 export const ImpactAssessment = (): ReactElement | null => {
   const { appParams, selectedOpsSection, setSelectedOpsSection } = useGlobal();
@@ -24,18 +23,8 @@ export const ImpactAssessment = (): ReactElement | null => {
         <EditButtons appParams={appParams} />
         <OpSecHeader operationSections={operationSections} selectedOpsSec={selectedOpsSection} setSelectedOpsSection={setSelectedOpsSection} />
         {operationSections.map((each, index) => {
-          /** Each operation section has its own form.  */
-          const {
-            control,
-            formState: { isValid },
-            //eslint-disable-next-line react-hooks/rules-of-hooks -- Need separate hook for each form
-          } = useForm({ mode: "onChange", reValidateMode: "onChange", resetOptions: { keepDirtyValues: true } });
-
-          if (selectedOpsSection !== index) return null;
-
-          return <QuestionTypeSection key={index} appParams={appParams} currentOpsSectionInfo={each} control={control} isValid={isValid} />;
+          return <QuestionTypeSection key={index} appParams={appParams} currentOpsSectionInfo={each} displaySection={selectedOpsSection === index} />;
         })}
-        {/* <QuestionTypeSection appParams={appParams} control={control} currentOpsSectionInfo={operationSections[selectedOpsSection]} isValid={isValid} /> */}
         <BottomNavigation operationSections={operationSections} selectedOpsSection={selectedOpsSection} setSelectedOpsSection={setSelectedOpsSection} />
       </Box>
     );

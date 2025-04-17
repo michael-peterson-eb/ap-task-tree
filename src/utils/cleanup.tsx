@@ -15,8 +15,3 @@ export const setInnerHTML = (text) => {
     />
   );
 };
-
-export const stripTextHtmlTags = (text: string) => {
-  const noTags = text.replace(/(<([^>]+)>)/gi, "");
-  return noTags.replace(/\&nbsp;/g, "");
-};

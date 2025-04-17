@@ -10,14 +10,3 @@ export const fetchResponseOptionsByTemplateId = async (templateID: any) => {
     console.log("Error: fetchAssessmentResponseOptions ", error);
   }
 };
-
-export const getRelatedResponseOptions = async (questionID: any) => {
-  try {
-    // Response Options Relationship Integration Name: R7996162
-    //@ts-ignore
-    const results = await _RB.getRelatedFields("R7996162", ",EA_SA_AssessmentQuestion", questionID, "id");
-    return results;
-  } catch (error) {
-    console.log("Error: getRelatedResponseOptions ", error);
-  }
-};

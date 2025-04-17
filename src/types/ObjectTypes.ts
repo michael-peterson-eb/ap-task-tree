@@ -9,11 +9,15 @@ export type RecordInfo = {
   sectionType: string;
 };
 
-export type ChangeObj = {
-  responseFormat: string;
-  riskObj?: {
-    EA_SA_txtAssmtRespOptCode: string;
-    EA_SA_txtFieldIntegrationName: string;
+export type RiskObj = {
+  EA_SA_txtAssmtRespOptCode: string;
+  EA_SA_txtFieldIntegrationName: string;
+};
+
+export type EventObj = {
+  target: {
+    id: string;
+    name: string;
+    value: string;
   };
-  scope: string;
 };

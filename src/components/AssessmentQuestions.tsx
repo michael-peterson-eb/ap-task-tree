@@ -19,6 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchAssessQuestionsByTemplateId } from "../model/Questions";
 import { fetchResponseOptionsByTemplateId } from "../model/ResponseOptions";
 import { Loading } from "./Loading";
+import { EventObj, RiskObj } from "../types/ObjectTypes";
 
 const AssessmentQuestions = ({ appParams, questionTemplateData, control }): ReactElement | null => {
   const { EA_SA_ddlAskPer: askPer, EA_SA_ddlResponseFormat: responseFormat } = questionTemplateData;
@@ -37,11 +38,7 @@ const AssessmentQuestions = ({ appParams, questionTemplateData, control }): Reac
     enabled: !!assessmentQuestions,
   });
 
-  const handleChange = (event, { responseFormat, riskObj, scope = "EA_OR_NORMAL" }) => {
-    /**  responseFormat and scope are no longer needed. Neither are needed anymore to update
-     *  the question. They are here for reference or possible future use.
-     */
-
+  const handleChange = (event: EventObj, riskObj: RiskObj | null) => {
     const { id, name, value } = event.target;
     let fieldValue: any = {};
 

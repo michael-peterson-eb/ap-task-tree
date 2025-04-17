@@ -4,7 +4,7 @@ import { getMultiValue, isQuestionRequired, getDefaultMultiValue } from "../../u
 import { ViewOnlyText } from "./ViewOnlyText";
 import { Controller } from "react-hook-form";
 
-export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData, responseOptions }: FormInputProps) => {
+export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, control, handleChange, questionTemplateData, responseOptions }: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion, EA_SA_txtaResponse } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
@@ -35,9 +35,8 @@ export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, cont
 
                     const idsOnly = newValue.map((item) => item.id).join(",");
                     const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: idsOnly } };
-                    const changeObj = { assessmentQuestionId: assessmentQuestion.id, responseFormat: "MSP" };
 
-                    handleChange(eventObj, changeObj);
+                    handleChange(eventObj, null);
                   }}
                   options={responseOptions}
                   renderInput={(params) => (

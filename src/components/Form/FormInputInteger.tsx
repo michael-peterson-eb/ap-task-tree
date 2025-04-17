@@ -5,16 +5,7 @@ import { setInnerHTML } from "../../utils/cleanup";
 import { ViewOnlyText } from "./ViewOnlyText";
 import { Controller } from "react-hook-form";
 
-export const FormInputInteger = ({
-  fieldName,
-  appParams,
-  assessmentQuestion,
-  control,
-  handleChange,
-  hasLabel = true,
-  questionTemplateData,
-  scope = "EA_OR_NORMAL",
-}: FormInputProps) => {
+export const FormInputInteger = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData }: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
@@ -46,13 +37,13 @@ export const FormInputInteger = ({
               helperText={!!error ? (error && error.message ? error.message : "This field is required") : null}
               InputProps={{ inputMode: "numeric" }}
               label={hasLabel ? setInnerHTML(EA_SA_txtaQuestion) : null}
+              name="Integer"
               onChange={(event) => {
                 onChange(event);
 
                 const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: event.target.value } };
-                const changeObj = { responseFormat: "INT", scope };
 
-                handleChange(eventObj, changeObj);
+                handleChange(eventObj, null);
               }}
               type="number"
               variant="outlined"

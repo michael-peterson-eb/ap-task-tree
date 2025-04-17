@@ -5,17 +5,7 @@ import { FormInputProps } from "../../types/FormInputProps";
 import { ViewOnlyText } from "./ViewOnlyText";
 import { Controller } from "react-hook-form";
 
-export const FormYesNo = ({
-  fieldName,
-  appParams,
-  assessmentQuestion,
-  control,
-  handleChange,
-  hasLabel = true,
-  questionTemplateData,
-  responseOptions,
-  scope = "EA_OR_NORMAL",
-}: FormInputProps) => {
+export const FormYesNo = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData, responseOptions }: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
@@ -50,9 +40,8 @@ export const FormYesNo = ({
                   onChange(event);
 
                   const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: event.target.value } };
-                  const changeObj: any = { responseFormat: "SSP", scope };
 
-                  handleChange(eventObj, changeObj);
+                  handleChange(eventObj, null);
                 }}
                 required={required}
                 sx={{ width: "100%", fontSize: "14px" }}

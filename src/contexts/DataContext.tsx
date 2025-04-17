@@ -1,4 +1,4 @@
-import { createContext, useContext, useRef, useEffect } from "react";
+import { createContext, useContext, useRef, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getOperationSections } from "../model/mocked/operationSection";
 import { Loading } from "../components/Loading";
@@ -6,10 +6,12 @@ import { Loading } from "../components/Loading";
 const DataContext = createContext({
   operationSections: [],
   operationSectionsPending: false,
-  refetchOpSecs: () => {},
   opSecUpdates: { current: {} },
+  opSecStatuses: [],
   questionUpdates: { current: {} },
+  refetchOpSecs: () => {},
   riskUpdates: { current: {} },
+  setOpSecStatuses: (value) => {},
 });
 
 const DataProvider = ({ children, appParams }) => {
@@ -21,7 +23,6 @@ const DataProvider = ({ children, appParams }) => {
 
   const {
     isPending: operationSectionsPending,
-    error,
     data: operationSections,
     refetch: refetchOpSecs,
   } = useQuery({
@@ -29,9 +30,29 @@ const DataProvider = ({ children, appParams }) => {
     queryFn: () => getOperationSections({ id, sectionType, questionRelName }),
   });
 
+  const [opSecStatuses, setOpSecStatuses] = useState([]);
+
+  useEffect(() => {
+    if (operationSections) {
+      const opSecStatuses = operationSections.map((operationSection) => {
+        const { status } = operationSection;
+        if (status === "completed") {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      setOpSecStatuses(opSecStatuses);
+    }
+  }, [operationSections]);
+
   if (operationSectionsPending || !operationSections) return <Loading />;
 
-  return <DataContext.Provider value={{ operationSections, operationSectionsPending, refetchOpSecs, opSecUpdates, questionUpdates, riskUpdates }}>{children}</DataContext.Provider>;
+  return (
+    <DataContext.Provider value={{ operationSections, operationSectionsPending, opSecUpdates, opSecStatuses, questionUpdates, refetchOpSecs, riskUpdates, setOpSecStatuses }}>
+      {children}
+    </DataContext.Provider>
+  );
 };
 
 const useData = () => {

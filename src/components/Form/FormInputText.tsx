@@ -13,7 +13,6 @@ export const FormInputText = ({
   hasLabel = true,
   handleChange,
   questionTemplateData,
-  scope = "EA_OR_NORMAL",
 }: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
@@ -39,13 +38,13 @@ export const FormInputText = ({
               fullWidth
               helperText={!!error ? (error && error.message ? error.message : "This field is required") : null}
               label={hasLabel ? setInnerHTML(EA_SA_txtaQuestion) : null}
+              name="Text"
               onChange={(event) => {
                 onChange(event);
 
                 const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: event.target.value } };
-                const changeObj = { responseFormat: "FRES", scope };
 
-                handleChange(eventObj, changeObj);
+                handleChange(eventObj, null);
               }}
               required={required}
               variant="outlined"
