@@ -21,7 +21,7 @@ export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, con
     return (
       <FormControl fullWidth>
         {hasLabel ? (
-          <InputLabel id={`single-select-${assessmentQuestion.id}`} sx={{ color: "#000", background: "#FFF", paddingRight: "4px", fontSize: "18px" }}>
+          <InputLabel id={`single-select-${assessmentQuestion.id}`} sx={{ paddingRight: "4px", paddingLeft: "4px", backgroundColor: "#FFF", fontSize: "16px" }}>
             {setInnerHTML(EA_SA_txtaQuestion)}
           </InputLabel>
         ) : null}
@@ -43,7 +43,7 @@ export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, con
                   const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: event.target.value } };
 
                   if (appParams.objectIntegrationName === "EA_RM_Risk") {
-                    const foundResponseOption = responseOptions.find((item) => item.id == event.target.value);
+                    const foundResponseOption = responseOptions.find((item) => item.id === event.target.value);
 
                     if (foundResponseOption) {
                       const riskObj: RiskObj = { ...foundResponseOption, EA_SA_txtFieldIntegrationName };
@@ -54,7 +54,6 @@ export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, con
                   }
                 }}
                 required={required}
-                sx={{ width: "100%", fontSize: "14px" }}
                 value={value}
               >
                 <MenuItem aria-label="" value="">

@@ -7,7 +7,6 @@ import { OpSecHeader } from "./OpSecHeader";
 import NoQuestionTypes from "./NoQuestionTypes";
 import { useData } from "../contexts/DataContext";
 import { EditButtons } from "./EditButtons";
-import BottomNavigation from "./BottomNavigation";
 
 export const ImpactAssessment = (): ReactElement | null => {
   const { appParams, selectedOpsSection, setSelectedOpsSection } = useGlobal();
@@ -19,13 +18,21 @@ export const ImpactAssessment = (): ReactElement | null => {
 
   if (operationSections && operationSections.length > 0) {
     return (
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
         <EditButtons appParams={appParams} />
         <OpSecHeader operationSections={operationSections} selectedOpsSec={selectedOpsSection} setSelectedOpsSection={setSelectedOpsSection} />
         {operationSections.map((each, index) => {
-          return <QuestionTypeSection key={index} appParams={appParams} currentOpsSectionInfo={each} displaySection={selectedOpsSection === index} />;
+          const questionTypeSectionProps = {
+            appParams,
+            currentOpsSectionInfo: each,
+            displaySection: selectedOpsSection === index,
+            operationSections,
+            selectedOpsSection,
+            setSelectedOpsSection,
+          };
+
+          return <QuestionTypeSection key={index} {...questionTypeSectionProps} />;
         })}
-        <BottomNavigation operationSections={operationSections} selectedOpsSection={selectedOpsSection} setSelectedOpsSection={setSelectedOpsSection} />
       </Box>
     );
   }

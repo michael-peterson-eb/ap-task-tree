@@ -1,6 +1,6 @@
 export const mockParams = {
   id: "418628738",
-  crudAction: "view",
+  crudAction: "edit",
   objectIntegrationName: "EA_SA_Process",
   questionRelName: "EA_SA_rsProcess",
   objectTitle: "Impact Assessment",

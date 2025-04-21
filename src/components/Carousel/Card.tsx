@@ -8,7 +8,7 @@ export const Card = ({ type, selectedOpsSec, index, handleTabClick }) => {
   const { opSecStatuses } = useData();
   const currentStatus = opSecStatuses[index];
 
-  const cardColor = currentStatus ? "#36A902" : "#DEE9FF";
+  const cardColor = currentStatus ? "#117E2F" : "#DEE9FF";
   const isSelected = selectedOpsSec === index;
 
   const icon = currentStatus ? <Check /> : <Circle color={currentStatus || isSelected ? "white" : "#1B2327"} />;

@@ -13,6 +13,7 @@ export const CarouselDropdown = ({ operationSections, selectedOpsSec, handleTabC
         onChange={(e) => {
           handleTabClick(e.target.value);
         }}
+        size="small"
         sx={{ width: "100%", maxWidth: "420px" }}
       >
         {operationSections.length > 0
@@ -20,6 +21,7 @@ export const CarouselDropdown = ({ operationSections, selectedOpsSec, handleTabC
               const currentStatus = opSecStatuses[index];
               return (
                 <MenuItem
+                  key={`carousel-dropdown-${type.id}`}
                   value={index}
                   sx={{
                     display: "flex",

@@ -1,3 +1,5 @@
+import { RecordInfo } from "../types/ObjectTypes";
+
 export const getNameValue = (options: any, id: any) => {
   if (!id || options.length == 0) return "No Answer";
 
@@ -59,5 +61,25 @@ export const isDateInFuture = (date) => {
     return false;
   } else {
     return true;
+  }
+};
+
+export const executeTriggers = async (appParams: RecordInfo) => {
+  // no trigger is called for Scenario Test
+  if (appParams.triggerId === "" || appParams.triggerId == "null") return;
+
+  // update should invoke the trigger [UPDATE] Calculate Assessment Time Intervals or an array of triggers
+  const triggers = appParams.triggerId.split(",");
+
+  if (appParams.objectTitle == "Incident Assessment") {
+    //@ts-ignore
+    await rbf_runTrigger(appParams.objectIntegrationName, appParams.id, triggers[0]);
+  } else if (appParams.objectTitle == "Scenario Test") {
+    //placeholder for future Scenario Test trigger
+  } else if (appParams.objectTitle != "Standalone Assessment") {
+    triggers.forEach(async (triggerId: any) => {
+      //@ts-ignore
+      await rbf_runTrigger(appParams.objectIntegrationName, appParams.id, triggerId);
+    });
   }
 };

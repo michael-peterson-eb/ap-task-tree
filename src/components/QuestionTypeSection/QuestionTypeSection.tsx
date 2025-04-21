@@ -1,15 +1,16 @@
-import { Box } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import { Loading } from "../Loading";
 import QuestionTypeSectionHeader from "./QuestionTypeSectionHeader";
 import { getAssessmentQuestionTemplateByType } from "../../model/mocked/assessmentQuestionTemplate";
 import AssessmentQuestions from "../AssessmentQuestions";
 import { useQuery } from "@tanstack/react-query";
-import { EditAlert } from "../EditAlert";
 import { useForm } from "react-hook-form";
+import AssessmentProgressBox from "../AssessmentProgressBox";
 
-const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection }) => {
+const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection, operationSections, selectedOpsSection, setSelectedOpsSection }) => {
   const { crudAction: mode, objectTitle } = appParams;
   const { id, name: questionName, status, EA_SA_rsAssessmentQuestionType } = currentOpsSectionInfo;
+  const smallScreen: boolean = useMediaQuery("(max-width:640px)");
 
   const {
     control,
@@ -27,18 +28,18 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection 
   if (!displaySection) return null;
 
   return (
-    <>
-      <QuestionTypeSectionHeader mode={mode} status={status} objectTitle={objectTitle} questionName={questionName} />
-      <Box sx={{ margin: "auto", overflow: "auto" }}>
+    <Box sx={{ display: "flex", width: "100%", gap: "24px", flexDirection: smallScreen ? "column" : "row" }}>
+      <Box sx={{ width: smallScreen ? "100%" : "60%" }}>
+        <QuestionTypeSectionHeader mode={mode} status={status} objectTitle={objectTitle} questionName={questionName} />
         {questionTemplate.length > 0 &&
           questionTemplate.map((questionTemplateData) => {
             return (
               <AssessmentQuestions key={`assessment-questions-${questionTemplateData.id}`} appParams={appParams} control={control} questionTemplateData={questionTemplateData} />
             );
           })}
-        <EditAlert isValid={isValid} trigger={trigger} />
       </Box>
-    </>
+      <AssessmentProgressBox isValid={isValid} trigger={trigger} smallScreen={smallScreen} />
+    </Box>
   );
 };
 
