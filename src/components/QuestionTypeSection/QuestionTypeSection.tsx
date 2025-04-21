@@ -10,7 +10,7 @@ import AssessmentProgressBox from "../AssessmentProgressBox";
 const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection, operationSections, selectedOpsSection, setSelectedOpsSection }) => {
   const { crudAction: mode, objectTitle } = appParams;
   const { id, name: questionName, status, EA_SA_rsAssessmentQuestionType } = currentOpsSectionInfo;
-  const smallScreen: boolean = useMediaQuery("(max-width:420px)");
+  const smallScreen: boolean = useMediaQuery("(max-width:640px)");
 
   const {
     control,

@@ -20,7 +20,7 @@ export const FormYesNo = ({ fieldName, appParams, assessmentQuestion, control, h
     return (
       <FormControl fullWidth>
         {hasLabel ? (
-          <InputLabel id={`yesno-${assessmentQuestion.id}`} size="normal" sx={{ background: "#FFF", paddingRight: "4px", fontSize: "18px" }}>
+          <InputLabel id={`yesno-${assessmentQuestion.id}`} sx={{ paddingRight: "4px", paddingLeft: "4px", backgroundColor: "#FFF", fontSize: "16px" }}>
             {setInnerHTML(EA_SA_txtaQuestion)}
           </InputLabel>
         ) : null}
@@ -35,7 +35,6 @@ export const FormYesNo = ({ fieldName, appParams, assessmentQuestion, control, h
                 displayEmpty
                 error={!!error}
                 id={assessmentQuestion.id}
-                labelId={`yesno-${assessmentQuestion.id}`}
                 onChange={(event: any) => {
                   onChange(event);
 
@@ -44,7 +43,6 @@ export const FormYesNo = ({ fieldName, appParams, assessmentQuestion, control, h
                   handleChange(eventObj, null);
                 }}
                 required={required}
-                sx={{ width: "100%", fontSize: "14px" }}
                 value={value}
               >
                 <MenuItem aria-label="" value="">

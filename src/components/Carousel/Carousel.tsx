@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ImageList, Box } from "@mui/material";
 import { Card } from "./Card";
 import NextButton from "./NextButton";
@@ -113,6 +113,10 @@ export default function Carousel({ operationSections, selectedOpsSec, handleTabC
     }
     return "none";
   };
+
+  useEffect(() => {
+    rootRef.current.children[selectedOpsSec].scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+  }, [selectedOpsSec]);
 
   return (
     <Box sx={{ maxHeight: "46px", marginBottom: "36px" }}>

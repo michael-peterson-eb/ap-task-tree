@@ -3,7 +3,7 @@ import Carousel from "./Carousel/Carousel";
 import { CarouselDropdown } from "./Carousel/CarouselDropdown";
 
 export const OpSecHeader = ({ operationSections, selectedOpsSec, setSelectedOpsSection }) => {
-  const smallScreen: boolean = useMediaQuery("(max-width:420px)");
+  const smallScreen: boolean = useMediaQuery("(max-width:640px)");
 
   const handleTabClick = (index: number) => {
     setSelectedOpsSection(index);

@@ -2,19 +2,14 @@ import { createTheme } from "@mui/material";
 
 export const customTheme = createTheme({
   typography: {
-    fontSize: 18,
+    fontSize: 16,
   },
   status: {
     danger: "#e53e3e",
   },
   palette: {
     primary: {
-      main: "#0971f1",
-      darker: "#053e85",
-    },
-    neutral: {
-      main: "#C7C7C7",
-      contrastText: "#fff",
+      main: "#0042B6",
     },
     active: {
       main: "#0572ed",
@@ -25,77 +20,48 @@ export const customTheme = createTheme({
     submit: {
       main: "#ef5b18",
     },
+    action: {
+      disabled: "rgba(0, 0, 0, 0.60)",
+    },
+    text: {
+      disabled: "rgba(0, 0, 0, 0.60)",
+    },
   },
-});
-
-export const CustomFontTheme = () => {
-  return createTheme({
-    typography: {
-      fontSize: 18,
-    },
-    components: {
-      MuiInputLabel: {
-        defaultProps: {
-          sx: {
-            display: "flex",
-            fontSize: "18px",
-            backgroundColor: "#FFF",
-            color: "#000",
-          },
-        },
-      },
-      MuiOutlinedInput: {
-        defaultProps: {
-          sx: {
-            fontSize: "14px",
-          },
-        },
-      },
-      MuiSelect: {
-        styleOverrides: {
-          root: {
-            "&.Mui-disabled": {
-              color: "black !important",
-              "-webkit-text-fill-color": "black !important",
-            },
-          },
-        },
-      },
-      MuiInputBase: {
-        defaultProps: {
-          sx: {
-            fontSize: "14px",
-          },
+  components: {
+    MuiInputLabel: {
+      defaultProps: {
+        sx: {
+          fontSize: 16,
         },
       },
     },
-  });
-};
-
-export const NavButtonTheme = createTheme({
-  typography: {
-    fontSize: 18,
-  },
-  status: {
-    danger: "#e53e3e",
-  },
-  palette: {
-    primary: {
-      main: "#0971f1",
-      darker: "#053e85",
+    MuiOutlinedInput: {
+      defaultProps: {
+        sx: {
+          fontSize: 16,
+        },
+      },
     },
-    neutral: {
-      main: "#C7C7C7",
-      contrastText: "#fff",
+    MuiSelect: {
+      defaultProps: {
+        sx: {
+          fontSize: 16,
+        },
+      },
     },
-    active: {
-      main: "#0572ed",
+    MuiInputBase: {
+      defaultProps: {
+        sx: {
+          fontSize: 16,
+        },
+      },
     },
-    completed: {
-      main: "#0FC27D",
-    },
-    submit: {
-      main: "#ef5b18",
+    MuiTextField: {
+      defaultProps: {
+        sx: {
+          fontSize: 16,
+        },
+      },
     },
   },
 });

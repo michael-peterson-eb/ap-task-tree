@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, Button, FormControlLabel, Checkbox, useMediaQuery } from "@mui/material";
+import { Box, Typography, Button, FormControlLabel, Checkbox } from "@mui/material";
 import PreviousArrow from "../data/icons/PreviousArrow";
 import NextArrow from "../data/icons/NextArrow";
 import { useData } from "../contexts/DataContext";
@@ -17,6 +17,8 @@ const AssessmentProgressBox = ({ isValid, trigger, smallScreen }) => {
   const handleBack = () => {
     if (selectedOpsSection > 0) {
       setSelectedOpsSection((prevActiveStep) => prevActiveStep - 1);
+    } else {
+      setSelectedOpsSection(operationSections.length - 1);
     }
   };
 
@@ -70,7 +72,7 @@ const AssessmentProgressBox = ({ isValid, trigger, smallScreen }) => {
             Assessment Progress
           </Typography>
           <Typography fontSize={smallScreen ? 10 : 12} fontStyle="normal" fontWeight={400} lineHeight="normal" color="#1B2327">
-            Section {selectedOpsSection + 1} of 11
+            Section {selectedOpsSection + 1} of {operationSections.length}
           </Typography>
         </Box>
         <Box sx={{ display: "grid", width: "100%", gap: "2px", gridTemplateColumns: `repeat(${operationSections.length}, 1fr)`, paddingY: "12px" }}>
@@ -88,7 +90,13 @@ const AssessmentProgressBox = ({ isValid, trigger, smallScreen }) => {
               radiusStyle = "0px 4px 4px 0px";
             }
 
-            return <div key={`progress-box-${operationSection.id}`} style={{ height: "18px", backgroundColor: isSelected ? "#0042B6" : cardColor, borderRadius: radiusStyle }} />;
+            return (
+              <button
+                onClick={() => setSelectedOpsSection(index)}
+                key={`progress-box-${operationSection.id}`}
+                style={{ height: "18px", backgroundColor: isSelected ? "#0042B6" : cardColor, borderRadius: radiusStyle, border: "none", cursor: "pointer" }}
+              />
+            );
           })}
         </Box>
         <div style={{ paddingTop: "12px", borderTop: "1px solid #CFD8DC" }} />
@@ -118,7 +126,7 @@ const AssessmentProgressBox = ({ isValid, trigger, smallScreen }) => {
           <Box sx={{ display: "flex", justifyContent: "center", padding: "16px", borderRadius: "0px 0px 4px 4px", borderTop: "1px solid #CFD8DC" }}>
             <FormControlLabel
               label={
-                <Typography fontSize={14} fontStyle="normal" fontWeight={500} lineHeight="22px" color="#1B2327">
+                <Typography fontSize={14} fontStyle="normal" fontWeight={500} lineHeight="22px" color="#1B2327" sx={{ paddingTop: "2px", paddingLeft: "2px" }}>
                   Complete Section
                 </Typography>
               }

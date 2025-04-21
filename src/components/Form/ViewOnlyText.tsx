@@ -6,17 +6,18 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export const ViewOnlyText = ({
   label,
-  value,
   responseFormat = null,
   size = "medium",
+  value,
 }: {
   label: string | null;
-  value: string | Dayjs | null;
   responseFormat?: string | null;
   size?: any;
+  value: string | Dayjs | null;
 }) => {
-  const disabledColor = "rgba(0, 0, 0, 0.65)";
-  const inputProps = { readOnly: true };
+  const inputProps = {
+    readOnly: true,
+  };
 
   if (responseFormat === "CCY") {
     //@ts-ignore
@@ -27,16 +28,7 @@ export const ViewOnlyText = ({
     return (
       <FormControl fullWidth variant="standard">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label={setInnerHTML(label)}
-            value={value}
-            disabled
-            sx={{
-              "& .MuiInputBase-input.Mui-disabled": {
-                WebkitTextFillColor: disabledColor,
-              },
-            }}
-          />
+          <DatePicker disabled label={setInnerHTML(label)} value={value} />
         </LocalizationProvider>
       </FormControl>
     );
@@ -44,21 +36,7 @@ export const ViewOnlyText = ({
 
   return (
     <FormControl fullWidth>
-      <TextField
-        label={label ? setInnerHTML(label) : null}
-        value={value}
-        InputProps={inputProps}
-        disabled
-        InputLabelProps={{
-          style: { color: disabledColor },
-        }}
-        size={size}
-        sx={{
-          "& .MuiInputBase-input.Mui-disabled": {
-            WebkitTextFillColor: disabledColor,
-          },
-        }}
-      />
+      <TextField disabled label={label ? setInnerHTML(label) : null} size={size} value={value} />
     </FormControl>
   );
 };
