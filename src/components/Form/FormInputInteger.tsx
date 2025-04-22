@@ -1,5 +1,5 @@
 import { FormInputProps } from "../../types/FormInputProps";
-import { TextField, FormControl } from "@mui/material";
+import { TextField, FormControl, Typography } from "@mui/material";
 import { isQuestionRequired } from "../../utils/common";
 import { setInnerHTML } from "../../utils/cleanup";
 import { ViewOnlyText } from "./ViewOnlyText";
@@ -19,6 +19,7 @@ export const FormInputInteger = ({ fieldName, appParams, assessmentQuestion, con
   if (mode === "edit") {
     return (
       <FormControl fullWidth>
+        {hasLabel ? <Typography sx={{ fontWeight: 500, fontSize: 14, color: "#1B2327", paddingBottom: "4px" }}>{setInnerHTML(EA_SA_txtaQuestion)}</Typography> : null}
         <Controller
           control={control}
           defaultValue={backendValue}
@@ -36,7 +37,9 @@ export const FormInputInteger = ({ fieldName, appParams, assessmentQuestion, con
               fullWidth
               helperText={!!error ? (error && error.message ? error.message : "This field is required") : null}
               InputProps={{ inputMode: "numeric" }}
-              label={hasLabel ? setInnerHTML(EA_SA_txtaQuestion) : null}
+              inputProps={{
+                style: { color: !value || value === "" ? "#445A65" : "#1B2327" },
+              }}
               name="Integer"
               onChange={(event) => {
                 onChange(event);
@@ -45,6 +48,9 @@ export const FormInputInteger = ({ fieldName, appParams, assessmentQuestion, con
 
                 handleChange(eventObj, null);
               }}
+              placeholder="0"
+              size="small"
+              sx={styles}
               type="number"
               variant="outlined"
               value={value}
@@ -56,4 +62,19 @@ export const FormInputInteger = ({ fieldName, appParams, assessmentQuestion, con
   }
 
   return null;
+};
+
+const styles = {
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderRadius: "4px",
+      border: "1px solid #CFD8DC",
+    },
+    "&:hover fieldset": {
+      border: "1px solid #0042B6",
+    },
+    "&.Mui-focused fieldset": {
+      border: "1px solid #0042B6",
+    },
+  },
 };

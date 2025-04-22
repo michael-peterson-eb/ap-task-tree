@@ -1,4 +1,4 @@
-import { FormControl, TextField, InputAdornment } from "@mui/material";
+import { FormControl, TextField, InputAdornment, Typography } from "@mui/material";
 import { setInnerHTML } from "../../utils/cleanup";
 import { Dayjs } from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -36,7 +36,8 @@ export const ViewOnlyText = ({
 
   return (
     <FormControl fullWidth>
-      <TextField disabled label={label ? setInnerHTML(label) : null} size={size} value={value} />
+      {label ? <Typography sx={{ fontWeight: 500, fontSize: 14, color: "#1B2327", paddingBottom: "4px" }}>{setInnerHTML(label)}</Typography> : null}
+      <TextField disabled size="small" value={value} sx={{ fontWeight: 400, fontSize: 14, color: "#1B2327"}} />
     </FormControl>
   );
 };
