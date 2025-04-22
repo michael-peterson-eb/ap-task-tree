@@ -1,5 +1,5 @@
 import { FormInputProps } from "../../types/FormInputProps";
-import { FormControl, ThemeProvider } from "@mui/material";
+import { FormControl, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { isQuestionRequired, isValidDate } from "../../utils/common";
@@ -23,50 +23,69 @@ export const FormInputDate = ({ fieldName, appParams, assessmentQuestion, contro
 
   if (mode === "edit") {
     return (
-        <FormControl fullWidth variant="standard">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Controller
-              control={control}
-              defaultValue={dayjs(backendValue)}
-              name={`${assessmentQuestion.id}.${fieldName}`}
-              rules={{
-                required,
-                validate: { isDateInFuture },
-              }}
-              render={({ field: { onChange, value, ref }, fieldState: { error } }) => (
-                <DatePicker
-                  disablePast={true}
-                  inputRef={ref}
-                  label={hasLabel ? setInnerHTML(EA_SA_txtaQuestion) : null}
-                  onChange={(newValue) => {
-                    onChange(newValue);
+      <FormControl fullWidth variant="standard">
+        {hasLabel ? <Typography sx={{ fontWeight: 500, fontSize: 14, color: "#1B2327", paddingBottom: "4px" }}>{setInnerHTML(EA_SA_txtaQuestion)}</Typography> : null}
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Controller
+            control={control}
+            defaultValue={dayjs(backendValue)}
+            name={`${assessmentQuestion.id}.${fieldName}`}
+            rules={{
+              required,
+              validate: { isDateInFuture },
+            }}
+            render={({ field: { onChange, value, ref }, fieldState: { error } }) => (
+              <DatePicker
+                disablePast={true}
+                inputRef={ref}
+                onChange={(newValue) => {
+                  onChange(newValue);
 
-                    const formattedDate = dateYYYYMMDDFormat(newValue);
+                  const formattedDate = dateYYYYMMDDFormat(newValue);
 
-                    if (isValidDate(formattedDate) && isDateInFuture(newValue)) {
-                      const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: formattedDate } };
+                  if (isValidDate(formattedDate) && isDateInFuture(newValue)) {
+                    const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: formattedDate } };
 
-                      handleChange(eventObj, null);
-                    }
-                  }}
-                  slotProps={{
-                    actionBar: {
-                      actions: ["clear"],
+                    handleChange(eventObj, null);
+                  }
+                }}
+                slotProps={{
+                  actionBar: {
+                    actions: ["clear"],
+                  },
+                  textField: {
+                    required,
+                    helperText: !!error ? (error && error.message ? error.message : "Please enter a valid date") : null,
+                    error: !!error,
+                    inputProps: {
+                      style: { color: !value || value === "" ? "#445A65" : "#1B2327" },
                     },
-                    textField: {
-                      required,
-                      helperText: !!error ? (error && error.message ? error.message : "Please enter a valid date") : null,
-                      error: !!error,
-                    },
-                  }}
-                  value={value}
-                />
-              )}
-            />
-          </LocalizationProvider>
-        </FormControl>
+                  },
+                }}
+                sx={styles}
+                value={value}
+              />
+            )}
+          />
+        </LocalizationProvider>
+      </FormControl>
     );
   }
 
   return null;
+};
+
+const styles = {
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderRadius: "4px",
+      border: "1px solid #CFD8DC",
+    },
+    "&:hover fieldset": {
+      border: "1px solid #0042B6",
+    },
+    "&.Mui-focused fieldset": {
+      border: "1px solid #0042B6",
+    },
+  },
 };

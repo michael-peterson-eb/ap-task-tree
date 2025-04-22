@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Box, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormGroup } from "@mui/material";
+import { Box, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormGroup, Typography } from "@mui/material";
 import { Loading } from "../Loading";
 import { FormInputProps } from "../../types/FormInputProps";
 import { setInnerHTML } from "../../utils/cleanup";
@@ -45,7 +45,9 @@ export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, hand
     return (
       <Box sx={{ paddingTop: 2, display: "block" }}>
         <InputLabel sx={{ display: "flex", whiteSpace: "normal" }} required={required}>
-          {severityLevels.length > 0 && setInnerHTML(severityLevels[0].EA_SA_rfQuestion)}
+          {severityLevels.length > 0 ? (
+            <Typography sx={{ fontWeight: 500, fontSize: 14, color: "#1B2327", paddingBottom: "4px" }}>{setInnerHTML(severityLevels[0].EA_SA_rfQuestion)}</Typography>
+          ) : null}
         </InputLabel>
         <TableContainer component={Paper} sx={{ border: "1px solid rgba(0, 0, 0, 0.65)", width: "inherit" }}>
           <Table sx={{ width: "100%" }} size="small">
@@ -145,8 +147,11 @@ export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, hand
       <>
         <FormGroup sx={{ paddingTop: 2, display: "block" }}>
           <InputLabel sx={{ display: "flex", whiteSpace: "normal" }} required={required}>
-            {severityLevels.length > 0 && setInnerHTML(severityLevels[0].EA_SA_rfQuestion)}
+            {severityLevels.length > 0 ? (
+              <Typography sx={{ fontWeight: 500, fontSize: 14, color: "#1B2327", paddingBottom: "4px" }}>{setInnerHTML(severityLevels[0].EA_SA_rfQuestion)}</Typography>
+            ) : null}
           </InputLabel>
+
           <TableContainer component={Paper} sx={{ border: "1px solid rgba(0, 0, 0, 0.75)", width: "inherit" }}>
             <Table sx={{ width: "100%" }} size="small">
               <TableHead>

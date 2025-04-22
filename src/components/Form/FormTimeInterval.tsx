@@ -27,7 +27,9 @@ export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, con
       <>
         <Box sx={{ marginTop: 2, display: "block" }}>
           <InputLabel sx={{ display: "flex", whiteSpace: "normal" }} required={required}>
-            {timeIntervals.length > 0 && setInnerHTML(timeIntervals[0].EA_SA_rfQuestion)}
+            {timeIntervals.length > 0 ? (
+              <Typography sx={{ fontWeight: 500, fontSize: 14, color: "#1B2327", paddingBottom: "4px" }}>{setInnerHTML(timeIntervals[0].EA_SA_rfQuestion)}</Typography>
+            ) : null}
           </InputLabel>
 
           <TableContainer component={Paper} sx={{ border: "1px solid rgba(0, 0, 0, 0.65)", width: "inherit" }}>
@@ -64,7 +66,9 @@ export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, con
       <>
         <FormGroup sx={{ paddingTop: 2, display: "block" }}>
           <InputLabel sx={{ display: "flex", whiteSpace: "normal" }} required={required}>
-            {timeIntervals.length > 0 && setInnerHTML(timeIntervals[0].EA_SA_rfQuestion)}
+            {timeIntervals.length > 0 ? (
+              <Typography sx={{ fontWeight: 500, fontSize: 14, color: "#1B2327", paddingBottom: "4px" }}>{setInnerHTML(timeIntervals[0].EA_SA_rfQuestion)}</Typography>
+            ) : null}
           </InputLabel>
 
           <TableContainer component={Paper} sx={{ border: "1px solid rgba(0, 0, 0, 0.75)", width: "inherit" }}>

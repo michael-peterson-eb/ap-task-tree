@@ -19,11 +19,7 @@ export const FormYesNo = ({ fieldName, appParams, assessmentQuestion, control, h
   if (mode === "edit") {
     return (
       <FormControl fullWidth>
-        {hasLabel ? (
-          <InputLabel id={`yesno-${assessmentQuestion.id}`} sx={{ paddingRight: "4px", paddingLeft: "4px", backgroundColor: "#FFF", fontSize: "16px" }}>
-            {setInnerHTML(EA_SA_txtaQuestion)}
-          </InputLabel>
-        ) : null}
+        {hasLabel ? <Typography sx={{ fontWeight: 500, fontSize: 14, color: "#1B2327", paddingBottom: "4px" }}>{setInnerHTML(EA_SA_txtaQuestion)}</Typography> : null}
         <Controller
           control={control}
           defaultValue={backendValue}
@@ -35,6 +31,8 @@ export const FormYesNo = ({ fieldName, appParams, assessmentQuestion, control, h
                 displayEmpty
                 error={!!error}
                 id={assessmentQuestion.id}
+                MenuProps={{ sx: menuStyles }}
+                notched
                 onChange={(event: any) => {
                   onChange(event);
 
@@ -43,10 +41,12 @@ export const FormYesNo = ({ fieldName, appParams, assessmentQuestion, control, h
                   handleChange(eventObj, null);
                 }}
                 required={required}
+                size="small"
+                sx={styles}
                 value={value}
               >
                 <MenuItem aria-label="" value="">
-                  <Typography>Select option</Typography>
+                  <Typography sx={{ color: "#445A65" }}>Select option</Typography>
                 </MenuItem>
                 {responseOptions.length > 0 &&
                   responseOptions.map((responseOption: any) => {
@@ -65,4 +65,51 @@ export const FormYesNo = ({ fieldName, appParams, assessmentQuestion, control, h
   }
 
   return null;
+};
+
+const styles = {
+  borderRadius: "4px",
+  "& .MuiSelect-select": {
+    paddingRight: "12px",
+    paddingLeft: "12px",
+    paddingTop: "8px",
+    paddingBottom: "8px",
+  },
+  ".MuiOutlinedInput-notchedOutline": {
+    border: "1px solid #CFD8DC",
+  },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    border: "1px solid #0042B6",
+  },
+  "&:hover .MuiOutlinedInput-notchedOutline": {
+    border: "1px solid #0042B6",
+  },
+  ".MuiSvgIcon-root": {
+    fill: "#1B2327 !important",
+    borderLeft: "1px solid #CFD8DC",
+    paddingLeft: "4px",
+  },
+  "&:hover .MuiSvgIcon-root": {
+    fill: "#1B2327 !important",
+    borderLeft: "1px solid #0042B6",
+    paddingLeft: "4px",
+  },
+  "&.Mui-focused .MuiSvgIcon-root": {
+    fill: "#1B2327 !important",
+    borderLeft: "1px solid #0042B6",
+    paddingLeft: "4px",
+    transform: "rotateX(180deg)",
+  },
+};
+
+const menuStyles = {
+  ".MuiMenu-root": {},
+  ".MuiMenu-paper": {
+    marginTop: "4px",
+    border: "1px solid #0042B6",
+    borderRadius: "2px 0px 0px 2px",
+  },
+  ".MuiMenu-list": {
+    padding: "0px",
+  },
 };
