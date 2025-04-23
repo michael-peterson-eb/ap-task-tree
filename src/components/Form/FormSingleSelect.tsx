@@ -9,9 +9,13 @@ import { RiskObj } from "../../types/ObjectTypes";
 export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData, responseOptions }: FormInputProps) => {
   const { EA_SA_txtFieldIntegrationName, EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
-  const backendValue = assessmentQuestion[fieldName!];
+  let backendValue = assessmentQuestion[fieldName!];
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
   const { crudAction: mode } = appParams;
+
+  if (!backendValue) {
+    backendValue = "";
+  }
 
   if (mode === "view") {
     return <ViewOnlyText label={hasLabel ? EA_SA_txtaQuestion : null} value={getNameValue(responseOptions, backendValue)} />;

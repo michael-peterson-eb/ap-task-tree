@@ -62,7 +62,21 @@ const AssessmentProgressBox = ({ isValid, trigger, smallScreen }) => {
   useEffect(() => {
     /* Query key is the same and does not change for ops secs, so we need to manually refetch */
     refetchOpSecs();
-  }, [id]);
+
+    if (!isValid) {
+      setAttemptedCheck(true);
+      setOpSecStatuses(
+        opSecStatuses.map((opSecStatus, index) => {
+          if (index === selectedOpsSection) {
+            return false;
+          } else {
+            return opSecStatus;
+          }
+        })
+      );
+      opSecUpdates.current = { ...opSecUpdates.current, [id]: { status: "in-progress" } };
+    }
+  }, [id, isValid]);
 
   return (
     <Box sx={{ width: smallScreen ? "100%" : 350, borderRadius: "4px 4px 0px 0px", border: "1px solid #CFD8DC", height: "min-content" }}>
@@ -130,7 +144,7 @@ const AssessmentProgressBox = ({ isValid, trigger, smallScreen }) => {
                   Complete Section
                 </Typography>
               }
-              control={<Checkbox checked={currentStatus} onChange={handleCheckboxChange} sx={{ margin: 0, padding: 0 }} />}
+              control={<Checkbox checked={!isValid ? false : currentStatus} onChange={handleCheckboxChange} sx={{ margin: 0, padding: 0 }} />}
             />
           </Box>
           {!isValid && attemptedCheck && (

@@ -83,7 +83,11 @@ export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, con
                 {timeIntervals.length > 0 &&
                   timeIntervals.map((timeInterval: any) => {
                     const timeIntervalRequired = isQuestionRequired(timeInterval.EA_SA_rfRequiredQuestion);
-                    const backendValue = timeInterval[fieldName!];
+                    let backendValue = timeInterval[fieldName!];
+                    
+                    if (!backendValue) {
+                      backendValue = ""
+                    }
 
                     return (
                       <TableRow key={timeInterval.id}>
