@@ -89,6 +89,7 @@ const AssessmentQuestions = ({ appParams, questionTemplateData, control }): Reac
         questionUpdates,
         responseOptions,
       };
+
       return (
         <>
           {responseFormat === "SSP" && askPer == null ? (
@@ -98,37 +99,37 @@ const AssessmentQuestions = ({ appParams, questionTemplateData, control }): Reac
           ) : null}
           {responseFormat === "SSP" && askPer === "EA_SA_TimeInterval" ? <FormTimeInterval fieldName={"EA_SA_rsAssessmentResponseOptions"} {...formProps} /> : null}
           {askPer === "EA_SA_SeverityLevel" ? <FormSeverityLevel {...formProps} /> : null}
-          {responseFormat === "FRES" ? (
+          {responseFormat === "FRES" && askPer == null ? (
             <div style={{ marginTop: 24 }}>
               <FormInputText fieldName={"EA_SA_txtaResponse"} {...formProps} />
             </div>
           ) : null}
-          {responseFormat === "MSP" ? (
+          {responseFormat === "MSP" && askPer == null ? (
             <div style={{ marginTop: 24 }}>
               <FormMultiSelect fieldName={"EA_SA_txtaResponse"} {...formProps} />
             </div>
           ) : null}
-          {responseFormat === "CCY" ? (
+          {responseFormat === "CCY" && askPer == null ? (
             <div style={{ marginTop: 24 }}>
               <FormInputCurrency fieldName={"EA_SA_curResponse"} {...formProps} />
             </div>
           ) : null}
-          {responseFormat === "DATE" ? (
+          {responseFormat === "DATE" && askPer == null ? (
             <div style={{ marginTop: 24 }}>
               <FormInputDate fieldName={"EA_SA_ddResponse"} {...formProps} />
             </div>
           ) : null}
-          {responseFormat === "INT" ? (
+          {responseFormat === "INT" && askPer == null ? (
             <div style={{ marginTop: 24 }}>
               <FormInputInteger fieldName={"EA_SA_intResponse"} {...formProps} />
             </div>
           ) : null}
-          {responseFormat === "DEC" ? (
+          {responseFormat === "DEC" && askPer == null ? (
             <div style={{ marginTop: 24 }}>
               <FormInputDecimal fieldName={"EA_SA_decResponse"} {...formProps} />
             </div>
           ) : null}
-          {responseFormat === "YN" ? (
+          {responseFormat === "YN" && askPer == null ? (
             <div style={{ marginTop: 24 }}>
               <FormYesNo fieldName={"EA_SA_rsAssessmentResponseOptions"} {...formProps} />
             </div>
