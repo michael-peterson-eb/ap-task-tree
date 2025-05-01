@@ -5,7 +5,15 @@ import { ViewOnlyText } from "./ViewOnlyText";
 import { FormInputProps } from "../../types/FormInputProps";
 import { Controller } from "react-hook-form";
 
-export const FormInputText = ({ fieldName, appParams, assessmentQuestion, control, hasLabel = true, handleChange, questionTemplateData }: FormInputProps) => {
+export const FormInputText = ({
+  fieldName,
+  appParams,
+  assessmentQuestion,
+  control,
+  hasLabel = true,
+  handleChange,
+  questionTemplateData,
+}: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
@@ -13,13 +21,32 @@ export const FormInputText = ({ fieldName, appParams, assessmentQuestion, contro
   const { crudAction: mode } = appParams;
 
   if (mode === "view") {
-    return <ViewOnlyText label={hasLabel ? EA_SA_txtaQuestion : null} value={backendValue} size="small" />;
+    return (
+      <ViewOnlyText
+        label={hasLabel ? EA_SA_txtaQuestion : null}
+        value={backendValue}
+        size="small"
+        required={required}
+      />
+    );
   }
 
   if (mode === "edit") {
     return (
       <FormControl fullWidth>
-        {hasLabel ? <Typography sx={{ fontWeight: 500, fontSize: 14, color: "#1B2327", paddingBottom: "4px" }}>{setInnerHTML(EA_SA_txtaQuestion)}</Typography> : null}
+        {hasLabel ? (
+          <Typography
+            sx={{
+              fontWeight: 500,
+              fontSize: 14,
+              color: "#1B2327",
+              paddingBottom: "4px",
+            }}
+          >
+            {setInnerHTML(EA_SA_txtaQuestion)}{" "}
+            {required && <span style={{ color: "red" }}>&nbsp;*</span>}
+          </Typography>
+        ) : null}
         <Controller
           control={control}
           defaultValue={backendValue}
@@ -29,15 +56,29 @@ export const FormInputText = ({ fieldName, appParams, assessmentQuestion, contro
             <TextField
               error={!!error}
               fullWidth
-              helperText={!!error ? (error && error.message ? error.message : "This field is required") : null}
+              helperText={
+                !!error
+                  ? error && error.message
+                    ? error.message
+                    : "This field is required"
+                  : null
+              }
               inputProps={{
-                style: { color: !value || value === "" ? "#445A65" : "#1B2327" },
+                style: {
+                  color: !value || value === "" ? "#445A65" : "#1B2327",
+                },
               }}
               name="Text"
               onChange={(event) => {
                 onChange(event);
 
-                const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: event.target.value } };
+                const eventObj = {
+                  target: {
+                    id: assessmentQuestion.id,
+                    name: fieldName,
+                    value: event.target.value,
+                  },
+                };
 
                 handleChange(eventObj, null);
               }}
