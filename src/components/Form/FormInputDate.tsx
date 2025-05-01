@@ -10,7 +10,15 @@ import { ViewOnlyText } from "./ViewOnlyText";
 import { setInnerHTML } from "../../utils/cleanup";
 import { Controller } from "react-hook-form";
 
-export const FormInputDate = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData }: FormInputProps) => {
+export const FormInputDate = ({
+  fieldName,
+  appParams,
+  assessmentQuestion,
+  control,
+  handleChange,
+  hasLabel = true,
+  questionTemplateData,
+}: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
@@ -18,13 +26,31 @@ export const FormInputDate = ({ fieldName, appParams, assessmentQuestion, contro
   const { crudAction: mode } = appParams;
 
   if (mode === "view") {
-    return <ViewOnlyText label={hasLabel ? EA_SA_txtaQuestion : null} value={dayjs(backendValue)} responseFormat="DATE" />;
+    return (
+      <ViewOnlyText
+        label={hasLabel ? EA_SA_txtaQuestion : null}
+        value={dayjs(backendValue)}
+        responseFormat="DATE"
+      />
+    );
   }
 
   if (mode === "edit") {
     return (
       <FormControl fullWidth variant="standard">
-        {hasLabel ? <Typography sx={{ fontWeight: 500, fontSize: 14, color: "#1B2327", paddingBottom: "4px" }}>{setInnerHTML(EA_SA_txtaQuestion)}</Typography> : null}
+        {hasLabel ? (
+          <Typography
+            sx={{
+              fontWeight: 500,
+              fontSize: 14,
+              color: "#1B2327",
+              paddingBottom: "4px",
+            }}
+          >
+            {setInnerHTML(EA_SA_txtaQuestion)}{" "}
+            {required && <span style={{ color: "red" }}>&nbsp;*</span>}
+          </Typography>
+        ) : null}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Controller
             control={control}
@@ -34,7 +60,10 @@ export const FormInputDate = ({ fieldName, appParams, assessmentQuestion, contro
               required,
               validate: { isDateInFuture },
             }}
-            render={({ field: { onChange, value, ref }, fieldState: { error } }) => (
+            render={({
+              field: { onChange, value, ref },
+              fieldState: { error },
+            }) => (
               <DatePicker
                 disablePast={true}
                 inputRef={ref}
@@ -44,7 +73,13 @@ export const FormInputDate = ({ fieldName, appParams, assessmentQuestion, contro
                   const formattedDate = dateYYYYMMDDFormat(newValue);
 
                   if (isValidDate(formattedDate) && isDateInFuture(newValue)) {
-                    const eventObj = { target: { id: assessmentQuestion.id, name: fieldName, value: formattedDate } };
+                    const eventObj = {
+                      target: {
+                        id: assessmentQuestion.id,
+                        name: fieldName,
+                        value: formattedDate,
+                      },
+                    };
 
                     handleChange(eventObj, null);
                   }
@@ -55,10 +90,16 @@ export const FormInputDate = ({ fieldName, appParams, assessmentQuestion, contro
                   },
                   textField: {
                     required,
-                    helperText: !!error ? (error && error.message ? error.message : "Please enter a valid date") : null,
+                    helperText: !!error
+                      ? error && error.message
+                        ? error.message
+                        : "Please enter a valid date"
+                      : null,
                     error: !!error,
                     inputProps: {
-                      style: { color: !value || value === "" ? "#445A65" : "#1B2327" },
+                      style: {
+                        color: !value || value === "" ? "#445A65" : "#1B2327",
+                      },
                     },
                   },
                 }}
