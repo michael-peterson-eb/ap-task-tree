@@ -1,32 +1,11 @@
 import { FormInputProps } from "../../types/FormInputProps";
-import {
-  TextField,
-  Autocomplete,
-  FormControl,
-  FormGroup,
-  MenuItem,
-  Checkbox,
-  ListItemText,
-  Typography,
-} from "@mui/material";
-import {
-  getMultiValue,
-  isQuestionRequired,
-  getDefaultMultiValue,
-} from "../../utils/common";
+import { TextField, Autocomplete, FormControl, FormGroup, MenuItem, Checkbox, ListItemText, Typography } from "@mui/material";
+import { getMultiValue, isQuestionRequired, getDefaultMultiValue } from "../../utils/common";
 import { ViewOnlyText } from "./ViewOnlyText";
 import { Controller } from "react-hook-form";
 import { setInnerHTML } from "../../utils/cleanup";
 
-export const FormMultiSelect = ({
-  fieldName,
-  appParams,
-  assessmentQuestion,
-  control,
-  handleChange,
-  questionTemplateData,
-  responseOptions,
-}: FormInputProps) => {
+export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, control, handleChange, questionTemplateData, responseOptions }: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion, EA_SA_txtaResponse } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
@@ -34,13 +13,7 @@ export const FormMultiSelect = ({
   const { crudAction: mode } = appParams;
 
   if (mode === "view") {
-    return (
-      <ViewOnlyText
-        label={EA_SA_txtaQuestion}
-        value={getMultiValue(responseOptions, EA_SA_txtaResponse)}
-        required={required}
-      />
-    );
+    return <ViewOnlyText label={EA_SA_txtaQuestion} value={getMultiValue(responseOptions, EA_SA_txtaResponse)} required={required} />;
   }
 
   if (mode === "edit") {
@@ -54,8 +27,7 @@ export const FormMultiSelect = ({
             paddingBottom: "4px",
           }}
         >
-          {setInnerHTML(EA_SA_txtaQuestion)}{" "}
-          {required && <span style={{ color: "red" }}>&nbsp;*</span>}
+          {setInnerHTML(EA_SA_txtaQuestion)} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
         </Typography>
         <FormGroup sx={{ paddingTop: 1 }}>
           <Controller
@@ -92,20 +64,12 @@ export const FormMultiSelect = ({
                     const { key, ...optionProps } = props;
                     return (
                       <li key={key} {...optionProps}>
-                        <Checkbox
-                          style={{ marginRight: 8 }}
-                          checked={selected}
-                        />
+                        <Checkbox style={{ marginRight: 8 }} checked={selected} />
                         {option.name}
                       </li>
                     );
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder={value.length > 0 ? "" : "Select options"}
-                    />
-                  )}
+                  renderInput={(params) => <TextField {...params} placeholder={value.length > 0 ? "" : "Select options"} />}
                   size="small"
                   slotProps={{
                     paper: {

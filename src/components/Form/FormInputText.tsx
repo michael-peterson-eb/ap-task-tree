@@ -5,15 +5,7 @@ import { ViewOnlyText } from "./ViewOnlyText";
 import { FormInputProps } from "../../types/FormInputProps";
 import { Controller } from "react-hook-form";
 
-export const FormInputText = ({
-  fieldName,
-  appParams,
-  assessmentQuestion,
-  control,
-  hasLabel = true,
-  handleChange,
-  questionTemplateData,
-}: FormInputProps) => {
+export const FormInputText = ({ fieldName, appParams, assessmentQuestion, control, hasLabel = true, handleChange, questionTemplateData }: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
@@ -21,14 +13,7 @@ export const FormInputText = ({
   const { crudAction: mode } = appParams;
 
   if (mode === "view") {
-    return (
-      <ViewOnlyText
-        label={hasLabel ? EA_SA_txtaQuestion : null}
-        value={backendValue}
-        size="small"
-        required={required}
-      />
-    );
+    return <ViewOnlyText label={hasLabel ? EA_SA_txtaQuestion : null} value={backendValue} required={required} />;
   }
 
   if (mode === "edit") {
@@ -43,8 +28,7 @@ export const FormInputText = ({
               paddingBottom: "4px",
             }}
           >
-            {setInnerHTML(EA_SA_txtaQuestion)}{" "}
-            {required && <span style={{ color: "red" }}>&nbsp;*</span>}
+            {setInnerHTML(EA_SA_txtaQuestion)} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
           </Typography>
         ) : null}
         <Controller
@@ -56,13 +40,7 @@ export const FormInputText = ({
             <TextField
               error={!!error}
               fullWidth
-              helperText={
-                !!error
-                  ? error && error.message
-                    ? error.message
-                    : "This field is required"
-                  : null
-              }
+              helperText={!!error ? (error && error.message ? error.message : "This field is required") : null}
               inputProps={{
                 style: {
                   color: !value || value === "" ? "#445A65" : "#1B2327",

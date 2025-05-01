@@ -4,7 +4,7 @@ import { Card } from "./Card";
 import NextButton from "./NextButton";
 import PrevButton from "./PrevButton";
 
-export default function Carousel({ operationSections, selectedOpsSec, handleTabClick }) {
+export default function Carousel({ operationSections, selectedOpsSec, handleTabClick, mode }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -119,7 +119,7 @@ export default function Carousel({ operationSections, selectedOpsSec, handleTabC
   }, [selectedOpsSec]);
 
   return (
-    <Box sx={{ maxHeight: "46px", marginBottom: "36px" }}>
+    <Box sx={{ maxHeight: "46px", marginBottom: "36px" }} position="sticky" top={mode === "edit" ? 36 : 0} zIndex={1000} bgcolor={"#f9f9f9"}>
       <ImageList
         ref={(element) => {
           //@ts-expect-error

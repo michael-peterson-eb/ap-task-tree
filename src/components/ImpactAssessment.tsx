@@ -20,7 +20,7 @@ export const ImpactAssessment = (): ReactElement | null => {
     return (
       <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
         <EditButtons appParams={appParams} />
-        <OpSecHeader operationSections={operationSections} selectedOpsSec={selectedOpsSection} setSelectedOpsSection={setSelectedOpsSection} />
+        <OpSecHeader operationSections={operationSections} selectedOpsSec={selectedOpsSection} setSelectedOpsSection={setSelectedOpsSection} mode={appParams.crudAction} />
         {operationSections.map((each, index) => {
           const questionTypeSectionProps = {
             appParams,

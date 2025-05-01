@@ -1,9 +1,4 @@
-import {
-  FormControl,
-  TextField,
-  InputAdornment,
-  Typography,
-} from "@mui/material";
+import { FormControl, TextField, InputAdornment, Typography } from "@mui/material";
 import { setInnerHTML } from "../../utils/cleanup";
 import { Dayjs } from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -12,7 +7,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 export const ViewOnlyText = ({
   label,
   responseFormat = null,
-  size = "medium",
   value,
   required,
 }: {
@@ -28,9 +22,7 @@ export const ViewOnlyText = ({
 
   if (responseFormat === "CCY") {
     //@ts-ignore
-    inputProps.startAdornment = (
-      <InputAdornment position="start">US$</InputAdornment>
-    );
+    inputProps.startAdornment = <InputAdornment position="start">US$</InputAdornment>;
   }
 
   if (responseFormat === "DATE") {
@@ -58,12 +50,7 @@ export const ViewOnlyText = ({
           {required && <span style={{ color: "red" }}>&nbsp;*</span>}
         </Typography>
       ) : null}
-      <TextField
-        disabled
-        size="small"
-        value={value}
-        sx={{ fontWeight: 400, fontSize: 14, color: "#1B2327" }}
-      />
+      <TextField disabled size="small" value={value} sx={{ fontWeight: 400, fontSize: 14, color: "#1B2327" }} />
     </FormControl>
   );
 };

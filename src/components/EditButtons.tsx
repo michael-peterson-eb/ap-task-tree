@@ -66,7 +66,7 @@ export const EditButtons = ({ appParams }) => {
   if (appParams.crudAction != "edit") return null;
 
   return (
-    <Box mb={1} display="flex" justifyContent="space-between" alignItems="right">
+    <Box pb={1} display="flex" justifyContent="space-between" alignItems="right" position="sticky" top={0} zIndex={1000} bgcolor={"#f9f9f9"}>
       <Button color="primary" onClick={handleCancel} variant="contained" size="small" sx={{ borderRadius: "0px" }}>
         {cancelClicked ? (
           <span>

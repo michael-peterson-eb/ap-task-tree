@@ -1,10 +1,4 @@
-import {
-  FormControl,
-  Select,
-  InputLabel,
-  MenuItem,
-  Typography,
-} from "@mui/material";
+import { FormControl, Select, InputLabel, MenuItem, Typography } from "@mui/material";
 import { getNameValue, isQuestionRequired } from "../../utils/common";
 import { setInnerHTML } from "../../utils/cleanup";
 import { FormInputProps } from "../../types/FormInputProps";
@@ -12,18 +6,8 @@ import { ViewOnlyText } from "./ViewOnlyText";
 import { Controller } from "react-hook-form";
 import { RiskObj } from "../../types/ObjectTypes";
 
-export const FormSingleSelect = ({
-  fieldName,
-  appParams,
-  assessmentQuestion,
-  control,
-  handleChange,
-  hasLabel = true,
-  questionTemplateData,
-  responseOptions,
-}: FormInputProps) => {
-  const { EA_SA_txtFieldIntegrationName, EA_SA_txtaQuestion } =
-    questionTemplateData;
+export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData, responseOptions }: FormInputProps) => {
+  const { EA_SA_txtFieldIntegrationName, EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   let backendValue = assessmentQuestion[fieldName!];
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
@@ -34,13 +18,7 @@ export const FormSingleSelect = ({
   }
 
   if (mode === "view") {
-    return (
-      <ViewOnlyText
-        label={hasLabel ? EA_SA_txtaQuestion : null}
-        value={getNameValue(responseOptions, backendValue)}
-        required={required}
-      />
-    );
+    return <ViewOnlyText label={hasLabel ? EA_SA_txtaQuestion : null} value={getNameValue(responseOptions, backendValue)} required={required} />;
   }
 
   if (mode === "edit") {
@@ -56,8 +34,7 @@ export const FormSingleSelect = ({
                 paddingBottom: "4px",
               }}
             >
-              {setInnerHTML(EA_SA_txtaQuestion)}{" "}
-              {required && <span style={{ color: "red" }}>&nbsp;*</span>}
+              {setInnerHTML(EA_SA_txtaQuestion)} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
             </Typography>
           ) : null}
           <Controller
@@ -85,9 +62,7 @@ export const FormSingleSelect = ({
                     };
 
                     if (appParams.objectIntegrationName === "EA_RM_Risk") {
-                      const foundResponseOption = responseOptions.find(
-                        (item) => item.id === event.target.value
-                      );
+                      const foundResponseOption = responseOptions.find((item) => item.id === event.target.value);
 
                       if (foundResponseOption) {
                         const riskObj: RiskObj = {
@@ -106,9 +81,7 @@ export const FormSingleSelect = ({
                   value={value}
                 >
                   <MenuItem aria-label="" value="">
-                    <Typography sx={{ color: "#445A65" }}>
-                      Select option
-                    </Typography>
+                    <Typography sx={{ color: "#445A65" }}>Select option</Typography>
                   </MenuItem>
                   {responseOptions.length > 0 &&
                     responseOptions.map((responseOption: any) => {
