@@ -119,7 +119,7 @@ export default function Carousel({ operationSections, selectedOpsSec, handleTabC
   }, [selectedOpsSec]);
 
   return (
-    <Box sx={{ maxHeight: "46px", marginBottom: "36px" }}>
+    <Box sx={{ maxHeight: "46px", marginBottom: "36px" }} position="sticky" top={36} zIndex={1000} bgcolor={"#f9f9f9"}>
       <ImageList
         ref={(element) => {
           //@ts-expect-error

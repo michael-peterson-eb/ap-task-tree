@@ -1,48 +1,17 @@
 import { useEffect, useState, useRef } from "react";
-import {
-  Box,
-  InputLabel,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  FormGroup,
-  Typography,
-} from "@mui/material";
+import { Box, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormGroup, Typography } from "@mui/material";
 import { Loading } from "../Loading";
 import { FormInputProps } from "../../types/FormInputProps";
 import { setInnerHTML } from "../../utils/cleanup";
 import { fetchQuestionsSeverityByTemplateId } from "../../model/Questions";
 import { useQuery } from "@tanstack/react-query";
-import {
-  periodInScopeHas,
-  isQuestionRequired,
-  getNameValue,
-} from "../../utils/common";
+import { periodInScopeHas, isQuestionRequired, getNameValue } from "../../utils/common";
 import { oneInScopeWidth, bothInScopeWidth } from "../../data/constants/fields";
 import { ViewOnlyText } from "./";
 
-import {
-  FormInputCurrency,
-  FormInputText,
-  FormSingleSelect,
-  FormInputDate,
-  FormInputInteger,
-  FormInputDecimal,
-} from "./";
+import { FormInputCurrency, FormInputText, FormSingleSelect, FormInputDate, FormInputInteger, FormInputDecimal } from "./";
 
-export const FormSeverityLevel = ({
-  appParams,
-  assessmentQuestion,
-  control,
-  handleChange,
-  questionTemplateData,
-  questionUpdates,
-  responseOptions,
-}: FormInputProps) => {
+export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, handleChange, questionTemplateData, questionUpdates, responseOptions }: FormInputProps) => {
   const { EA_SA_ddlResponseFormat: responseFormat } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
@@ -51,8 +20,7 @@ export const FormSeverityLevel = ({
   // Get Severity Levels
   const { isPending: severityLevelsPending, data: severityLevels } = useQuery({
     queryKey: [`fetchQuestionsSeverityByTemplateId-${questionTemplateData.id}`],
-    queryFn: () =>
-      fetchQuestionsSeverityByTemplateId(appParams, questionTemplateData.id),
+    queryFn: () => fetchQuestionsSeverityByTemplateId(appParams, questionTemplateData.id),
   });
 
   const [periodInScope, setPeriodInScope] = useState("");
@@ -63,10 +31,7 @@ export const FormSeverityLevel = ({
       const inScope = severityLevels[0].EA_OR_mddlPeriodsInScope;
 
       setPeriodInScope(inScope);
-      if (
-        periodInScopeHas(inScope, "EA_OR_Normal") &&
-        periodInScopeHas(inScope, "EA_OR_Peak")
-      ) {
+      if (periodInScopeHas(inScope, "EA_OR_Normal") && periodInScopeHas(inScope, "EA_OR_Peak")) {
         colWidth.current = bothInScopeWidth;
       } else {
         colWidth.current = oneInScopeWidth;
@@ -100,11 +65,8 @@ export const FormSeverityLevel = ({
             </Typography>
           ) : null}
         </InputLabel>
-        <TableContainer
-          component={Paper}
-          sx={{ border: "1px solid rgba(0, 0, 0, 0.65)", width: "inherit" }}
-        >
-          <Table sx={{ width: "100%" }} size="small">
+        <TableContainer component={Paper} sx={{ border: "1px solid rgba(0, 0, 0, 0.65)", width: "inherit" }}>
+          <Table sx={{ width: "100%" }}>
             <TableHead>
               <TableRow
                 sx={{
@@ -113,16 +75,8 @@ export const FormSeverityLevel = ({
                 }}
               >
                 <TableCell style={{ width: "20%" }}>Severity Level</TableCell>
-                {periodInScopeHas(periodInScope, "EA_OR_Normal") && (
-                  <TableCell style={{ width: `${colWidth.current}%` }}>
-                    Impact at Normal Period
-                  </TableCell>
-                )}
-                {periodInScopeHas(periodInScope, "EA_OR_Peak") && (
-                  <TableCell style={{ width: `${colWidth.current}%` }}>
-                    Impact at Peak Period
-                  </TableCell>
-                )}
+                {periodInScopeHas(periodInScope, "EA_OR_Normal") && <TableCell style={{ width: `${colWidth.current}%` }}>Impact at Normal Period</TableCell>}
+                {periodInScopeHas(periodInScope, "EA_OR_Peak") && <TableCell style={{ width: `${colWidth.current}%` }}>Impact at Peak Period</TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -130,9 +84,7 @@ export const FormSeverityLevel = ({
                 severityLevels.map((severityLevel) => {
                   return (
                     <TableRow key={severityLevel.id}>
-                      <TableCell>
-                        {severityLevel.EA_OR_txtSeverityLevelName}
-                      </TableCell>
+                      <TableCell>{severityLevel.EA_OR_txtSeverityLevelName}</TableCell>
                       {periodInScopeHas(periodInScope, "EA_OR_Normal") && (
                         <TableCell style={{ padding: "0px" }}>
                           {responseFormat === "FRES" && (
@@ -143,11 +95,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={severityLevel.EA_SA_txtaResponse}
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={severityLevel.EA_SA_txtaResponse} />
                             </div>
                           )}
                           {responseFormat === "SSP" && (
@@ -158,14 +106,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={getNameValue(
-                                  responseOptions,
-                                  severityLevel.EA_SA_rsAssessmentResponseOptions
-                                )}
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={getNameValue(responseOptions, severityLevel.EA_SA_rsAssessmentResponseOptions)} />
                             </div>
                           )}
                           {responseFormat === "INT" && (
@@ -176,11 +117,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={severityLevel.EA_SA_intResponse}
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={severityLevel.EA_SA_intResponse} />
                             </div>
                           )}
                           {responseFormat === "DEC" && (
@@ -191,11 +128,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={severityLevel.EA_SA_decResponse}
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={severityLevel.EA_SA_decResponse} />
                             </div>
                           )}
                           {responseFormat === "CCY" && (
@@ -206,12 +139,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={severityLevel.EA_SA_curResponse}
-                                responseFormat="CCY"
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={severityLevel.EA_SA_curResponse} responseFormat="CCY" />
                             </div>
                           )}
                           {responseFormat === "DATE" && (
@@ -222,12 +150,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={severityLevel.EA_SA_ddResponse}
-                                responseFormat="DATE"
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={severityLevel.EA_SA_ddResponse} responseFormat="DATE" />
                             </div>
                           )}
                         </TableCell>
@@ -242,11 +165,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={severityLevel.EA_OR_txtaResponse}
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={severityLevel.EA_OR_txtaResponse} />
                             </div>
                           )}
                           {responseFormat === "SSP" && (
@@ -257,14 +176,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={getNameValue(
-                                  responseOptions,
-                                  severityLevel.EA_OR_rsAssessmentResponseOptions
-                                )}
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={getNameValue(responseOptions, severityLevel.EA_OR_rsAssessmentResponseOptions)} />
                             </div>
                           )}
                           {responseFormat === "INT" && (
@@ -275,11 +187,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={severityLevel.EA_OR_intResponse}
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={severityLevel.EA_OR_intResponse} />
                             </div>
                           )}
                           {responseFormat === "DEC" && (
@@ -290,11 +198,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={severityLevel.EA_OR_decResponse}
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={severityLevel.EA_OR_decResponse} />
                             </div>
                           )}
                           {responseFormat === "CCY" && (
@@ -305,12 +209,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={severityLevel.EA_OR_curResponse}
-                                responseFormat="CCY"
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={severityLevel.EA_OR_curResponse} responseFormat="CCY" />
                             </div>
                           )}
                           {responseFormat === "DATE" && (
@@ -321,12 +220,7 @@ export const FormSeverityLevel = ({
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText
-                                label={null}
-                                value={severityLevel.EA_OR_ddResponse}
-                                responseFormat="DATE"
-                                size="small"
-                              />
+                              <ViewOnlyText label={null} value={severityLevel.EA_OR_ddResponse} responseFormat="DATE" />
                             </div>
                           )}
                         </TableCell>
@@ -367,11 +261,8 @@ export const FormSeverityLevel = ({
             ) : null}
           </InputLabel>
 
-          <TableContainer
-            component={Paper}
-            sx={{ border: "1px solid rgba(0, 0, 0, 0.75)", width: "inherit" }}
-          >
-            <Table sx={{ width: "100%" }} size="small">
+          <TableContainer component={Paper} sx={{ border: "1px solid rgba(0, 0, 0, 0.75)", width: "inherit" }}>
+            <Table sx={{ width: "100%" }}>
               <TableHead>
                 <TableRow
                   sx={{
@@ -380,16 +271,8 @@ export const FormSeverityLevel = ({
                   }}
                 >
                   <TableCell style={{ width: "20%" }}>Severity Level</TableCell>
-                  {periodInScopeHas(periodInScope, "EA_OR_Normal") && (
-                    <TableCell style={{ width: `${colWidth.current}%` }}>
-                      Impact at Normal Period
-                    </TableCell>
-                  )}
-                  {periodInScopeHas(periodInScope, "EA_OR_Peak") && (
-                    <TableCell style={{ width: `${colWidth.current}%` }}>
-                      Impact at Peak Period
-                    </TableCell>
-                  )}
+                  {periodInScopeHas(periodInScope, "EA_OR_Normal") && <TableCell style={{ width: `${colWidth.current}%` }}>Impact at Normal Period</TableCell>}
+                  {periodInScopeHas(periodInScope, "EA_OR_Peak") && <TableCell style={{ width: `${colWidth.current}%` }}>Impact at Peak Period</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -407,9 +290,7 @@ export const FormSeverityLevel = ({
                     };
                     return (
                       <TableRow key={severityLevel.id}>
-                        <TableCell>
-                          {severityLevel.EA_OR_txtSeverityLevelName}
-                        </TableCell>
+                        <TableCell>{severityLevel.EA_OR_txtSeverityLevelName}</TableCell>
                         {periodInScopeHas(periodInScope, "EA_OR_Normal") && (
                           <TableCell style={{ padding: "0px" }}>
                             {responseFormat === "FRES" && (
@@ -420,10 +301,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormInputText
-                                  fieldName={"EA_SA_txtaResponse"}
-                                  {...formProps}
-                                />
+                                <FormInputText fieldName={"EA_SA_txtaResponse"} {...formProps} />
                               </div>
                             )}
                             {responseFormat === "SSP" && (
@@ -434,12 +312,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormSingleSelect
-                                  fieldName={
-                                    "EA_SA_rsAssessmentResponseOptions"
-                                  }
-                                  {...formProps}
-                                />
+                                <FormSingleSelect fieldName={"EA_SA_rsAssessmentResponseOptions"} {...formProps} />
                               </div>
                             )}
                             {responseFormat === "INT" && (
@@ -450,10 +323,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormInputInteger
-                                  fieldName={"EA_SA_intResponse"}
-                                  {...formProps}
-                                />
+                                <FormInputInteger fieldName={"EA_SA_intResponse"} {...formProps} />
                               </div>
                             )}
                             {responseFormat === "DEC" && (
@@ -464,10 +334,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormInputDecimal
-                                  fieldName={"EA_SA_decResponse"}
-                                  {...formProps}
-                                />
+                                <FormInputDecimal fieldName={"EA_SA_decResponse"} {...formProps} />
                               </div>
                             )}
                             {responseFormat === "CCY" && (
@@ -478,10 +345,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormInputCurrency
-                                  fieldName={"EA_SA_curResponse"}
-                                  {...formProps}
-                                />
+                                <FormInputCurrency fieldName={"EA_SA_curResponse"} {...formProps} />
                               </div>
                             )}
                             {responseFormat === "DATE" && (
@@ -492,10 +356,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormInputDate
-                                  fieldName={"EA_SA_ddResponse"}
-                                  {...formProps}
-                                />
+                                <FormInputDate fieldName={"EA_SA_ddResponse"} {...formProps} />
                               </div>
                             )}
                           </TableCell>
@@ -510,10 +371,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormInputText
-                                  fieldName={"EA_OR_txtaResponse"}
-                                  {...formProps}
-                                />
+                                <FormInputText fieldName={"EA_OR_txtaResponse"} {...formProps} />
                               </div>
                             )}
                             {responseFormat === "SSP" && (
@@ -524,12 +382,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormSingleSelect
-                                  fieldName={
-                                    "EA_SA_rsPeakAssessmentResponseOptions"
-                                  }
-                                  {...formProps}
-                                />
+                                <FormSingleSelect fieldName={"EA_SA_rsPeakAssessmentResponseOptions"} {...formProps} />
                               </div>
                             )}
                             {responseFormat === "INT" && (
@@ -540,10 +393,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormInputInteger
-                                  fieldName={"EA_OR_intResponse"}
-                                  {...formProps}
-                                />
+                                <FormInputInteger fieldName={"EA_OR_intResponse"} {...formProps} />
                               </div>
                             )}
                             {responseFormat === "DEC" && (
@@ -554,10 +404,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormInputDecimal
-                                  fieldName={"EA_OR_decResponse"}
-                                  {...formProps}
-                                />
+                                <FormInputDecimal fieldName={"EA_OR_decResponse"} {...formProps} />
                               </div>
                             )}
                             {responseFormat === "CCY" && (
@@ -568,10 +415,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormInputCurrency
-                                  fieldName={"EA_OR_curResponse"}
-                                  {...formProps}
-                                />
+                                <FormInputCurrency fieldName={"EA_OR_curResponse"} {...formProps} />
                               </div>
                             )}
                             {responseFormat === "DATE" && (
@@ -582,10 +426,7 @@ export const FormSeverityLevel = ({
                                   marginRight: 8,
                                 }}
                               >
-                                <FormInputDate
-                                  fieldName={"EA_OR_ddResponse"}
-                                  {...formProps}
-                                />
+                                <FormInputDate fieldName={"EA_OR_ddResponse"} {...formProps} />
                               </div>
                             )}
                           </TableCell>

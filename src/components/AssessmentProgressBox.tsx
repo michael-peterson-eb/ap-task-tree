@@ -79,7 +79,13 @@ const AssessmentProgressBox = ({ isValid, trigger, smallScreen }) => {
   }, [id, isValid]);
 
   return (
-    <Box sx={{ width: smallScreen ? "100%" : 350, borderRadius: "4px 4px 0px 0px", border: "1px solid #CFD8DC", height: "min-content" }}>
+    <Box
+      sx={{ width: smallScreen ? "100%" : 350, borderRadius: "4px 4px 0px 0px", border: "1px solid #CFD8DC", height: "min-content" }}
+      position={"sticky"}
+      top={100}
+      zIndex={1000}
+      bgcolor={"#f9f9f9"}
+    >
       <Box sx={{ width: "100%", padding: 2, boxSizing: "border-box" }}>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography fontSize={smallScreen ? 12 : 14} fontStyle="normal" fontWeight={700} lineHeight="22px" color="#1B2327">

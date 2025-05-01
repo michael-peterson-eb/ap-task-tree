@@ -5,15 +5,7 @@ import { setInnerHTML } from "../../utils/cleanup";
 import { ViewOnlyText } from "./ViewOnlyText";
 import { Controller } from "react-hook-form";
 
-export const FormInputInteger = ({
-  fieldName,
-  appParams,
-  assessmentQuestion,
-  control,
-  handleChange,
-  hasLabel = true,
-  questionTemplateData,
-}: FormInputProps) => {
+export const FormInputInteger = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData }: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
@@ -21,13 +13,7 @@ export const FormInputInteger = ({
   const { crudAction: mode } = appParams;
 
   if (mode === "view") {
-    return (
-      <ViewOnlyText
-        label={hasLabel ? EA_SA_txtaQuestion : null}
-        value={backendValue}
-        required={required}
-      />
-    );
+    return <ViewOnlyText label={hasLabel ? EA_SA_txtaQuestion : null} value={backendValue} required={required} />;
   }
 
   if (mode === "edit") {
@@ -42,8 +28,7 @@ export const FormInputInteger = ({
               paddingBottom: "4px",
             }}
           >
-            {setInnerHTML(EA_SA_txtaQuestion)}{" "}
-            {required && <span style={{ color: "red" }}>&nbsp;*</span>}
+            {setInnerHTML(EA_SA_txtaQuestion)} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
           </Typography>
         ) : null}
         <Controller
@@ -61,13 +46,7 @@ export const FormInputInteger = ({
             <TextField
               error={!!error}
               fullWidth
-              helperText={
-                !!error
-                  ? error && error.message
-                    ? error.message
-                    : "This field is required"
-                  : null
-              }
+              helperText={!!error ? (error && error.message ? error.message : "This field is required") : null}
               InputProps={{ inputMode: "numeric" }}
               inputProps={{
                 style: {
