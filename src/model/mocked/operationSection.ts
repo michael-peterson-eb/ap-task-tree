@@ -25,7 +25,7 @@ export const getOperationSections = async ({ id, sectionType, questionRelName })
         true
       );
 
-      return results;
+      return results.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
     }
   } catch (error) {
     console.error("Error in getOperationSections: ", error);
