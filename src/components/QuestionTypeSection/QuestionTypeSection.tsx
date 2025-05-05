@@ -30,7 +30,7 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection,
   return (
     <Box sx={{ display: "flex", width: "100%", gap: "24px", flexDirection: smallScreen ? "column" : "row" }}>
       <Box sx={{ width: smallScreen ? "100%" : "60%" }}>
-        <QuestionTypeSectionHeader mode={mode} status={status} objectTitle={objectTitle} questionName={questionName} />
+        <QuestionTypeSectionHeader questionName={questionName} />
         {questionTemplate.length > 0 &&
           questionTemplate.map((questionTemplateData) => {
             return (
