@@ -1,22 +1,26 @@
 import { FormInputProps } from "../../types/FormInputProps";
-import { TextField, Autocomplete, FormControl, FormGroup, MenuItem, Checkbox, ListItemText, Typography } from "@mui/material";
+import { TextField, Autocomplete, FormControl, FormGroup, MenuItem, Checkbox, ListItemText, Typography, Chip } from "@mui/material";
 import { getMultiValue, isQuestionRequired, getDefaultMultiValue } from "../../utils/common";
 import { ViewOnlyText } from "./ViewOnlyText";
 import { Controller } from "react-hook-form";
 import { setInnerHTML } from "../../utils/cleanup";
 
 export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, control, handleChange, questionTemplateData, responseOptions }: FormInputProps) => {
-  const { EA_SA_txtaQuestion } = questionTemplateData;
+  const { EA_SA_txtaQuestion, EA_SA_ddlResponseFormat: responseFormat } = questionTemplateData;
   const { EA_SA_rfRequiredQuestion, EA_SA_txtaResponse } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
   const { crudAction: mode } = appParams;
 
   if (mode === "view") {
-    return <ViewOnlyText label={EA_SA_txtaQuestion} value={getMultiValue(responseOptions, EA_SA_txtaResponse)} required={required} />;
+    return <ViewOnlyText label={EA_SA_txtaQuestion} value={getMultiValue(responseOptions, EA_SA_txtaResponse)} required={required} responseFormat={responseFormat} />;
   }
 
   if (mode === "edit") {
+    // Find the relevant response option
+    const selectedOption = null // responseOptions?.find((option) => option.name === value);
+
+    const chipColor = selectedOption?.EA_SA_txtLabelColor || "#000000"; // Default to black if no color is found
     return (
       <FormControl sx={{ width: "100%" }} required={required}>
         <Typography
@@ -65,11 +69,20 @@ export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, cont
                     return (
                       <li key={key} {...optionProps}>
                         <Checkbox style={{ marginRight: 8 }} checked={selected} />
+                        <Chip label="" sx={{ ...chipStyles, backgroundColor: option.EA_SA_txtLabelColor || chipStyles.backgroundColor}} />
                         {option.name}
                       </li>
                     );
                   }}
                   renderInput={(params) => <TextField {...params} placeholder={value.length > 0 ? "" : "Select options"} />}
+                  /* renderValue={(value: string[], getItemProps) =>
+                    value.map((option: string, index: number) => {
+                      const { key, ...itemProps } = getItemProps({ index });
+                      return (
+                        <Chip variant="outlined" label={option} key={key} {...itemProps} />
+                      );
+                    })
+                  } */
                   size="small"
                   slotProps={{
                     paper: {
@@ -105,4 +118,12 @@ const styles = {
       border: "1px solid #0042B6",
     },
   },
+};
+
+const chipStyles = {
+  backgroundColor: "#ccc", // Default color
+  width: "14px",
+  height: "14px",
+  borderRadius: "2px",
+  marginRight: "8px",
 };
