@@ -34,7 +34,7 @@ export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, con
                 paddingBottom: "4px",
               }}
             >
-              {setInnerHTML("SSP HERE")} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
+              {setInnerHTML(EA_SA_txtaQuestion)} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
             </Typography>
           ) : null}
           <Controller
