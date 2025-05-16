@@ -26,18 +26,17 @@ const AssessmentQuestions = ({ appParams, questionTemplateData, control, mode })
   const { questionUpdates, riskUpdates } = useData();
 
   // Get Assessment Questions
-  const {
-    isPending: assessmentQuestionsPending,
-    data: assessmentQuestions,
-  } = useQuery({
-    queryKey: [`fetchAssessQuestionByTemplateId-${questionTemplateData.id}-${mode}}`],
+  const queryKey = [`${mode}-fetchAssessQuestionByTemplateId-${questionTemplateData.id}`, mode];
+  const { isPending: assessmentQuestionsPending, data: assessmentQuestions } = useQuery({
+    queryKey,
     queryFn: () => fetchAssessQuestionsByTemplateId(appParams, questionTemplateData.id),
     enabled: process.env.NODE_ENV !== "development",
   });
 
   // Get Response Options
+  const queryKeyResponseOptions = [`${mode}-fetchResponseOptionsByTemplateId-${questionTemplateData.id}`, mode];
   const { isPending: responseOptionsPending, data: responseOptions } = useQuery({
-    queryKey: [`fetchResponseOptionsByTemplateId-${questionTemplateData.id}-${mode}}`],
+    queryKey: queryKeyResponseOptions,
     queryFn: () => fetchResponseOptionsByTemplateId(questionTemplateData.id),
     enabled: !!assessmentQuestions,
   });

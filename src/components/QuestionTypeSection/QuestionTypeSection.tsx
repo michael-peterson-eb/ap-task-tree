@@ -18,12 +18,9 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection 
     trigger,
   } = useForm({ mode: "onChange", reValidateMode: "onChange", resetOptions: { keepDirtyValues: true } });
 
-  const {
-    isPending: questionTemplatePending,
-    data: questionTemplate,
-    refetch,
-  } = useQuery({
-    queryKey: [`questionTemplateSections-${id}-${mode}`],
+  const queryKey = [`${mode}-questionTemplateSections-${id}`, mode];
+  const { isPending: questionTemplatePending, data: questionTemplate } = useQuery({
+    queryKey,
     queryFn: () => getAssessmentQuestionTemplateByType({ EA_SA_rsAssessmentQuestionType: EA_SA_rsAssessmentQuestionType }),
   });
 
@@ -38,7 +35,13 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection 
         {questionTemplate.length > 0 &&
           questionTemplate.map((questionTemplateData) => {
             return (
-              <AssessmentQuestions key={`assessment-questions-${questionTemplateData.id}`} appParams={appParams} control={control} questionTemplateData={questionTemplateData} mode={mode} />
+              <AssessmentQuestions
+                key={`assessment-questions-${questionTemplateData.id}`}
+                appParams={appParams}
+                control={control}
+                questionTemplateData={questionTemplateData}
+                mode={mode}
+              />
             );
           })}
       </Box>

@@ -144,6 +144,7 @@ export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, con
                               return (
                                 <Select
                                   displayEmpty
+                                  size="small"
                                   error={!!error}
                                   id={timeInterval.id}
                                   labelId={`time-interval-${timeInterval.id}`}
