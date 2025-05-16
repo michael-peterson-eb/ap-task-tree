@@ -42,7 +42,7 @@ export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, cont
             control={control}
             defaultValue={getDefaultMultiValue(backendValue, responseOptions)}
             name={`${assessmentQuestion.id}.${fieldName}`}
-            rules={{ required, minLength: required ? 1 : 0 }}
+            rules={{ required }}
             render={({ field: { onChange, value }, fieldState: { error } }) => {
               return (
                 <Autocomplete
