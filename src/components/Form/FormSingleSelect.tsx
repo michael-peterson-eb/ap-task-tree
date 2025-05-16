@@ -1,4 +1,4 @@
-import { FormControl, Select, InputLabel, MenuItem, Typography } from "@mui/material";
+import { FormControl, Select, InputLabel, MenuItem, Typography, Chip } from "@mui/material";
 import { getNameValue, isQuestionRequired } from "../../utils/common";
 import { setInnerHTML } from "../../utils/cleanup";
 import { FormInputProps } from "../../types/FormInputProps";
@@ -18,7 +18,7 @@ export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, con
   }
 
   if (mode === "view") {
-    return <ViewOnlyText label={hasLabel ? EA_SA_txtaQuestion : null} value={getNameValue(responseOptions, backendValue)} required={required} />;
+    return <ViewOnlyText label={hasLabel ? EA_SA_txtaQuestion : null} value={getNameValue(responseOptions, backendValue)} required={required} responseOptions={responseOptions} />;
   }
 
   if (mode === "edit") {
@@ -87,7 +87,10 @@ export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, con
                     responseOptions.map((responseOption: any) => {
                       return (
                         <MenuItem value={responseOption.id}>
-                          <Typography>{responseOption.name}</Typography>
+                          <Typography sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <Chip label="" size="small" sx={{ ...chipStyles, backgroundColor: responseOption.EA_SA_txtLabelColor || chipStyles.backgroundColor }} />
+                            {responseOption.name}
+                          </Typography>
                         </MenuItem>
                       );
                     })}
@@ -148,4 +151,12 @@ const menuStyles = {
   ".MuiMenu-list": {
     padding: "0px",
   },
+};
+
+const chipStyles = {
+  backgroundColor: "#000", // Default color
+  width: "14px",
+  height: "14px",
+  borderRadius: "2px",
+  border: "1px solid rgba(0, 0, 0, 0.60)",
 };

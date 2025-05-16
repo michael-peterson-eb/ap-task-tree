@@ -26,7 +26,7 @@ const DataProvider = ({ children, appParams }) => {
     data: operationSections,
     refetch: refetchOpSecs,
   } = useQuery({
-    queryKey: [`operationSections-${id}-${mode}`],
+    queryKey: [`operationSections-${id}-${mode}`, mode],
     queryFn: () => getOperationSections({ id, sectionType, questionRelName }),
   });
 

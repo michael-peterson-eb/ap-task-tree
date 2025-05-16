@@ -1,4 +1,4 @@
-import { Box, Alert, AlertTitle } from "@mui/material";
+import { Box } from "@mui/material";
 const QuestionTypeSectionHeader = ({ questionName }) => {
   return (
     <>

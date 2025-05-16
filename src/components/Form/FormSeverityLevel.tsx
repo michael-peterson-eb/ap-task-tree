@@ -106,7 +106,7 @@ export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, hand
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText label={null} value={getNameValue(responseOptions, severityLevel.EA_SA_rsAssessmentResponseOptions)} />
+                              <ViewOnlyText label={null} value={getNameValue(responseOptions, severityLevel.EA_SA_rsAssessmentResponseOptions)} responseOptions={responseOptions} responseFormat={responseFormat} />
                             </div>
                           )}
                           {responseFormat === "INT" && (
@@ -176,7 +176,7 @@ export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, hand
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText label={null} value={getNameValue(responseOptions, severityLevel.EA_OR_rsAssessmentResponseOptions)} />
+                              <ViewOnlyText label={null} value={getNameValue(responseOptions, severityLevel.EA_SA_rsPeakAssessmentResponseOptions)} responseOptions={responseOptions} responseFormat={responseFormat}/>
                             </div>
                           )}
                           {responseFormat === "INT" && (

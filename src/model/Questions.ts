@@ -90,7 +90,23 @@ export const fetchQuestionsSeverityByTemplateId = async (recordInfo: any, templa
     //@ts-ignore
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 10000, true);
 
-    return await results;
+    //@ts-ignore Get severity levels from config, add to map to eliminate an extra loop further down.
+    const severityDisplayOrders = await _RB.selectQuery(["name", "EA_OR_intDisplayOrder"], "EA_OR_SeverityLevel", "", 10000, true);
+    const severityDisplayMap = {};
+    for (let i = 0; i < severityDisplayOrders.length; i++) {
+      severityDisplayMap[severityDisplayOrders[i].name] = severityDisplayOrders[i].EA_OR_intDisplayOrder;
+    }
+
+    // Sort the results by severity level display order using the map
+    const sortedResults = results.sort((a, b) => {
+      // There should always be a display order for each severity level,
+      // but if not, default to 0 (lowest display order)
+      const severityA = severityDisplayMap[a.EA_OR_txtSeverityLevelName] || 0;
+      const severityB = severityDisplayMap[b.EA_OR_txtSeverityLevelName] || 0;
+      return severityA - severityB;
+    });
+
+    return sortedResults;
   } catch (error) {
     console.log("Error: fetchQuestionsSeverityByTemplateId ", error);
   }

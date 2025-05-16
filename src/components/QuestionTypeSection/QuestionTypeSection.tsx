@@ -7,9 +7,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import AssessmentProgressBox from "../AssessmentProgressBox";
 
-const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection, operationSections, selectedOpsSection, setSelectedOpsSection }) => {
-  const { crudAction: mode, objectTitle } = appParams;
-  const { id, name: questionName, status, EA_SA_rsAssessmentQuestionType } = currentOpsSectionInfo;
+const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection }) => {
+  const { crudAction: mode } = appParams;
+  const { id, name: questionName, EA_SA_rsAssessmentQuestionType } = currentOpsSectionInfo;
   const smallScreen: boolean = useMediaQuery("(max-width:640px)");
 
   const {
@@ -18,8 +18,9 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection,
     trigger,
   } = useForm({ mode: "onChange", reValidateMode: "onChange", resetOptions: { keepDirtyValues: true } });
 
+  const queryKey = [`${mode}-questionTemplateSections-${id}`, mode];
   const { isPending: questionTemplatePending, data: questionTemplate } = useQuery({
-    queryKey: [`questionTemplateSections-${id}-${mode}`],
+    queryKey,
     queryFn: () => getAssessmentQuestionTemplateByType({ EA_SA_rsAssessmentQuestionType: EA_SA_rsAssessmentQuestionType }),
   });
 
@@ -34,7 +35,13 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection,
         {questionTemplate.length > 0 &&
           questionTemplate.map((questionTemplateData) => {
             return (
-              <AssessmentQuestions key={`assessment-questions-${questionTemplateData.id}`} appParams={appParams} control={control} questionTemplateData={questionTemplateData} />
+              <AssessmentQuestions
+                key={`assessment-questions-${questionTemplateData.id}`}
+                appParams={appParams}
+                control={control}
+                questionTemplateData={questionTemplateData}
+                mode={mode}
+              />
             );
           })}
       </Box>
