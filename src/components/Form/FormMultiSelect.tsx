@@ -132,4 +132,5 @@ const chipStyles = {
   height: "14px",
   marginRight: "8px",
   borderRadius: "2px !important",
+  border: "1px solid rgba(0, 0, 0, 0.60)",
 };
