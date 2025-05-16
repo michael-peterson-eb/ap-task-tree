@@ -13,14 +13,18 @@ export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, cont
   const { crudAction: mode } = appParams;
 
   if (mode === "view") {
-    return <ViewOnlyText label={EA_SA_txtaQuestion} value={getMultiValue(responseOptions, EA_SA_txtaResponse)} required={required} responseFormat={responseFormat} />;
+    return (
+      <ViewOnlyText
+        label={EA_SA_txtaQuestion}
+        value={getMultiValue(responseOptions, EA_SA_txtaResponse)}
+        required={required}
+        responseFormat={responseFormat}
+        responseOptions={responseOptions}
+      />
+    );
   }
 
   if (mode === "edit") {
-    // Find the relevant response option
-    const selectedOption = null // responseOptions?.find((option) => option.name === value);
-
-    const chipColor = selectedOption?.EA_SA_txtLabelColor || "#000000"; // Default to black if no color is found
     return (
       <FormControl sx={{ width: "100%" }} required={required}>
         <Typography
@@ -38,11 +42,10 @@ export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, cont
             control={control}
             defaultValue={getDefaultMultiValue(backendValue, responseOptions)}
             name={`${assessmentQuestion.id}.${fieldName}`}
-            rules={{ required: true, minLength: 1 }}
+            rules={{ required, minLength: required ? 1 : 0 }}
             render={({ field: { onChange, value }, fieldState: { error } }) => {
               return (
                 <Autocomplete
-                  ChipProps={{ style: { borderRadius: "4px" } }}
                   defaultValue={value}
                   disableCloseOnSelect
                   getOptionLabel={(option: any) => option.name}
@@ -69,20 +72,23 @@ export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, cont
                     return (
                       <li key={key} {...optionProps}>
                         <Checkbox style={{ marginRight: 8 }} checked={selected} />
-                        <Chip label="" sx={{ ...chipStyles, backgroundColor: option.EA_SA_txtLabelColor || chipStyles.backgroundColor}} />
+                        <Chip label="" sx={{ ...chipStyles, backgroundColor: option.EA_SA_txtLabelColor || chipStyles.backgroundColor }} />
                         {option.name}
                       </li>
                     );
                   }}
                   renderInput={(params) => <TextField {...params} placeholder={value.length > 0 ? "" : "Select options"} />}
-                  /* renderValue={(value: string[], getItemProps) =>
-                    value.map((option: string, index: number) => {
-                      const { key, ...itemProps } = getItemProps({ index });
-                      return (
-                        <Chip variant="outlined" label={option} key={key} {...itemProps} />
-                      );
-                    })
-                  } */
+                  renderTags={(value, getTagProps) => {
+                    return value.map((chipDetails, index) => (
+                      <Chip
+                        label={chipDetails.name}
+                        size="small"
+                        sx={{ borderRadius: "4px" }}
+                        icon={<Chip label="" sx={{ ...chipStyles, backgroundColor: chipDetails.EA_SA_txtLabelColor || chipStyles.backgroundColor }} />}
+                        {...getTagProps({ index })}
+                      />
+                    ));
+                  }}
                   size="small"
                   slotProps={{
                     paper: {
@@ -121,9 +127,9 @@ const styles = {
 };
 
 const chipStyles = {
-  backgroundColor: "#ccc", // Default color
+  backgroundColor: "#fff", // Default color
   width: "14px",
   height: "14px",
-  borderRadius: "2px",
   marginRight: "8px",
+  borderRadius: "2px !important",
 };

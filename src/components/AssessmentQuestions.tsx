@@ -21,20 +21,23 @@ import { fetchResponseOptionsByTemplateId } from "../model/ResponseOptions";
 import { Loading } from "./Loading";
 import { EventObj, RiskObj } from "../types/ObjectTypes";
 
-const AssessmentQuestions = ({ appParams, questionTemplateData, control }): ReactElement | null => {
+const AssessmentQuestions = ({ appParams, questionTemplateData, control, mode }): ReactElement | null => {
   const { EA_SA_ddlAskPer: askPer, EA_SA_ddlResponseFormat: responseFormat } = questionTemplateData;
   const { questionUpdates, riskUpdates } = useData();
 
   // Get Assessment Questions
-  const { isPending: assessmentQuestionsPending, data: assessmentQuestions } = useQuery({
-    queryKey: [`fetchAssessQuestionByTemplateId-${questionTemplateData.id}`],
+  const {
+    isPending: assessmentQuestionsPending,
+    data: assessmentQuestions,
+  } = useQuery({
+    queryKey: [`fetchAssessQuestionByTemplateId-${questionTemplateData.id}-${mode}}`],
     queryFn: () => fetchAssessQuestionsByTemplateId(appParams, questionTemplateData.id),
     enabled: process.env.NODE_ENV !== "development",
   });
 
   // Get Response Options
   const { isPending: responseOptionsPending, data: responseOptions } = useQuery({
-    queryKey: [`fetchResponseOptionsByTemplateId-${questionTemplateData.id}`],
+    queryKey: [`fetchResponseOptionsByTemplateId-${questionTemplateData.id}-${mode}}`],
     queryFn: () => fetchResponseOptionsByTemplateId(questionTemplateData.id),
     enabled: !!assessmentQuestions,
   });

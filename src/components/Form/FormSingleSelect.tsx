@@ -34,7 +34,7 @@ export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, con
                 paddingBottom: "4px",
               }}
             >
-              {setInnerHTML(EA_SA_txtaQuestion)} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
+              {setInnerHTML("SSP HERE")} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
             </Typography>
           ) : null}
           <Controller
@@ -88,7 +88,7 @@ export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, con
                       return (
                         <MenuItem value={responseOption.id}>
                           <Typography sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                            <Chip label="" sx={{ ...chipStyles, backgroundColor: responseOption.EA_SA_txtLabelColor || chipStyles.backgroundColor}} />
+                            <Chip label="" size="small" sx={{ ...chipStyles, backgroundColor: responseOption.EA_SA_txtLabelColor || chipStyles.backgroundColor }} />
                             {responseOption.name}
                           </Typography>
                         </MenuItem>
@@ -154,7 +154,7 @@ const menuStyles = {
 };
 
 const chipStyles = {
-  backgroundColor: "#ccc", // Default color
+  backgroundColor: "#000", // Default color
   width: "14px",
   height: "14px",
   borderRadius: "2px",
