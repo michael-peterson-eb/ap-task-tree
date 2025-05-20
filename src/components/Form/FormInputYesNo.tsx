@@ -122,6 +122,9 @@ const styles = {
     paddingLeft: "4px",
     transform: "rotateX(180deg)",
   },
+  '& .rbs-validationMsg': {
+    display: 'none !important'
+  }
 };
 
 const menuStyles = {

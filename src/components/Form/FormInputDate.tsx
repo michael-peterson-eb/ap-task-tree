@@ -107,4 +107,7 @@ const styles = {
       border: "1px solid #0042B6",
     },
   },
+  '& .rbs-validationMsg': {
+    display: 'none !important'
+  }
 };

@@ -102,4 +102,7 @@ const styles = {
   "& input[type=number]::-webkit-inner-spin-button": {
     marginLeft: "8px",
   },
+  '& .rbs-validationMsg': {
+    display: 'none !important'
+  }
 };
