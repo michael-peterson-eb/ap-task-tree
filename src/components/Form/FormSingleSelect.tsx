@@ -151,6 +151,9 @@ const menuStyles = {
   ".MuiMenu-list": {
     padding: "0px",
   },
+  '& .rbs-validationMsg': {
+    display: 'none !important'
+  }
 };
 
 const chipStyles = {

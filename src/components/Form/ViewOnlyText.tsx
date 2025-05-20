@@ -94,21 +94,32 @@ export const ViewOnlyText = ({
       <TextField
         disabled
         size="small"
-        value={value}
-        sx={{ fontWeight: 400, fontSize: 14, color: "#1B2327" }}
+        value={!value ? "-" : value}
+        sx={textFieldStyles}
         InputProps={{ startAdornment: responseFormat === "SSP" && <Chip label="" sx={{ ...chipStyles, backgroundColor: chipColor }} /> }}
       />
     </FormControl>
   );
 };
 
+const textFieldStyles = {
+  fontWeight: 400,
+  fontSize: 14,
+  color: "#1B2327",
+  padding: "0px !important",
+  "& .MuiInputBase-input": {
+    padding: "0px !important",
+  },
+  "& .MuiOutlinedInput-root": {
+    padding: "0px !important",
+    "& fieldset": {
+      border: "1px solid transparent !important",
+    },
+  },
+};
+
 const mspBoxStyles = {
-  paddingRight: "12px",
-  paddingLeft: "12px",
-  paddingTop: "8px",
-  paddingBottom: "8px",
-  borderRadius: "4px",
-  border: "1px solid rgba(0, 0, 0, 0.60)",
+  border: "1px solid transparent !important",
 };
 
 const chipStyles = {

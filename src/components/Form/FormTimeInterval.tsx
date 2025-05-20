@@ -162,10 +162,7 @@ export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, con
                                     handleChange(eventObj, null);
                                   }}
                                   required={timeIntervalRequired}
-                                  sx={{
-                                    width: "100%",
-                                    "& fieldset": { borderWidth: "0px" },
-                                  }}
+                                  sx={styles}
                                   value={value}
                                 >
                                   <MenuItem aria-label="" value="">
@@ -197,3 +194,12 @@ export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, con
 
   return null;
 };
+
+const styles = 
+  {
+    width: "100%",
+    "& fieldset": { borderWidth: "0px" },
+    '& .rbs-validationMsg': {
+      display: 'none !important'
+    }
+  }
