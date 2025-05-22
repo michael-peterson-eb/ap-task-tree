@@ -36,6 +36,10 @@ export const FormTimeInterval = ({
     queryFn: () => fetchQuestionsIntervalsByTemplateId(appParams, questionTemplateData.id),
   });
 
+  // This function cascades the response option to the next time intervals if it is lower than the currently selected value. If it
+  // is higher than the currently selected value, then that value will cascade to the next time interval. In the case that they are
+  // setting the value to null/empty string, then the nulled out value will cascade to the following time intervals. This is to
+  // prevent the user from selecting a response option that is lower than the previous time intervals selection response option.
   const handleChangeCascade = (value: any, index: number) => {
     for (let i = 0; i < timeIntervals.length; i++) {
       const timeInterval = timeIntervals[i];
@@ -47,7 +51,11 @@ export const FormTimeInterval = ({
         const selectedTimeIntervalValue = responseOptions.find((option) => option.id === value)?.EA_SA_intDisplayOrder;
         const loopedTimeIntervalValue = responseOptions.find((option) => option.id === thisValue)?.EA_SA_intDisplayOrder;
 
-        if (!loopedTimeIntervalValue || selectedTimeIntervalValue > loopedTimeIntervalValue) {
+        if (!selectedTimeIntervalValue) {
+          setFormValue(valueName, "");
+        }
+
+        if (selectedTimeIntervalValue > loopedTimeIntervalValue || !loopedTimeIntervalValue) {
           setFormValue(valueName, value);
 
           const eventObj = {
@@ -206,14 +214,35 @@ export const FormTimeInterval = ({
                                     responseOptions.map((responseOption: any, respOptIndex: number) => {
                                       const valueName = `${timeInterval.id}.${fieldName}`;
                                       const timeIntervalValue = getFormValues(valueName);
-                                      const timeIntervalValueDisplayOrder = responseOptions.find((option) => option.id === timeIntervalValue)?.EA_SA_intDisplayOrder;
+                                      let timeIntervalValueDisplayOrder = responseOptions.find((option) => option.id === timeIntervalValue)?.EA_SA_intDisplayOrder;
 
                                       const responseOptionValueDisplayOrder = responseOption?.EA_SA_intDisplayOrder;
 
                                       let disabled = false;
 
-                                      // The response option cannot be selected if it is lower than the currently selected response
                                       if (responseOptionValueDisplayOrder < timeIntervalValueDisplayOrder) {
+                                        disabled = true;
+                                      }
+
+                                      //  If the user selects a response, and then nulls it out, all the values become selectable again. This logic is to
+                                      // keep track of the highest selected value and disable any response options that are lower than that value.
+
+                                      let highestVal = 0;
+                                      let counter = 0;
+                                      // Find the index of the current time interval
+                                      const index = timeIntervals.findIndex((item) => item.id === timeInterval.id);
+
+                                      // Only loop through the time intervals before the current one, and find the highest value time interval. This
+                                      // is to prevent the user from selecting a response option that is lower than the highest selected value..
+                                      while (counter < index) {
+                                        const timeInterval = timeIntervals[counter];
+                                        const timeIntervalValue = getFormValues(`${timeInterval.id}.${fieldName}`);
+                                        const foundNum = responseOptions.find((option) => option.id === timeIntervalValue)?.EA_SA_intDisplayOrder;
+                                        if (foundNum > highestVal) highestVal = foundNum;
+                                        counter++;
+                                      }
+
+                                      if (highestVal > responseOptionValueDisplayOrder) {
                                         disabled = true;
                                       }
 
