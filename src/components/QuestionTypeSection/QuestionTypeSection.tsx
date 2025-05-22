@@ -16,6 +16,8 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection 
     control,
     formState: { isValid },
     trigger,
+    setValue,
+    getValues,
   } = useForm({ mode: "onChange", reValidateMode: "onChange", resetOptions: { keepDirtyValues: true } });
 
   const queryKey = [`${mode}-questionTemplateSections-${id}`, mode];
@@ -41,6 +43,8 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection 
                 control={control}
                 questionTemplateData={questionTemplateData}
                 mode={mode}
+                setFormValue={setValue}
+                getFormValues={getValues}
               />
             );
           })}
