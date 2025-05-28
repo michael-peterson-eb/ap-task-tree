@@ -82,7 +82,7 @@ const AssessmentProgressBox = ({ isValid, trigger, smallScreen }) => {
     <Box
       sx={{ width: smallScreen ? "100%" : 350, borderRadius: "4px 4px 0px 0px", border: "1px solid #CFD8DC", height: "min-content" }}
       position={"sticky"}
-      top={100}
+      top={118}
       zIndex={1000}
       bgcolor={"#f9f9f9"}
     >
