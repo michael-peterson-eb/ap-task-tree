@@ -1,4 +1,4 @@
-import { Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormGroup, MenuItem, Typography, Box } from "@mui/material";
+import { Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormGroup, MenuItem, Typography, Box, Tooltip } from "@mui/material";
 import { FormInputProps } from "../../types/FormInputProps";
 import { fetchQuestionsIntervalsByTemplateId } from "../../model/Questions";
 import { useQuery } from "@tanstack/react-query";
@@ -9,16 +9,67 @@ import { getNameValue, isQuestionRequired } from "../../utils/common";
 import { setInnerHTML } from "../../utils/cleanup";
 import { Controller } from "react-hook-form";
 
-export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, control, handleChange, questionTemplateData, responseOptions }: FormInputProps) => {
+export const FormTimeInterval = ({
+  fieldName,
+  appParams,
+  assessmentQuestion,
+  control,
+  getFormValues,
+  handleChange,
+  questionTemplateData,
+  responseOptions,
+  setFormValue,
+}: FormInputProps) => {
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
   const { crudAction: mode } = appParams;
+
+  const adminIds = [90, 95];
+  const adminCodes = ["ea_businessadmin", "EA_itadmin", "EA_subadmin", "ea_admin"];
+  // @ts-expect-error This is attached to window
+  const user = window.currentUser;
+  const isAdmin = adminIds.indexOf(user?.CURR_USER_ROLE_ID) >= 0 || adminCodes.indexOf(user?.CURR_USER_ROLE_CODE.toLowerCase()) >= 0;
 
   // Get Time Intervals
   const { isPending: timeIntervalsPending, data: timeIntervals } = useQuery({
     queryKey: [`fetchQuestionsIntervalsByTemplateId-${questionTemplateData.id}`],
     queryFn: () => fetchQuestionsIntervalsByTemplateId(appParams, questionTemplateData.id),
   });
+
+  // This function cascades the response option to the next time intervals if it is lower than the currently selected value. If it
+  // is higher than the currently selected value, then that value will cascade to the next time interval. In the case that they are
+  // setting the value to null/empty string, then the nulled out value will cascade to the following time intervals. This is to
+  // prevent the user from selecting a response option that is lower than the previous time intervals selection response option.
+  const handleChangeCascade = (value: any, index: number) => {
+    for (let i = 0; i < timeIntervals.length; i++) {
+      const timeInterval = timeIntervals[i];
+      const valueName = `${timeInterval.id}.${fieldName}`;
+
+      const thisValue = getFormValues(valueName);
+
+      if (i > index) {
+        const selectedTimeIntervalValue = responseOptions.find((option) => option.id === value)?.EA_SA_intDisplayOrder;
+        const loopedTimeIntervalValue = responseOptions.find((option) => option.id === thisValue)?.EA_SA_intDisplayOrder;
+
+        if (!selectedTimeIntervalValue) {
+          setFormValue(valueName, "");
+        }
+
+        if (selectedTimeIntervalValue > loopedTimeIntervalValue || !loopedTimeIntervalValue) {
+          setFormValue(valueName, value);
+
+          const eventObj = {
+            target: {
+              id: timeInterval.id,
+              name: fieldName,
+              value: value,
+            },
+          };
+          handleChange(eventObj, null);
+        }
+      }
+    }
+  };
 
   if (timeIntervalsPending) return <Loading type="none" />;
 
@@ -123,7 +174,7 @@ export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, con
               </TableHead>
               <TableBody>
                 {timeIntervals.length > 0 &&
-                  timeIntervals.map((timeInterval: any) => {
+                  timeIntervals.map((timeInterval: any, index: number) => {
                     const timeIntervalRequired = isQuestionRequired(timeInterval.EA_SA_rfRequiredQuestion);
                     let backendValue = timeInterval[fieldName!];
 
@@ -150,16 +201,7 @@ export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, con
                                   labelId={`time-interval-${timeInterval.id}`}
                                   onChange={(event) => {
                                     onChange(event);
-
-                                    const eventObj = {
-                                      target: {
-                                        id: timeInterval.id,
-                                        name: fieldName,
-                                        value: event.target.value,
-                                      },
-                                    };
-
-                                    handleChange(eventObj, null);
+                                    handleChangeCascade(event.target.value, index);
                                   }}
                                   required={timeIntervalRequired}
                                   sx={styles}
@@ -169,7 +211,53 @@ export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, con
                                     <em>Select impact</em>
                                   </MenuItem>
                                   {responseOptions.length > 0 &&
-                                    responseOptions.map((responseOption: any) => {
+                                    responseOptions.map((responseOption: any, respOptIndex: number) => {
+                                      const valueName = `${timeInterval.id}.${fieldName}`;
+                                      const timeIntervalValue = getFormValues(valueName);
+                                      let timeIntervalValueDisplayOrder = responseOptions.find((option) => option.id === timeIntervalValue)?.EA_SA_intDisplayOrder;
+
+                                      const responseOptionValueDisplayOrder = responseOption?.EA_SA_intDisplayOrder;
+
+                                      let disabled = false;
+
+                                      if (responseOptionValueDisplayOrder < timeIntervalValueDisplayOrder) {
+                                        disabled = true;
+                                      }
+
+                                      //  If the user selects a response, and then nulls it out, all the values become selectable again. This logic is to
+                                      // keep track of the highest selected value and disable any response options that are lower than that value.
+
+                                      let highestVal = 0;
+                                      let counter = 0;
+                                      // Find the index of the current time interval
+                                      const index = timeIntervals.findIndex((item) => item.id === timeInterval.id);
+
+                                      // Only loop through the time intervals before the current one, and find the highest value time interval. This
+                                      // is to prevent the user from selecting a response option that is lower than the highest selected value..
+                                      while (counter < index) {
+                                        const timeInterval = timeIntervals[counter];
+                                        const timeIntervalValue = getFormValues(`${timeInterval.id}.${fieldName}`);
+                                        const foundNum = responseOptions.find((option) => option.id === timeIntervalValue)?.EA_SA_intDisplayOrder;
+                                        if (foundNum > highestVal) highestVal = foundNum;
+                                        counter++;
+                                      }
+
+                                      if (highestVal > responseOptionValueDisplayOrder) {
+                                        disabled = true;
+                                      }
+
+                                      if (disabled && !isAdmin) {
+                                        return (
+                                          <Tooltip title={`${responseOption.name} is lower than the currently selected response and cannot be selected`} placement="top">
+                                            <div>
+                                              <MenuItem value={responseOption.id} disabled={disabled}>
+                                                <Typography>{responseOption.name}</Typography>
+                                              </MenuItem>
+                                            </div>
+                                          </Tooltip>
+                                        );
+                                      }
+
                                       return (
                                         <MenuItem value={responseOption.id}>
                                           <Typography>{responseOption.name}</Typography>
@@ -195,11 +283,10 @@ export const FormTimeInterval = ({ fieldName, appParams, assessmentQuestion, con
   return null;
 };
 
-const styles = 
-  {
-    width: "100%",
-    "& fieldset": { borderWidth: "0px" },
-    '& .rbs-validationMsg': {
-      display: 'none !important'
-    }
-  }
+const styles = {
+  width: "100%",
+  "& fieldset": { borderWidth: "0px" },
+  "& .rbs-validationMsg": {
+    display: "none !important",
+  },
+};

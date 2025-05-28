@@ -6,6 +6,7 @@ import AssessmentQuestions from "../AssessmentQuestions";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import AssessmentProgressBox from "../AssessmentProgressBox";
+import AdditionalInfoBox from "../AdditionalInfoBox";
 
 const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection }) => {
   const { crudAction: mode } = appParams;
@@ -16,6 +17,8 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection 
     control,
     formState: { isValid },
     trigger,
+    setValue,
+    getValues,
   } = useForm({ mode: "onChange", reValidateMode: "onChange", resetOptions: { keepDirtyValues: true } });
 
   const queryKey = [`${mode}-questionTemplateSections-${id}`, mode];
@@ -41,11 +44,16 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection 
                 control={control}
                 questionTemplateData={questionTemplateData}
                 mode={mode}
+                setFormValue={setValue}
+                getFormValues={getValues}
               />
             );
           })}
       </Box>
-      <AssessmentProgressBox isValid={isValid} trigger={trigger} smallScreen={smallScreen} />
+      <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <AssessmentProgressBox isValid={isValid} trigger={trigger} smallScreen={smallScreen} />
+        <AdditionalInfoBox smallScreen={smallScreen} />
+      </Box>
     </Box>
   );
 };

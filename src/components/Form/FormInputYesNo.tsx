@@ -7,7 +7,7 @@ import { Controller } from "react-hook-form";
 
 export const FormYesNo = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData, responseOptions }: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
-  const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
+  const { EA_SA_rfRequiredQuestion, EA_SA_txtAdditionalInformation } = assessmentQuestion;
   let backendValue = assessmentQuestion[fieldName!];
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
   const { crudAction: mode } = appParams;
@@ -68,7 +68,7 @@ export const FormYesNo = ({ fieldName, appParams, assessmentQuestion, control, h
                 value={value}
               >
                 <MenuItem aria-label="" value="">
-                  <Typography sx={{ color: "#445A65" }}>Select option</Typography>
+                  <Typography sx={{ color: "#445A65" }}>{EA_SA_txtAdditionalInformation || "Select option"}</Typography>
                 </MenuItem>
                 {responseOptions.length > 0 &&
                   responseOptions.map((responseOption: any) => {
@@ -122,9 +122,9 @@ const styles = {
     paddingLeft: "4px",
     transform: "rotateX(180deg)",
   },
-  '& .rbs-validationMsg': {
-    display: 'none !important'
-  }
+  "& .rbs-validationMsg": {
+    display: "none !important",
+  },
 };
 
 const menuStyles = {

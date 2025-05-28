@@ -7,7 +7,7 @@ import { setInnerHTML } from "../../utils/cleanup";
 
 export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, control, handleChange, questionTemplateData, responseOptions }: FormInputProps) => {
   const { EA_SA_txtaQuestion, EA_SA_ddlResponseFormat: responseFormat } = questionTemplateData;
-  const { EA_SA_rfRequiredQuestion, EA_SA_txtaResponse } = assessmentQuestion;
+  const { EA_SA_rfRequiredQuestion, EA_SA_txtaResponse, EA_SA_txtAdditionalInformation } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
   const { crudAction: mode } = appParams;
@@ -77,7 +77,7 @@ export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, cont
                       </li>
                     );
                   }}
-                  renderInput={(params) => <TextField {...params} placeholder={value.length > 0 ? "" : "Select options"} />}
+                  renderInput={(params) => <TextField {...params} placeholder={value.length > 0 ? "" : EA_SA_txtAdditionalInformation || "Select options"} />}
                   renderTags={(value, getTagProps) => {
                     return value.map((chipDetails, index) => (
                       <Chip
@@ -124,9 +124,9 @@ const styles = {
       border: "1px solid #0042B6",
     },
   },
-  '& .rbs-validationMsg': {
-    display: 'none !important'
-  }
+  "& .rbs-validationMsg": {
+    display: "none !important",
+  },
 };
 
 const chipStyles = {

@@ -21,7 +21,7 @@ import { fetchResponseOptionsByTemplateId } from "../model/ResponseOptions";
 import { Loading } from "./Loading";
 import { EventObj, RiskObj } from "../types/ObjectTypes";
 
-const AssessmentQuestions = ({ appParams, questionTemplateData, control, mode }): ReactElement | null => {
+const AssessmentQuestions = ({ appParams, questionTemplateData, control, mode, getFormValues, setFormValue }): ReactElement | null => {
   const { EA_SA_ddlAskPer: askPer, EA_SA_ddlResponseFormat: responseFormat } = questionTemplateData;
   const { questionUpdates, riskUpdates } = useData();
 
@@ -86,10 +86,12 @@ const AssessmentQuestions = ({ appParams, questionTemplateData, control, mode })
         appParams,
         assessmentQuestion,
         control,
+        getFormValues,
         handleChange,
         questionTemplateData,
         questionUpdates,
         responseOptions,
+        setFormValue,
       };
 
       return (

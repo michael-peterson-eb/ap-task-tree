@@ -7,7 +7,7 @@ import { Controller } from "react-hook-form";
 
 export const FormInputText = ({ fieldName, appParams, assessmentQuestion, control, hasLabel = true, handleChange, questionTemplateData }: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
-  const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
+  const { EA_SA_rfRequiredQuestion, EA_SA_txtAdditionalInformation } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
   const { crudAction: mode } = appParams;
@@ -60,7 +60,7 @@ export const FormInputText = ({ fieldName, appParams, assessmentQuestion, contro
 
                 handleChange(eventObj, null);
               }}
-              placeholder="Enter a response"
+              placeholder={EA_SA_txtAdditionalInformation || "Enter a response"}
               required={required}
               size="small"
               sx={styles}
@@ -89,7 +89,7 @@ const styles = {
       border: "1px solid #0042B6",
     },
   },
-  '& .rbs-validationMsg': {
-    display: 'none !important'
-  }
+  "& .rbs-validationMsg": {
+    display: "none !important",
+  },
 };
