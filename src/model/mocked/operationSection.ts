@@ -18,7 +18,7 @@ export const getOperationSections = async ({ id, sectionType, questionRelName })
 
       //@ts-ignore
       const results = await _RB.selectQuery(
-        ["id", "name", "status#code", "EA_SA_txtCode", "EA_SA_rsAssessmentQuestionType", "EA_SA_rsAssessmentQuestions"],
+        ["id", "name", "status#code", "EA_SA_txtCode", "EA_SA_rsAssessmentQuestionType", "EA_SA_rsAssessmentQuestions", "EA_SA_txtaAdditionalInformation"],
         "EA_SA_OperationsSection",
         queryCondition,
         100,

@@ -6,6 +6,7 @@ import AssessmentQuestions from "../AssessmentQuestions";
 import { useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import AssessmentProgressBox from "../AssessmentProgressBox";
+import AdditionalInfoBox from "../AdditionalInfoBox";
 
 const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection }) => {
   const { crudAction: mode } = appParams;
@@ -49,7 +50,10 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection 
             );
           })}
       </Box>
-      <AssessmentProgressBox isValid={isValid} trigger={trigger} smallScreen={smallScreen} />
+      <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <AssessmentProgressBox isValid={isValid} trigger={trigger} smallScreen={smallScreen} />
+        <AdditionalInfoBox smallScreen={smallScreen} />
+      </Box>
     </Box>
   );
 };

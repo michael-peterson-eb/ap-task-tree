@@ -7,6 +7,7 @@ export const formatOperationSections = (data) => {
       EA_SA_txtCode: each[3],
       EA_SA_rsAssessmentQuestionType: each[4],
       EA_SA_rsAssessmentQuestions: each[5],
+      EA_SA_txtaAdditionalInformation: each[6],
     };
   });
 };
