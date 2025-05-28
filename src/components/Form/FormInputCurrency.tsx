@@ -8,7 +8,7 @@ import { RiskObj } from "../../types/ObjectTypes";
 
 export const FormInputCurrency = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData }: FormInputProps) => {
   const { EA_SA_txtFieldIntegrationName, EA_SA_txtaQuestion } = questionTemplateData;
-  const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
+  const { EA_SA_rfRequiredQuestion, EA_SA_txtaAdditionalInformation } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
   const { crudAction: mode } = appParams;
@@ -82,7 +82,7 @@ export const FormInputCurrency = ({ fieldName, appParams, assessmentQuestion, co
                   handleChange(eventObj, null);
                 }
               }}
-              placeholder="Specify Amount"
+              placeholder={EA_SA_txtaAdditionalInformation}
               size="small"
               sx={styles}
               required={required}
@@ -112,7 +112,7 @@ const styles = {
       border: "1px solid #0042B6",
     },
   },
-  '& .rbs-validationMsg': {
-    display: 'none !important'
-  }
+  "& .rbs-validationMsg": {
+    display: "none !important",
+  },
 };

@@ -10,6 +10,7 @@ const AssessmentQuestionFields = [
   "EA_SA_intResponse",
   "EA_SA_decResponse",
   "EA_SA_txtaAdditionalInformation",
+  "EA_SA_txtAdditionalInformation",
   "EA_SA_rsTimeInterval",
   "EA_SA_rsAssessmentResponseOptions",
   "EA_SA_rsAssessmentQuestionTemplate",

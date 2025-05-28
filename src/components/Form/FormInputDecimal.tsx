@@ -7,7 +7,7 @@ import { Controller } from "react-hook-form";
 
 export const FormInputDecimal = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData }: FormInputProps) => {
   const { EA_SA_txtaQuestion } = questionTemplateData;
-  const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
+  const { EA_SA_rfRequiredQuestion, EA_SA_txtAdditionalInformation } = assessmentQuestion;
   const backendValue = assessmentQuestion[fieldName!];
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
   const { crudAction: mode } = appParams;
@@ -70,7 +70,7 @@ export const FormInputDecimal = ({ fieldName, appParams, assessmentQuestion, con
 
                 handleChange(eventObj, null);
               }}
-              placeholder="0.00"
+              placeholder={EA_SA_txtAdditionalInformation || "0.00"}
               size="small"
               sx={styles}
               type="number"
@@ -102,7 +102,7 @@ const styles = {
   "& input[type=number]::-webkit-inner-spin-button": {
     marginLeft: "8px",
   },
-  '& .rbs-validationMsg': {
-    display: 'none !important'
-  }
+  "& .rbs-validationMsg": {
+    display: "none !important",
+  },
 };
