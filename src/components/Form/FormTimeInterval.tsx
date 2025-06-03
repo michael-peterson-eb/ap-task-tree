@@ -284,8 +284,7 @@ export const FormTimeInterval = ({
                                         disabled = true;
                                       }
 
-                                      // if (disabled && !isAdmin) {
-                                          if (disabled) {
+                                      if (disabled && !isAdmin) {
                                         return (
                                           <Tooltip
                                             title={`Disabled options prevent the selection of lower severity ratings over time — the impact can remain the same or worsen, but not improve.`}
