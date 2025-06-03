@@ -41,35 +41,73 @@ export const FormTimeInterval = ({
   // setting the value to null/empty string, then the nulled out value will cascade to the following time intervals. This is to
   // prevent the user from selecting a response option that is lower than the previous time intervals selection response option.
   const handleChangeCascade = (value: any, index: number) => {
-    for (let i = 0; i < timeIntervals.length; i++) {
+  const selectedTimeInterval = timeIntervals[index];
+  const selectedValueName = `${selectedTimeInterval.id}.${fieldName}`;
+
+  // Always apply change to the selected interval
+  setFormValue(selectedValueName, value);
+  handleChange(
+    {
+      target: {
+        id: selectedTimeInterval.id,
+        name: fieldName,
+        value,
+      },
+    },
+    null
+  );
+
+  // Handle empty value: reset all following values
+  if (value === "" || value == null) {
+    for (let i = index + 1; i < timeIntervals.length; i++) {
       const timeInterval = timeIntervals[i];
       const valueName = `${timeInterval.id}.${fieldName}`;
+      setFormValue(valueName, "");
 
-      const thisValue = getFormValues(valueName);
-
-      if (i > index) {
-        const selectedTimeIntervalValue = responseOptions.find((option) => option.id === value)?.EA_SA_intDisplayOrder;
-        const loopedTimeIntervalValue = responseOptions.find((option) => option.id === thisValue)?.EA_SA_intDisplayOrder;
-
-        if (!selectedTimeIntervalValue) {
-          setFormValue(valueName, "");
-        }
-
-        if (selectedTimeIntervalValue > loopedTimeIntervalValue || !loopedTimeIntervalValue) {
-          setFormValue(valueName, value);
-
-          const eventObj = {
-            target: {
-              id: timeInterval.id,
-              name: fieldName,
-              value: value,
-            },
-          };
-          handleChange(eventObj, null);
-        }
-      }
+      handleChange(
+        {
+          target: {
+            id: timeInterval.id,
+            name: fieldName,
+            value: "",
+          },
+        },
+        null
+      );
     }
-  };
+    return;
+  }
+
+  // Normal cascade for valid (non-empty) values
+  const selectedOption = responseOptions.find((option) => option.id === value);
+  const selectedOrder = selectedOption?.EA_SA_intDisplayOrder;
+  if (!selectedOrder) return;
+
+  for (let i = index + 1; i < timeIntervals.length; i++) {
+    const timeInterval = timeIntervals[i];
+    const valueName = `${timeInterval.id}.${fieldName}`;
+    const currentValue = getFormValues(valueName);
+
+    const currentOption = responseOptions.find((option) => option.id === currentValue);
+    const currentOrder = currentOption?.EA_SA_intDisplayOrder;
+
+    if (!currentOrder || selectedOrder > currentOrder) {
+      setFormValue(valueName, value);
+
+      handleChange(
+        {
+          target: {
+            id: timeInterval.id,
+            name: fieldName,
+            value,
+          },
+        },
+        null
+      );
+    }
+  }
+};
+
 
   if (timeIntervalsPending) return <Loading type="none" />;
 
@@ -248,7 +286,10 @@ export const FormTimeInterval = ({
 
                                       if (disabled && !isAdmin) {
                                         return (
-                                          <Tooltip title={`${responseOption.name} is lower than the currently selected response and cannot be selected`} placement="top">
+                                          <Tooltip
+                                            title={`Disabled options prevent the selection of lower severity ratings over time — the impact can remain the same or worsen, but not improve.`}
+                                            placement="top"
+                                          >
                                             <div>
                                               <MenuItem value={responseOption.id} disabled={disabled}>
                                                 <Typography>{responseOption.name}</Typography>
