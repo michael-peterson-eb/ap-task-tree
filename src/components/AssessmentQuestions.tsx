@@ -61,8 +61,6 @@ const AssessmentQuestions = ({ appParams, questionTemplateData, control, mode, g
     };
     questionUpdates.current = newUpdatedFields;
 
-    console.log('QUESTION UPDATES', questionUpdates.current);
-
     if (riskObj && riskFields.includes(riskObj.EA_SA_txtFieldIntegrationName)) {
       riskUpdates.current = { ...riskUpdates.current, [id]: riskObj };
     }
