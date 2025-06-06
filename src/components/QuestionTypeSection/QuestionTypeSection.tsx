@@ -52,7 +52,7 @@ const QuestionTypeSection = ({ appParams, currentOpsSectionInfo, displaySection 
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
         <AssessmentProgressBox isValid={isValid} trigger={trigger} smallScreen={smallScreen} />
-        <AdditionalInfoBox smallScreen={smallScreen} />
+        {/* <AdditionalInfoBox smallScreen={smallScreen} /> */}
       </Box>
     </Box>
   );
