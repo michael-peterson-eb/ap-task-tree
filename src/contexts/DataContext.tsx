@@ -2,8 +2,15 @@ import { createContext, useContext, useRef, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getOperationSections } from "../model/mocked/operationSection";
 import { Loading } from "../components/Loading";
+import { getAssessmentType } from "../model/AssessmentType";
 
 const DataContext = createContext({
+  assessmentType: {
+    id: "",
+    name: "",
+    EA_SA_cbEnableAutofill: false,
+    EA_SA_cbEnableValidation: false,
+  },
   operationSections: [],
   operationSectionsPending: false,
   opSecUpdates: { current: {} },
@@ -15,7 +22,12 @@ const DataContext = createContext({
 });
 
 const DataProvider = ({ children, appParams }) => {
-  const { id, sectionType, questionRelName, crudAction: mode } = appParams;
+  const { id, sectionType, objectIntegrationName, questionRelName, crudAction: mode } = appParams;
+
+  const { isPending: assessmentTypePending, data: assessmentType } = useQuery({
+    queryKey: ["assessment-type", id, objectIntegrationName],
+    queryFn: () => getAssessmentType({ id, objectIntegrationName }),
+  });
 
   const opSecUpdates = useRef({});
   const questionUpdates = useRef({});
@@ -46,10 +58,12 @@ const DataProvider = ({ children, appParams }) => {
     }
   }, [operationSections]);
 
-  if (operationSectionsPending || !operationSections) return <Loading />;
+  if (operationSectionsPending || !operationSections || assessmentTypePending || !assessmentType) return <Loading />;
 
   return (
-    <DataContext.Provider value={{ operationSections, operationSectionsPending, opSecUpdates, opSecStatuses, questionUpdates, refetchOpSecs, riskUpdates, setOpSecStatuses }}>
+    <DataContext.Provider
+      value={{ assessmentType, operationSections, operationSectionsPending, opSecUpdates, opSecStatuses, questionUpdates, refetchOpSecs, riskUpdates, setOpSecStatuses }}
+    >
       {children}
     </DataContext.Provider>
   );
