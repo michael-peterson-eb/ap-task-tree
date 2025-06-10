@@ -26,8 +26,6 @@ export const FormTimeInterval = ({
   const { crudAction: mode } = appParams;
   const { assessmentType } = useData();
 
-  console.log("ASSESSMENT TYPE", assessmentType);
-
   const adminIds = [90, 95];
   const adminCodes = ["ea_businessadmin", "EA_itadmin", "EA_subadmin", "ea_admin"];
   // @ts-expect-error This is attached to window
