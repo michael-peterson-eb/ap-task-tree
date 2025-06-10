@@ -7,7 +7,7 @@ import { dateYYYYMMDDFormat } from "../../utils/format";
 import { isDateInFuture } from "../../utils/common";
 import dayjs from "dayjs";
 import { ViewOnlyText } from "./ViewOnlyText";
-import { setInnerHTML } from "../../utils/cleanup";
+import { getQuestionHTML } from "../../utils/cleanup";
 import { Controller } from "react-hook-form";
 
 export const FormInputDate = ({ fieldName, appParams, assessmentQuestion, control, handleChange, hasLabel = true, questionTemplateData }: FormInputProps) => {
@@ -31,10 +31,15 @@ export const FormInputDate = ({ fieldName, appParams, assessmentQuestion, contro
               fontSize: 14,
               color: "#1B2327",
               paddingBottom: "4px",
+              display: "inline !important",
+              wordBreak: "break-word",
+              whiteSpace: "normal",
             }}
-          >
-            {setInnerHTML(EA_SA_txtaQuestion)} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
-          </Typography>
+            component="span"
+            dangerouslySetInnerHTML={{
+              __html: getQuestionHTML(EA_SA_txtaQuestion, required),
+            }}
+          />
         ) : null}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Controller
@@ -107,7 +112,7 @@ const styles = {
       border: "1px solid #0042B6",
     },
   },
-  '& .rbs-validationMsg': {
-    display: 'none !important'
-  }
+  "& .rbs-validationMsg": {
+    display: "none !important",
+  },
 };

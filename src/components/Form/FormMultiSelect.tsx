@@ -3,7 +3,7 @@ import { TextField, Autocomplete, FormControl, FormGroup, MenuItem, Checkbox, Li
 import { getMultiValue, isQuestionRequired, getDefaultMultiValue } from "../../utils/common";
 import { ViewOnlyText } from "./ViewOnlyText";
 import { Controller } from "react-hook-form";
-import { setInnerHTML } from "../../utils/cleanup";
+import { getQuestionHTML } from "../../utils/cleanup";
 
 export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, control, handleChange, questionTemplateData, responseOptions }: FormInputProps) => {
   const { EA_SA_txtaQuestion, EA_SA_ddlResponseFormat: responseFormat } = questionTemplateData;
@@ -33,10 +33,15 @@ export const FormMultiSelect = ({ fieldName, appParams, assessmentQuestion, cont
             fontSize: 14,
             color: "#1B2327",
             paddingBottom: "4px",
+            display: "inline !important",
+            wordBreak: "break-word",
+            whiteSpace: "normal",
           }}
-        >
-          {setInnerHTML(EA_SA_txtaQuestion)} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
-        </Typography>
+          component="span"
+          dangerouslySetInnerHTML={{
+            __html: getQuestionHTML(EA_SA_txtaQuestion, required),
+          }}
+        />
         <FormGroup sx={{ paddingTop: 1 }}>
           <Controller
             control={control}

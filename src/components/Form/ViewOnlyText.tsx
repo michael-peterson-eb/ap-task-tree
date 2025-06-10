@@ -1,5 +1,5 @@
 import { FormControl, TextField, InputAdornment, Typography, Chip, Stack } from "@mui/material";
-import { setInnerHTML } from "../../utils/cleanup";
+import { setInnerHTML, getQuestionHTML } from "../../utils/cleanup";
 import { Dayjs } from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -50,11 +50,15 @@ export const ViewOnlyText = ({
               fontSize: 14,
               color: "#1B2327",
               paddingBottom: "4px",
+              display: "inline !important",
+              wordBreak: "break-word",
+              whiteSpace: "normal",
             }}
-          >
-            {setInnerHTML(label)}
-            {required && <span style={{ color: "red" }}>&nbsp;*</span>}
-          </Typography>
+            component="span"
+            dangerouslySetInnerHTML={{
+              __html: getQuestionHTML(label, required),
+            }}
+          />
         ) : null}
         <Stack direction="row" spacing={1} sx={mspBoxStyles}>
           {values.map((value) => {
@@ -84,11 +88,15 @@ export const ViewOnlyText = ({
             fontSize: 14,
             color: "#1B2327",
             paddingBottom: "4px",
+            display: "inline !important",
+            wordBreak: "break-word",
+            whiteSpace: "normal",
           }}
-        >
-          {setInnerHTML(label)}
-          {required && <span style={{ color: "red" }}>&nbsp;*</span>}
-        </Typography>
+          component="span"
+          dangerouslySetInnerHTML={{
+            __html: getQuestionHTML(label, required),
+          }}
+        />
       ) : null}
 
       <TextField

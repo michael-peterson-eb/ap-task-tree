@@ -6,7 +6,7 @@ import { Loading } from "../Loading";
 import { ViewOnlyText } from "./ViewOnlyText";
 import { showTimeInterval } from "../../utils/format";
 import { getNameValue, isQuestionRequired } from "../../utils/common";
-import { setInnerHTML } from "../../utils/cleanup";
+import { getQuestionHTML, setInnerHTML } from "../../utils/cleanup";
 import { Controller } from "react-hook-form";
 import { useData } from "../../contexts/DataContext";
 
@@ -116,14 +116,7 @@ export const FormTimeInterval = ({
     return (
       <>
         <Box sx={{ marginTop: 2, display: "block" }}>
-          <InputLabel
-            sx={{
-              display: "flex",
-              whiteSpace: "normal",
-              "& .MuiInputLabel-asterisk": { color: "red" },
-            }}
-            required={required}
-          >
+          <InputLabel>
             {timeIntervals.length > 0 ? (
               <Typography
                 sx={{
@@ -131,10 +124,15 @@ export const FormTimeInterval = ({
                   fontSize: 14,
                   color: "#1B2327",
                   paddingBottom: "4px",
+                  display: "inline !important",
+                  wordBreak: "break-word",
+                  whiteSpace: "normal",
                 }}
-              >
-                {setInnerHTML(timeIntervals[0].EA_SA_rfQuestion)}
-              </Typography>
+                component="span"
+                dangerouslySetInnerHTML={{
+                  __html: getQuestionHTML(timeIntervals[0].EA_SA_rfQuestion, required),
+                }}
+              />
             ) : null}
           </InputLabel>
 

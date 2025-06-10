@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Box, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormGroup, Typography } from "@mui/material";
 import { Loading } from "../Loading";
 import { FormInputProps } from "../../types/FormInputProps";
-import { setInnerHTML } from "../../utils/cleanup";
+import { getQuestionHTML } from "../../utils/cleanup";
 import { fetchQuestionsSeverityByTemplateId } from "../../model/Questions";
 import { useQuery } from "@tanstack/react-query";
 import { periodInScopeHas, isQuestionRequired, getNameValue } from "../../utils/common";
@@ -44,14 +44,7 @@ export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, hand
   if (mode === "view") {
     return (
       <Box sx={{ paddingTop: 2, display: "block" }}>
-        <InputLabel
-          sx={{
-            display: "flex",
-            whiteSpace: "normal",
-            "& .MuiInputLabel-asterisk": { color: "red" },
-          }}
-          required={required}
-        >
+        <InputLabel>
           {severityLevels.length > 0 ? (
             <Typography
               sx={{
@@ -59,10 +52,15 @@ export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, hand
                 fontSize: 14,
                 color: "#1B2327",
                 paddingBottom: "4px",
+                display: "inline !important",
+                wordBreak: "break-word",
+                whiteSpace: "normal",
               }}
-            >
-              {setInnerHTML(severityLevels[0].EA_SA_rfQuestion)}
-            </Typography>
+              component="span"
+              dangerouslySetInnerHTML={{
+                __html: getQuestionHTML(severityLevels[0].EA_SA_rfQuestion, required),
+              }}
+            />
           ) : null}
         </InputLabel>
         <TableContainer component={Paper} sx={{ border: "1px solid rgba(0, 0, 0, 0.65)", width: "inherit" }}>
@@ -106,7 +104,12 @@ export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, hand
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText label={null} value={getNameValue(responseOptions, severityLevel.EA_SA_rsAssessmentResponseOptions)} responseOptions={responseOptions} responseFormat={responseFormat} />
+                              <ViewOnlyText
+                                label={null}
+                                value={getNameValue(responseOptions, severityLevel.EA_SA_rsAssessmentResponseOptions)}
+                                responseOptions={responseOptions}
+                                responseFormat={responseFormat}
+                              />
                             </div>
                           )}
                           {responseFormat === "INT" && (
@@ -176,7 +179,12 @@ export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, hand
                                 marginRight: 8,
                               }}
                             >
-                              <ViewOnlyText label={null} value={getNameValue(responseOptions, severityLevel.EA_SA_rsPeakAssessmentResponseOptions)} responseOptions={responseOptions} responseFormat={responseFormat}/>
+                              <ViewOnlyText
+                                label={null}
+                                value={getNameValue(responseOptions, severityLevel.EA_SA_rsPeakAssessmentResponseOptions)}
+                                responseOptions={responseOptions}
+                                responseFormat={responseFormat}
+                              />
                             </div>
                           )}
                           {responseFormat === "INT" && (
@@ -239,14 +247,7 @@ export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, hand
     return (
       <>
         <FormGroup sx={{ paddingTop: 2, display: "block" }}>
-          <InputLabel
-            sx={{
-              display: "flex",
-              whiteSpace: "normal",
-              "& .MuiInputLabel-asterisk": { color: "red" },
-            }}
-            required={required}
-          >
+          <InputLabel>
             {severityLevels.length > 0 ? (
               <Typography
                 sx={{
@@ -254,10 +255,15 @@ export const FormSeverityLevel = ({ appParams, assessmentQuestion, control, hand
                   fontSize: 14,
                   color: "#1B2327",
                   paddingBottom: "4px",
+                  display: "inline !important",
+                  wordBreak: "break-word",
+                  whiteSpace: "normal",
                 }}
-              >
-                {setInnerHTML(severityLevels[0].EA_SA_rfQuestion)}
-              </Typography>
+                component="span"
+                dangerouslySetInnerHTML={{
+                  __html: getQuestionHTML(severityLevels[0].EA_SA_rfQuestion, required),
+                }}
+              ></Typography>
             ) : null}
           </InputLabel>
 
