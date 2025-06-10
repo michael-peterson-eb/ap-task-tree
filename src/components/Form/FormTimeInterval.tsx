@@ -8,6 +8,7 @@ import { showTimeInterval } from "../../utils/format";
 import { getNameValue, isQuestionRequired } from "../../utils/common";
 import { setInnerHTML } from "../../utils/cleanup";
 import { Controller } from "react-hook-form";
+import { useData } from "../../contexts/DataContext";
 
 export const FormTimeInterval = ({
   fieldName,
@@ -23,6 +24,9 @@ export const FormTimeInterval = ({
   const { EA_SA_rfRequiredQuestion } = assessmentQuestion;
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
   const { crudAction: mode } = appParams;
+  const { assessmentType } = useData();
+
+  console.log("ASSESSMENT TYPE", assessmentType);
 
   const adminIds = [90, 95];
   const adminCodes = ["ea_businessadmin", "EA_itadmin", "EA_subadmin", "ea_admin"];
@@ -41,73 +45,72 @@ export const FormTimeInterval = ({
   // setting the value to null/empty string, then the nulled out value will cascade to the following time intervals. This is to
   // prevent the user from selecting a response option that is lower than the previous time intervals selection response option.
   const handleChangeCascade = (value: any, index: number) => {
-  const selectedTimeInterval = timeIntervals[index];
-  const selectedValueName = `${selectedTimeInterval.id}.${fieldName}`;
+    const selectedTimeInterval = timeIntervals[index];
+    const selectedValueName = `${selectedTimeInterval.id}.${fieldName}`;
 
-  // Always apply change to the selected interval
-  setFormValue(selectedValueName, value);
-  handleChange(
-    {
-      target: {
-        id: selectedTimeInterval.id,
-        name: fieldName,
-        value,
+    // Always apply change to the selected interval
+    setFormValue(selectedValueName, value);
+    handleChange(
+      {
+        target: {
+          id: selectedTimeInterval.id,
+          name: fieldName,
+          value,
+        },
       },
-    },
-    null
-  );
+      null
+    );
 
-  // Handle empty value: reset all following values
-  if (value === "" || value == null) {
+    // Handle empty value: reset all following values
+    if (value === "" || value == null) {
+      for (let i = index + 1; i < timeIntervals.length; i++) {
+        const timeInterval = timeIntervals[i];
+        const valueName = `${timeInterval.id}.${fieldName}`;
+        setFormValue(valueName, "");
+
+        handleChange(
+          {
+            target: {
+              id: timeInterval.id,
+              name: fieldName,
+              value: "",
+            },
+          },
+          null
+        );
+      }
+      return;
+    }
+
+    // Normal cascade for valid (non-empty) values
+    const selectedOption = responseOptions.find((option) => option.id === value);
+    const selectedOrder = selectedOption?.EA_SA_intDisplayOrder;
+    if (!selectedOrder) return;
+
     for (let i = index + 1; i < timeIntervals.length; i++) {
       const timeInterval = timeIntervals[i];
       const valueName = `${timeInterval.id}.${fieldName}`;
-      setFormValue(valueName, "");
+      const currentValue = getFormValues(valueName);
 
-      handleChange(
-        {
-          target: {
-            id: timeInterval.id,
-            name: fieldName,
-            value: "",
+      const currentOption = responseOptions.find((option) => option.id === currentValue);
+      const currentOrder = currentOption?.EA_SA_intDisplayOrder;
+
+      if (!currentOrder || selectedOrder > currentOrder) {
+        setFormValue(valueName, value);
+
+        handleChange(
+          {
+            target: {
+              id: timeInterval.id,
+              name: fieldName,
+              value,
+            },
           },
-        },
-        null
-      );
+          null
+        );
+      }
     }
-    return;
-  }
-
-  // Normal cascade for valid (non-empty) values
-  const selectedOption = responseOptions.find((option) => option.id === value);
-  const selectedOrder = selectedOption?.EA_SA_intDisplayOrder;
-  if (!selectedOrder) return;
-
-  for (let i = index + 1; i < timeIntervals.length; i++) {
-    const timeInterval = timeIntervals[i];
-    const valueName = `${timeInterval.id}.${fieldName}`;
-    const currentValue = getFormValues(valueName);
-
-    const currentOption = responseOptions.find((option) => option.id === currentValue);
-    const currentOrder = currentOption?.EA_SA_intDisplayOrder;
-
-    if (!currentOrder || selectedOrder > currentOrder) {
-      setFormValue(valueName, value);
-
-      handleChange(
-        {
-          target: {
-            id: timeInterval.id,
-            name: fieldName,
-            value,
-          },
-        },
-        null
-      );
-    }
-  }
-};
-
+  };
 
   if (timeIntervalsPending) return <Loading type="none" />;
 
@@ -239,7 +242,20 @@ export const FormTimeInterval = ({
                                   labelId={`time-interval-${timeInterval.id}`}
                                   onChange={(event) => {
                                     onChange(event);
-                                    handleChangeCascade(event.target.value, index);
+
+                                    if (assessmentType?.EA_SA_cbEnableAutofill) {
+                                      handleChangeCascade(event.target.value, index);
+                                    } else {
+                                      const eventObj = {
+                                        target: {
+                                          id: timeInterval.id,
+                                          name: fieldName,
+                                          value: event.target.value,
+                                        },
+                                      };
+
+                                      handleChange(eventObj, null);
+                                    }
                                   }}
                                   required={timeIntervalRequired}
                                   sx={styles}
@@ -284,7 +300,7 @@ export const FormTimeInterval = ({
                                         disabled = true;
                                       }
 
-                                      if (disabled && !isAdmin) {
+                                      if (disabled && !isAdmin && assessmentType?.EA_SA_cbEnableValidation) {
                                         return (
                                           <Tooltip
                                             title={`Disabled options prevent the selection of lower severity ratings over time — the impact can remain the same or worsen, but not improve.`}
