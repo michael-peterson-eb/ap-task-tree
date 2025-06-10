@@ -1,6 +1,6 @@
-import { FormControl, Select, InputLabel, MenuItem, Typography, Chip } from "@mui/material";
+import { FormControl, Select, MenuItem, Typography, Chip } from "@mui/material";
 import { getNameValue, isQuestionRequired } from "../../utils/common";
-import { setInnerHTML } from "../../utils/cleanup";
+import { getQuestionHTML } from "../../utils/cleanup";
 import { FormInputProps } from "../../types/FormInputProps";
 import { ViewOnlyText } from "./ViewOnlyText";
 import { Controller } from "react-hook-form";
@@ -32,10 +32,15 @@ export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, con
                 fontSize: 14,
                 color: "#1B2327",
                 paddingBottom: "4px",
+                display: "inline !important",
+                wordBreak: "break-word",
+                whiteSpace: "normal",
               }}
-            >
-              {setInnerHTML(EA_SA_txtaQuestion)} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
-            </Typography>
+              component="span"
+              dangerouslySetInnerHTML={{
+                __html: getQuestionHTML(EA_SA_txtaQuestion, required),
+              }}
+            />
           ) : null}
           <Controller
             control={control}

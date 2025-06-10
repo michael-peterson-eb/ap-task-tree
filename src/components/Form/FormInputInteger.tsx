@@ -1,7 +1,7 @@
 import { FormInputProps } from "../../types/FormInputProps";
 import { TextField, FormControl, Typography } from "@mui/material";
 import { isQuestionRequired } from "../../utils/common";
-import { setInnerHTML } from "../../utils/cleanup";
+import { getQuestionHTML } from "../../utils/cleanup";
 import { ViewOnlyText } from "./ViewOnlyText";
 import { Controller } from "react-hook-form";
 
@@ -26,10 +26,15 @@ export const FormInputInteger = ({ fieldName, appParams, assessmentQuestion, con
               fontSize: 14,
               color: "#1B2327",
               paddingBottom: "4px",
+              display: "inline !important",
+              wordBreak: "break-word",
+              whiteSpace: "normal",
             }}
-          >
-            {setInnerHTML(EA_SA_txtaQuestion)} {required && <span style={{ color: "red" }}>&nbsp;*</span>}
-          </Typography>
+            component="span"
+            dangerouslySetInnerHTML={{
+              __html: getQuestionHTML(EA_SA_txtaQuestion, required),
+            }}
+          />
         ) : null}
         <Controller
           control={control}

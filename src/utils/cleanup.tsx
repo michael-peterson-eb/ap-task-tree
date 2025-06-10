@@ -15,3 +15,8 @@ export const setInnerHTML = (text) => {
     />
   );
 };
+
+export const getQuestionHTML = (html, required = false) => {
+  const sanitized = cleanLabel(html).replace(/<\/?(div|p|br)[^>]*>/g, " "); // Replace block-level tags
+  return required ? `${sanitized}<span style="color:red;">&nbsp;*</span>` : sanitized;
+};
