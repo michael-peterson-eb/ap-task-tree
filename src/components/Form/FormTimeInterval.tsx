@@ -295,8 +295,7 @@ export const FormTimeInterval = ({
                                       if (highestVal > responseOptionValueDisplayOrder) {
                                         disabled = true;
                                       }
-                                      // if (disabled && !isAdmin && assessmentType?.EA_SA_cbEnableValidation) {
-                                      if (disabled) {
+                                      if (disabled && !isAdmin && assessmentType?.EA_SA_cbEnableValidation) {
                                         return (
                                           <Tooltip
                                             title={
