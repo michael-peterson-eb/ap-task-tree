@@ -1,42 +1,57 @@
+const objIntRelLookupMap = {
+  EA_SA_Process: "EA_SA_rsAssessment",
+  EA_SA_Product_Service: "EA_SA_rsAssessments",
+  EA_SA_Application: "EA_SA_rsAssessments",
+  EA_RM_Risk: "EA_RM_rsAssessment",
+  EA_RM_Risk_Assessment: "EA_RM_rsAssessment",
+  EA_SA_Assessment: "EA_SA_rsAssessment",
+  EA_EI_Activation: "EA_EI_rsAssessment",
+};
+
 export const getAssessmentType = async ({ id, objectIntegrationName }) => {
   try {
-    let assessmentRelationName = "EA_SA_rsAssessment";
+    const relationName = objIntRelLookupMap[objectIntegrationName];
+    if (!relationName) throw new Error(`Unsupported objectIntegrationName: ${objectIntegrationName}`);
 
-    if (objectIntegrationName === "EA_SA_Product_Service" || objectIntegrationName === "EA_SA_Application") {
-      assessmentRelationName = "EA_SA_rsAssessments";
+    let assessmentId: number;
+
+    if (objectIntegrationName === "EA_SA_Assessment") {
+      //@ts-ignore
+      const [assessment] = await _RB.selectQuery(["id", "EA_SA_rsAssessmentType"], "EA_SA_Assessment", `id = ${id}`, 1, true);
+      assessmentId = assessment?.EA_SA_rsAssessmentType;
+    } else {
+      //@ts-ignore
+      const [record] = await _RB.selectQuery(["id", relationName], objectIntegrationName, `id = ${id}`, 1, true);
+
+      const linkedAssessmentId = record?.[relationName];
+      if (!linkedAssessmentId) throw new Error(`Missing relation ID in ${relationName}`);
+
+      //@ts-ignore
+      const [assessment] = await _RB.selectQuery(["id", "EA_SA_rsAssessmentType"], "EA_SA_Assessment", `id = ${linkedAssessmentId}`, 1, true);
+
+      assessmentId = assessment?.EA_SA_rsAssessmentType;
     }
 
-    if (objectIntegrationName === "EA_RM_Risk") {
-      assessmentRelationName = "EA_RM_rsAssessment";
-    }
-
-    if (objectIntegrationName === "EA_OR_ScenarioTest") {
-      assessmentRelationName = "EA_OR_rsAssessment";
-    }
+    if (!assessmentId) throw new Error("Missing assessment type ID");
 
     //@ts-ignore
-    const assessmentName = await _RB.selectQuery(["id", assessmentRelationName], objectIntegrationName, `id = ${id}`, 1, true);
+    const [assessmentType] = await _RB.selectQuery(["id", "name", "EA_SA_cbEnableAutofill", "EA_SA_cbEnableValidation"], "EA_SA_AssessmentType", `id = ${assessmentId}`, 1, true);
 
-    console.log("assessmentName: ", assessmentName);
-
-    const idParam = assessmentName[0][assessmentRelationName];
-
-    //@ts-ignore
-    const assessment = await _RB.selectQuery(["id", "EA_SA_rsAssessmentType"], "EA_SA_Assessment", `id = ${idParam}`, 1, true);
-
-    console.log("assessment: ", assessment);
-
-    //@ts-ignore
-    const assessmentType = await _RB.selectQuery(
-      ["id", "name", "EA_SA_cbEnableAutofill", "EA_SA_cbEnableValidation"],
-      "EA_SA_AssessmentType",
-      `${(id = assessment[0].EA_SA_rsAssessmentType)}`,
-      1,
-      true
+    return (
+      assessmentType || {
+        id: 0,
+        name: "Unknown",
+        EA_SA_cbEnableAutofill: false,
+        EA_SA_cbEnableValidation: false,
+      }
     );
-
-    return assessmentType[0];
   } catch (error) {
-    console.error("Error in getAssessmentQuestionTemplate: ", error);
+    console.error("Error in getAssessmentType:", error);
+    return {
+      id: 0,
+      name: "Error",
+      EA_SA_cbEnableAutofill: false,
+      EA_SA_cbEnableValidation: false,
+    };
   }
 };
