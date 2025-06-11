@@ -295,11 +295,16 @@ export const FormTimeInterval = ({
                                       if (highestVal > responseOptionValueDisplayOrder) {
                                         disabled = true;
                                       }
-
-                                      if (disabled && !isAdmin && assessmentType?.EA_SA_cbEnableValidation) {
+                                      // if (disabled && !isAdmin && assessmentType?.EA_SA_cbEnableValidation) {
+                                      if (disabled) {
                                         return (
                                           <Tooltip
-                                            title={`Disabled options prevent the selection of lower severity ratings over time — the impact can remain the same or worsen, but not improve.`}
+                                            title={
+                                              <Typography sx={{ fontSize: "1rem" }}>
+                                                Disabled options prevent the selection of lower severity ratings over time — the impact can remain the same or worsen, but not
+                                                improve.
+                                              </Typography>
+                                            }
                                             placement="top"
                                           >
                                             <div>
