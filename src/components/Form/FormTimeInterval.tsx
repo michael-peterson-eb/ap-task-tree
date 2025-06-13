@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormGroup, MenuItem, Typography, Box, Tooltip } from "@mui/material";
 import { FormInputProps } from "../../types/FormInputProps";
 import { fetchQuestionsIntervalsByTemplateId } from "../../model/Questions";
@@ -25,6 +26,9 @@ export const FormTimeInterval = ({
   const required = isQuestionRequired(EA_SA_rfRequiredQuestion);
   const { crudAction: mode } = appParams;
   const { assessmentType } = useData();
+
+  const [objValues, setObjValues] = useState<any>({});
+  const [menuOpen, setMenuOpen] = useState({});
 
   const adminIds = [90, 95];
   const adminCodes = ["ea_businessadmin", "EA_itadmin", "EA_subadmin", "ea_admin"];
@@ -59,12 +63,20 @@ export const FormTimeInterval = ({
       null
     );
 
+    setObjValues((prev) => {
+      return { ...prev, [selectedValueName]: value };
+    });
+
     // Handle empty value: reset all following values
     if (value === "" || value == null) {
       for (let i = index + 1; i < timeIntervals.length; i++) {
         const timeInterval = timeIntervals[i];
         const valueName = `${timeInterval.id}.${fieldName}`;
         setFormValue(valueName, "");
+
+        setObjValues((prev) => {
+          return { ...prev, [valueName]: "" };
+        });
 
         handleChange(
           {
@@ -96,6 +108,10 @@ export const FormTimeInterval = ({
       if (!currentOrder || selectedOrder > currentOrder) {
         setFormValue(valueName, value);
 
+        setObjValues((prev) => {
+          return { ...prev, [valueName]: value };
+        });
+
         handleChange(
           {
             target: {
@@ -109,6 +125,18 @@ export const FormTimeInterval = ({
       }
     }
   };
+
+  useEffect(() => {
+    if (timeIntervals && timeIntervals.length > 0) {
+      const obj: any = {};
+      timeIntervals.forEach((timeInterval: any) => {
+        const backendValue = timeInterval[fieldName!];
+
+        obj[`${timeInterval.id}.${fieldName}`] = backendValue || "";
+      });
+      setObjValues(obj);
+    }
+  }, [timeIntervals]);
 
   if (timeIntervalsPending) return <Loading type="none" />;
 
@@ -250,12 +278,18 @@ export const FormTimeInterval = ({
                                         },
                                       };
 
+                                      setObjValues((prev) => {
+                                        return { ...prev, [`${timeInterval.id}.${fieldName}`]: event.target.value };
+                                      });
+
                                       handleChange(eventObj, null);
                                     }
                                   }}
+                                  onOpen={() => setMenuOpen({ ...menuOpen, [timeInterval.id]: true })}
+                                  onClose={() => setMenuOpen({ ...menuOpen, [timeInterval.id]: false })}
                                   required={timeIntervalRequired}
                                   sx={styles}
-                                  value={value}
+                                  value={objValues[`${timeInterval.id}.${fieldName}`] || ""}
                                 >
                                   <MenuItem aria-label="" value="">
                                     <em>Select impact</em>
@@ -295,28 +329,39 @@ export const FormTimeInterval = ({
                                       if (highestVal > responseOptionValueDisplayOrder) {
                                         disabled = true;
                                       }
-                                      if (disabled && !isAdmin && assessmentType?.EA_SA_cbEnableValidation) {
+
+                                      const shouldDisable = disabled && assessmentType?.EA_SA_cbEnableValidation && !isAdmin;
+
+                                      if (shouldDisable) {
                                         return (
-                                          <Tooltip
-                                            title={
-                                              <Typography sx={{ fontSize: "1rem" }}>
-                                                Disabled options prevent the selection of lower severity ratings over time — the impact can remain the same or worsen, but not
-                                                improve.
-                                              </Typography>
-                                            }
-                                            placement="top"
-                                          >
-                                            <div>
-                                              <MenuItem value={responseOption.id} disabled={disabled}>
+                                          <MenuItem key={responseOption.id} value={responseOption.id} disabled={shouldDisable}>
+                                            <Tooltip
+                                              disableHoverListener={!menuOpen[timeInterval.id]}
+                                              title={
+                                                <Typography sx={{ fontSize: "1rem" }}>
+                                                  Disabled options prevent the selection of lower severity ratings over time — the impact can remain the same or worsen, but not
+                                                  improve.
+                                                </Typography>
+                                              }
+                                              placement="top"
+                                            >
+                                              <span
+                                                style={{
+                                                  pointerEvents: shouldDisable ? "none" : "auto", // ✅ disables clicks inside but not outside
+                                                  display: "flex",
+                                                  width: "100%",
+                                                  color: "rgba(0,0,0,0.38)", // mimic disabled text
+                                                }}
+                                              >
                                                 <Typography>{responseOption.name}</Typography>
-                                              </MenuItem>
-                                            </div>
-                                          </Tooltip>
+                                              </span>
+                                            </Tooltip>
+                                          </MenuItem>
                                         );
                                       }
 
                                       return (
-                                        <MenuItem value={responseOption.id}>
+                                        <MenuItem key={responseOption.id} value={responseOption.id}>
                                           <Typography>{responseOption.name}</Typography>
                                         </MenuItem>
                                       );
