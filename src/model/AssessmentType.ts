@@ -6,12 +6,24 @@ const objIntRelLookupMap = {
   EA_RM_Risk_Assessment: "EA_RM_rsAssessment",
   EA_SA_Assessment: "EA_SA_rsAssessment",
   EA_EI_Activation: "EA_EI_rsAssessment",
+  EA_OR_ScenarioTest: "EA_OR_rsAssessment",
+};
+
+const noAssessmentLookup = () => {
+  return {
+    EA_SA_cbEnableAutofill: false,
+    EA_SA_cbEnableValidation: false,
+  };
 };
 
 export const getAssessmentType = async ({ id, objectIntegrationName }) => {
   try {
     const relationName = objIntRelLookupMap[objectIntegrationName];
-    if (!relationName) throw new Error(`Unsupported objectIntegrationName: ${objectIntegrationName}`);
+
+    if (!relationName) {
+      console.error(`Unsupported objectIntegrationName: ${objectIntegrationName}`);
+      return noAssessmentLookup();
+    }
 
     let assessmentId: number;
 
@@ -24,7 +36,10 @@ export const getAssessmentType = async ({ id, objectIntegrationName }) => {
       const [record] = await _RB.selectQuery(["id", relationName], objectIntegrationName, `id = ${id}`, 1, true);
 
       const linkedAssessmentId = record?.[relationName];
-      if (!linkedAssessmentId) throw new Error(`Missing relation ID in ${relationName}`);
+      if (!linkedAssessmentId) {
+        console.error(`No linked assessment found for ${objectIntegrationName} with ID ${id}`);
+        return noAssessmentLookup();
+      }
 
       //@ts-ignore
       const [assessment] = await _RB.selectQuery(["id", "EA_SA_rsAssessmentType"], "EA_SA_Assessment", `id = ${linkedAssessmentId}`, 1, true);
@@ -32,26 +47,26 @@ export const getAssessmentType = async ({ id, objectIntegrationName }) => {
       assessmentId = assessment?.EA_SA_rsAssessmentType;
     }
 
-    if (!assessmentId) throw new Error("Missing assessment type ID");
+    if (!assessmentId) {
+      console.error(`No assessment type found for ${objectIntegrationName} with ID ${id}`);
+      return noAssessmentLookup();
+    }
 
     //@ts-ignore
     const [assessmentType] = await _RB.selectQuery(["id", "name", "EA_SA_cbEnableAutofill", "EA_SA_cbEnableValidation"], "EA_SA_AssessmentType", `id = ${assessmentId}`, 1, true);
 
+    console.log(`Assessment Type: ${assessmentType.name} for ${objectIntegrationName}`);
+
     return (
       assessmentType || {
-        id: 0,
-        name: "Unknown",
+        id: assessmentType.id,
+        name: assessmentType.name,
         EA_SA_cbEnableAutofill: false,
         EA_SA_cbEnableValidation: false,
       }
     );
   } catch (error) {
     console.error("Error in getAssessmentType:", error);
-    return {
-      id: 0,
-      name: "Error",
-      EA_SA_cbEnableAutofill: false,
-      EA_SA_cbEnableValidation: false,
-    };
+    return noAssessmentLookup();
   }
 };
