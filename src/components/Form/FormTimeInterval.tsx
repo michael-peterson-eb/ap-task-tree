@@ -131,8 +131,15 @@ export const FormTimeInterval = ({
       const obj: any = {};
       timeIntervals.forEach((timeInterval: any) => {
         const backendValue = timeInterval[fieldName!];
+        const updatedValue = getFormValues(`${timeInterval.id}.${fieldName}`);
 
-        obj[`${timeInterval.id}.${fieldName}`] = backendValue || "";
+        if (updatedValue || updatedValue === "") {
+          obj[`${timeInterval.id}.${fieldName}`] = updatedValue;
+        } else if (backendValue) {
+          obj[`${timeInterval.id}.${fieldName}`] = backendValue;
+        } else {
+          obj[`${timeInterval.id}.${fieldName}`] = "";
+        }
       });
       setObjValues(obj);
     }
