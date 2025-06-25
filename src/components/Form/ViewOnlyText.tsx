@@ -117,6 +117,7 @@ const textFieldStyles = {
   padding: "0px !important",
   "& .MuiInputBase-input": {
     padding: "0px !important",
+    fontSize: "14px !important",
   },
   "& .MuiOutlinedInput-root": {
     padding: "0px !important",
@@ -134,6 +135,6 @@ const chipStyles = {
   width: "14px",
   height: "14px",
   borderRadius: "2px !important",
-  marginRight: "2px !important",
+  marginRight: "6px !important",
   border: "1px solid rgba(0, 0, 0, 0.60)",
 };

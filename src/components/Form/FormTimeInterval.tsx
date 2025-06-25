@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormGroup, MenuItem, Typography, Box, Tooltip } from "@mui/material";
+import { Select, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, FormGroup, MenuItem, Typography, Box, Tooltip, Chip } from "@mui/material";
 import { FormInputProps } from "../../types/FormInputProps";
 import { fetchQuestionsIntervalsByTemplateId } from "../../model/Questions";
 import { useQuery } from "@tanstack/react-query";
@@ -192,7 +192,7 @@ export const FormTimeInterval = ({
                       <TableRow key={timeInterval.id}>
                         <TableCell>{showTimeInterval(timeInterval)}</TableCell>
                         <TableCell>
-                          <ViewOnlyText label={null} value={getNameValue(responseOptions, backendValue)} />
+                          <ViewOnlyText label={null} value={getNameValue(responseOptions, backendValue)} responseOptions={responseOptions} responseFormat="SSP" />
                         </TableCell>
                       </TableRow>
                     );
@@ -271,6 +271,7 @@ export const FormTimeInterval = ({
                                   error={!!error}
                                   id={timeInterval.id}
                                   labelId={`time-interval-${timeInterval.id}`}
+                                  MenuProps={{ sx: menuStyles }}
                                   onChange={(event) => {
                                     onChange(event);
 
@@ -360,7 +361,14 @@ export const FormTimeInterval = ({
                                                   color: "rgba(0,0,0,0.38)", // mimic disabled text
                                                 }}
                                               >
-                                                <Typography>{responseOption.name}</Typography>
+                                                <Typography sx={{ display: "flex", alignItems: "center", gap: "8px", fontSize: 14 }}>
+                                                  <Chip
+                                                    label=""
+                                                    size="small"
+                                                    sx={{ ...chipStyles, backgroundColor: responseOption.EA_SA_txtLabelColor || chipStyles.backgroundColor }}
+                                                  />
+                                                  {responseOption.name}
+                                                </Typography>
                                               </span>
                                             </Tooltip>
                                           </MenuItem>
@@ -369,7 +377,10 @@ export const FormTimeInterval = ({
 
                                       return (
                                         <MenuItem key={responseOption.id} value={responseOption.id}>
-                                          <Typography>{responseOption.name}</Typography>
+                                          <Typography sx={{ display: "flex", alignItems: "center", gap: "8px", fontSize: 14 }}>
+                                            <Chip label="" size="small" sx={{ ...chipStyles, backgroundColor: responseOption.EA_SA_txtLabelColor || chipStyles.backgroundColor }} />
+                                            {responseOption.name}
+                                          </Typography>
                                         </MenuItem>
                                       );
                                     })}
@@ -398,4 +409,59 @@ const styles = {
   "& .rbs-validationMsg": {
     display: "none !important",
   },
+  borderRadius: "4px",
+  "& .MuiSelect-select": {
+    paddingRight: "12px",
+    paddingLeft: "12px",
+    paddingTop: "8px",
+    paddingBottom: "8px",
+  },
+  ".MuiOutlinedInput-notchedOutline": {
+    border: "1px solid #CFD8DC",
+  },
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    border: "1px solid #0042B6",
+  },
+  "&:hover .MuiOutlinedInput-notchedOutline": {
+    border: "1px solid #0042B6",
+  },
+  ".MuiSvgIcon-root": {
+    fill: "#1B2327 !important",
+    borderLeft: "1px solid #CFD8DC",
+    paddingLeft: "4px",
+  },
+  "&:hover .MuiSvgIcon-root": {
+    fill: "#1B2327 !important",
+    borderLeft: "1px solid #0042B6",
+    paddingLeft: "4px",
+  },
+  "&.Mui-focused .MuiSvgIcon-root": {
+    fill: "#1B2327 !important",
+    borderLeft: "1px solid #0042B6",
+    paddingLeft: "4px",
+    transform: "rotateX(180deg)",
+  },
+};
+
+const menuStyles = {
+  ".MuiMenu-root": {},
+  ".MuiMenu-paper": {
+    marginTop: "4px",
+    border: "1px solid #0042B6",
+    borderRadius: "2px 0px 0px 2px",
+  },
+  ".MuiMenu-list": {
+    padding: "0px",
+  },
+  "& .rbs-validationMsg": {
+    display: "none !important",
+  },
+};
+
+const chipStyles = {
+  backgroundColor: "#000", // Default color
+  width: "14px",
+  height: "14px",
+  borderRadius: "2px",
+  border: "1px solid rgba(0, 0, 0, 0.60)",
 };

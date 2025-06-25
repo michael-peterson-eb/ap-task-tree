@@ -18,7 +18,15 @@ export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, con
   }
 
   if (mode === "view") {
-    return <ViewOnlyText label={hasLabel ? EA_SA_txtaQuestion : null} value={getNameValue(responseOptions, backendValue)} required={required} responseOptions={responseOptions} />;
+    return (
+      <ViewOnlyText
+        label={hasLabel ? EA_SA_txtaQuestion : null}
+        value={getNameValue(responseOptions, backendValue)}
+        required={required}
+        responseOptions={responseOptions}
+        responseFormat="SSP"
+      />
+    );
   }
 
   if (mode === "edit") {
@@ -86,13 +94,13 @@ export const FormSingleSelect = ({ fieldName, appParams, assessmentQuestion, con
                   value={value}
                 >
                   <MenuItem aria-label="" value="">
-                    <Typography sx={{ color: "#445A65" }}>{EA_SA_txtAdditionalInformation || "Select option"}</Typography>
+                    <Typography sx={{ color: "#445A65", fontSize: 14 }}>{EA_SA_txtAdditionalInformation || "Select option"}</Typography>
                   </MenuItem>
                   {responseOptions.length > 0 &&
                     responseOptions.map((responseOption: any) => {
                       return (
                         <MenuItem value={responseOption.id}>
-                          <Typography sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <Typography sx={{ display: "flex", alignItems: "center", gap: "8px", fontSize: 14 }}>
                             <Chip label="" size="small" sx={{ ...chipStyles, backgroundColor: responseOption.EA_SA_txtLabelColor || chipStyles.backgroundColor }} />
                             {responseOption.name}
                           </Typography>

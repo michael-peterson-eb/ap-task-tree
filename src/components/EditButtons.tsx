@@ -4,6 +4,7 @@ import { useData } from "../contexts/DataContext";
 import { updateQuestion } from "../model/Questions";
 import { updateOpSectionStatus } from "../model/SectionStatus";
 import { executeTriggers } from "../utils/common";
+import { queryClient } from "../App";
 
 export const EditButtons = ({ appParams }) => {
   const [cancelClicked, setCancelClicked] = useState(false);
@@ -59,6 +60,8 @@ export const EditButtons = ({ appParams }) => {
     }
 
     await executeTriggers(appParams);
+
+    queryClient.invalidateQueries();
 
     window.history.go(-1);
   };
