@@ -31,7 +31,7 @@ export const FormTimeInterval = ({
   const [menuOpen, setMenuOpen] = useState({});
 
   const adminIds = [90, 95];
-  const adminCodes = ["ea_businessadmin", "EA_itadmin", "EA_subadmin", "ea_admin"];
+  const adminCodes = ["ea_businessadmin", "ea_itadmin", "ea_subadmin", "ea_admin"];
   // @ts-expect-error This is attached to window
   const user = window.currentUser;
   const isAdmin = adminIds.indexOf(user?.CURR_USER_ROLE_ID) >= 0 || adminCodes.indexOf(user?.CURR_USER_ROLE_CODE.toLowerCase()) >= 0;
