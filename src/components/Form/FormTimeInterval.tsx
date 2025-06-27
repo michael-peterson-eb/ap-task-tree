@@ -209,27 +209,23 @@ export const FormTimeInterval = ({
     return (
       <>
         <FormGroup sx={{ paddingTop: 2, display: "block" }}>
-          <InputLabel
-            sx={{
-              display: "flex",
-              whiteSpace: "normal",
-              "& .MuiInputLabel-asterisk": { color: "red" },
-            }}
-            required={required}
-          >
-            {timeIntervals.length > 0 ? (
-              <Typography
-                sx={{
-                  fontWeight: 500,
-                  fontSize: 14,
-                  color: "#1B2327",
-                  paddingBottom: "4px",
-                }}
-              >
-                {setInnerHTML(timeIntervals[0].EA_SA_rfQuestion)}
-              </Typography>
-            ) : null}
-          </InputLabel>
+          {timeIntervals.length > 0 ? (
+            <Typography
+              sx={{
+                fontWeight: 500,
+                fontSize: 14,
+                color: "#1B2327",
+                paddingBottom: "4px",
+                display: "inline !important",
+                wordBreak: "break-word",
+                whiteSpace: "normal",
+              }}
+              component="span"
+              dangerouslySetInnerHTML={{
+                __html: getQuestionHTML(timeIntervals[0].EA_SA_rfQuestion, required),
+              }}
+            />
+          ) : null}
 
           <TableContainer component={Paper} sx={{ border: "1px solid rgba(0, 0, 0, 0.75)", width: "inherit" }}>
             <Table sx={{ width: "100%" }} size="small">
