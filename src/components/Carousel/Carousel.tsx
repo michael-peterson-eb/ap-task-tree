@@ -143,7 +143,7 @@ export default function Carousel({ operationSections, selectedOpsSec, handleTabC
             selectedOpsSec={selectedOpsSec}
             index={index}
             handleTabClick={handleTabClick}
-            dataTestId={`data-testId-${(type.name || type.id || index)
+            dataTestId={`${(type.name || type.id || index)
               .toString()
               .replace(/\s+/g, '-')
               .toLowerCase()}`}
