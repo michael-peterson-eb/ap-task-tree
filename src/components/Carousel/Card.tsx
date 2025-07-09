@@ -4,7 +4,7 @@ import Circle from "./Circle";
 import Dotdotdot from "react-dotdotdot";
 import { useData } from "../../contexts/DataContext";
 
-export const Card = ({ type, selectedOpsSec, index, handleTabClick }) => {
+export const Card = ({ type, selectedOpsSec, index, handleTabClick, dataTestId }) => {
   const { opSecStatuses } = useData();
   const currentStatus = opSecStatuses[index];
 
@@ -14,7 +14,12 @@ export const Card = ({ type, selectedOpsSec, index, handleTabClick }) => {
   const icon = currentStatus ? <Check /> : <Circle color={currentStatus || isSelected ? "white" : "#1B2327"} />;
 
   return (
-    <ImageListItem key={type.id} sx={{ cursor: "pointer" }} onClick={() => handleTabClick(index)}>
+    <ImageListItem
+      key={type.id}
+      sx={{ cursor: "pointer" }}
+      onClick={() => handleTabClick(index)}
+      data-testid={dataTestId}
+    >
       <Box
         sx={{
           background: isSelected ? "#0042B6" : cardColor,
