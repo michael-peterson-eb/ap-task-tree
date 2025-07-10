@@ -137,7 +137,17 @@ export default function Carousel({ operationSections, selectedOpsSec, handleTabC
         }}
       >
         {operationSections.map((type, index) => (
-          <Card key={type.id} type={type} selectedOpsSec={selectedOpsSec} index={index} handleTabClick={handleTabClick} />
+          <Card
+            key={type.id}
+            type={type}
+            selectedOpsSec={selectedOpsSec}
+            index={index}
+            handleTabClick={handleTabClick}
+            dataTestId={`${(type.name || type.id || index)
+              .toString()
+              .replace(/\s+/g, '-')
+              .toLowerCase()}`}
+          />
         ))}
       </ImageList>
       <PrevButton handleClickPrev={scrollLeft} canScrollLeft={canScrollLeft} />
