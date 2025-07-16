@@ -44,7 +44,7 @@ export const FormYesNo = ({ fieldName, appParams, assessmentQuestion, control, h
           control={control}
           defaultValue={backendValue}
           name={`${assessmentQuestion.id}.${fieldName}`}
-          rules={{ required: true }}
+          rules={{ required }}
           render={({ field: { onChange, value }, fieldState: { error } }) => {
             return (
               <Select
