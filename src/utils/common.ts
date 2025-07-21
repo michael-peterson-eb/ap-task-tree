@@ -75,7 +75,8 @@ export const executeTriggers = async (appParams: RecordInfo) => {
     //@ts-ignore
     await rbf_runTrigger(appParams.objectIntegrationName, appParams.id, triggers[0]);
   } else if (appParams.objectTitle == "Scenario Test") {
-    //placeholder for future Scenario Test trigger
+    //@ts-ignore
+    await rbf_runTrigger(appParams.objectIntegrationName, appParams.id, triggers[0]);
   } else if (appParams.objectTitle != "Standalone Assessment") {
     triggers.forEach(async (triggerId: any) => {
       //@ts-ignore
