@@ -39,6 +39,7 @@ export const fetchAssessQuestionsByTemplateId = async (recordInfo: any, template
     queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate <> 'null'`;
+    queryCondition += ` AND EA_SA_cbDisplayQuestion=true`;
 
     //@ts-ignore
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 1, true);
@@ -62,6 +63,7 @@ export const fetchQuestionsIntervalsByTemplateId = async (recordInfo: any, templ
     queryCondition += `${recordInfo.questionRelName}=${recordInfo.id}`;
     queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
+    queryCondition += ` AND EA_SA_cbDisplayQuestion=true`;
     queryCondition += ` AND EA_SA_rsTimeInterval <> 'null' ORDER BY EA_SA_rfTimeInSeconds ASC`;
 
     //@ts-ignore
@@ -87,6 +89,7 @@ export const fetchQuestionsSeverityByTemplateId = async (recordInfo: any, templa
     queryCondition += ` AND EA_SA_rfOperationSectionType='${recordInfo.sectionType}'`;
     queryCondition += ` AND EA_SA_rsAssessmentQuestionTemplate=${templateID}`;
     queryCondition += ` AND EA_OR_rsSeverityLevel <> 'null'`;
+    queryCondition += ` AND EA_SA_cbDisplayQuestion=true`;
 
     //@ts-ignore
     const results = await _RB.selectQuery(AssessmentQuestionFields, "EA_SA_AssessmentQuestion", queryCondition, 10000, true);
