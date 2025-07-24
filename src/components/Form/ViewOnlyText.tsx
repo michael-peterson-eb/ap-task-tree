@@ -1,6 +1,6 @@
 import { FormControl, TextField, InputAdornment, Typography, Chip, Stack } from "@mui/material";
 import { setInnerHTML, getQuestionHTML } from "../../utils/cleanup";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
@@ -28,10 +28,12 @@ export const ViewOnlyText = ({
   }
 
   if (responseFormat === "DATE") {
+    // Ensure value is a valid Dayjs object or fallback to today
+    const safeDate = value && dayjs(value).isValid() ? dayjs(value) : null;
     return (
       <FormControl fullWidth variant="standard">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker disabled label={setInnerHTML(label)} value={value} />
+          <DatePicker disabled label={setInnerHTML(label)} value={safeDate} />
         </LocalizationProvider>
       </FormControl>
     );
