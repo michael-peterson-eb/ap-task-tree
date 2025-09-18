@@ -1,4 +1,3 @@
-// popupClient.hmr.ts
 type Pending = { resolve:(v:any)=>void; reject:(e:any)=>void; timer:number };
 
 type Options = {
