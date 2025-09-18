@@ -58,7 +58,7 @@ export default function App() {
         boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
       }}
     >
-      <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>🔌 LCAP R3PC Debugger</h2>
+      <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>🔌 LCAP RPC Debugger</h2>
 
       <div style={{ display: "flex", gap: "0.75rem" }}>
         <button
